@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LibraryTestWindow</class>
+ <widget class="QMainWindow" name="LibraryTestWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1037</width>
+    <height>795</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>LibraryTestWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QGroupBox" name="getterGroupBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>0</y>
+      <width>291</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="title">
+     <string>get functions</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QPushButton" name="connectWsPushButton">
+       <property name="text">
+        <string> CONNECT WEBSOCKET</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="disconnectWsPushButton">
+       <property name="text">
+        <string>DISCONNECT WEBSOCKET</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="volumePushButton">
+       <property name="text">
+        <string>CHECK VOLUME</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="sourcesPushButton">
+       <property name="text">
+        <string>GET SOURCES</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bassCapabilitiesPushButton">
+       <property name="text">
+        <string>BASS CAPABILITIES</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bassPushButton">
+       <property name="text">
+        <string>GET BASS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="getZonePushButton">
+       <property name="text">
+        <string>GET ZONE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="nowPlayingPushButton">
+       <property name="text">
+        <string>NOW PLAYING</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="presetsPushButton">
+       <property name="text">
+        <string>GET PRESETS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="devInfoPushButton">
+       <property name="text">
+        <string>DEVICE INFO</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QGroupBox" name="keypressGroupBox">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>0</y>
+      <width>338</width>
+      <height>631</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>keypress</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="leftMargin">
+      <number>18</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="powerTogglePushButton">
+       <property name="text">
+        <string>POWER TOGGLE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="playPushButton">
+       <property name="text">
+        <string>PLAY</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pausePushButton">
+       <property name="text">
+        <string>PAUSE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="previousPushButton">
+       <property name="text">
+        <string>PREVIOUS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="nextPushButton">
+       <property name="text">
+        <string>NEXT</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="mutePushButton">
+       <property name="text">
+        <string>MUTE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="shuffleOnPushButton">
+       <property name="text">
+        <string>SHUFFLE ON</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="shuffleOffPushButton">
+       <property name="text">
+        <string>SHUFFLE OFF</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="repeatOnePushButton">
+       <property name="text">
+        <string>REPEAT ONE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="repeateAllPushButton">
+       <property name="text">
+        <string>REPEAT ALL</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="repeatOffPushButton">
+       <property name="text">
+        <string>REPEAT OFF</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addFavoritePushButton">
+       <property name="text">
+        <string>ADD FAVORITE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="removeFavoritePushButton">
+       <property name="text">
+        <string>REMOVE FAFORITE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="thumbsUpPushButton">
+       <property name="text">
+        <string>THUMBS UP</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="thumbsDownPushButton">
+       <property name="text">
+        <string>THUMBS DOWN</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bookmarkPushButton">
+       <property name="text">
+        <string>BOOKMARK (PANDORA ONLY)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="presetGoupBox">
+       <property name="title">
+        <string>PRESETS</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QWidget" name="widget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="preset01PushButton">
+             <property name="text">
+              <string>P1</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="preset02PushButton">
+             <property name="text">
+              <string>P2</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="preset03PushButton">
+             <property name="text">
+              <string>P3</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_2" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="preset04PushButton">
+             <property name="text">
+              <string>P4</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="preset05PushButton">
+             <property name="text">
+              <string>P5</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="preset06PushButton">
+             <property name="text">
+              <string>P6</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1037</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
