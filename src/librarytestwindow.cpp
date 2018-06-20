@@ -48,6 +48,7 @@ namespace radio
     connect( ui->nowPlayingPushButton, &QPushButton::clicked, this, &LibraryTestWindow::slotNowPlayingButton );
     connect( ui->presetsPushButton, &QPushButton::clicked, this, &LibraryTestWindow::slotOnGetPresetsButton );
     connect( ui->devInfoPushButton, &QPushButton::clicked, this, &LibraryTestWindow::slotOnGetDeviceInfoButton );
+    connect( ui->getGroupPushButton, &QPushButton::clicked, this, &LibraryTestWindow::slotOnGetGroupButton );
     //
     // KEYPRESS (POST)
     //
@@ -147,6 +148,11 @@ namespace radio
     sDevice->getDeviceInfo();
   }
 
+  void LibraryTestWindow::slotOnGetGroupButton( void )
+  {
+    lg->debug( "LibraryTestWindow::slotOnGetGroupButton.." );
+    sDevice->getGroup();
+  }
   void LibraryTestWindow::slotOnPlayButton( void )
   {
     lg->debug( "LibraryTestWindow::slotOnPlayButton..." );

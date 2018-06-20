@@ -152,6 +152,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="getGroupPushButton">
+            <property name="text">
+             <string>GET GROUP (ST 10)</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

@@ -39,7 +39,7 @@ namespace radio
     lg->debug( "BSoundTouchDevice::~BSoundTouchDevice..." );
   }
 
-  void BSoundTouchDevice::setHostname( QString &stHost )
+  void BSoundTouchDevice::setHostname( const QString &stHost )
   {
     hostname = stHost;
   }
@@ -109,6 +109,15 @@ namespace radio
   void BSoundTouchDevice::getDeviceInfo( void )
   {
     setUrl( "info" );
+    startGetRequest();
+  }
+
+  void BSoundTouchDevice::getGroup( void )
+  {
+    //
+    // Gruppenzugehörigkeit/Infos bei SoundToch 10
+    //
+    setUrl( "getGroup" );
     startGetRequest();
   }
 
@@ -207,6 +216,113 @@ namespace radio
     }
   }
 
+  void BSoundTouchDevice::selectSource( const QString &source, const QString &account = "" )
+  {
+    //
+    // stellt am geräte eine Quelle ein
+    // AUX, INTERNET, BLUETHOOTH, AMAZON, TUNEIN etc...
+    // TODO: wie geht es dann weiter?
+    //
+    setUrl( "select" );
+    lg->info( QString( "BSoundTouchDevice::selectSource: select source: %1, account: %2" ).arg( source ).arg( account ) );
+    QString data( QString( "<ContentItem source=\"%1\" sourceAccount=\"%2\"></ContentItem>" ).arg( source ).arg( account ) );
+    startPostRequest( data );
+  }
+
+  void BSoundTouchDevice::setBass( int bass )
+  {
+    //
+    // Bass einstellen
+    // TODO: Grenzen prüfen
+    //
+    setUrl( "bass" );
+    lg->info( QString( "BSoundTouchDevice::setBass: set bass to %1" ).arg( bass ) );
+    QString data( QString( "<bass>%1</bass>" ).arg( bass ) );
+    startPostRequest( data );
+  }
+
+  void BSoundTouchDevice::setVolume( int volume )
+  {
+    //
+    // Lautstärke einstellen (0..100)
+    //
+    if ( volume < 0 )
+      volume = 0;
+    if ( volume > 100 )
+      volume = 100;
+    setUrl( "volume" );
+    lg->info( QString( "BSoundTouchDevice::setVolume: set volume to %1" ).arg( volume ) );
+    QString data( QString( "<volume>%1</volume>" ).arg( volume ) );
+    startPostRequest( data );
+  }
+
+  void BSoundTouchDevice::setZone( const QString &masterId, const SoundTouchMemberList &memberList )
+  {
+    //
+    // erstelle eine Zohne (gemeinsames Abspielen einer Quelle) mit Mitlgliedern
+    //
+    lg->debug( "BSoundTouchDevice::setZone..." );
+    setUrl( "setZone" );
+    editZone( masterId, memberList );
+  }
+
+  void BSoundTouchDevice::addZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList )
+  {
+    //
+    // führe zu einer Zohne (gemeinsames Abspielen einer Quelle) Mitglieder hinzu
+    //
+    lg->debug( "BSoundTouchDevice::addZoneSlave..." );
+    setUrl( "addZoneSlave" );
+    editZone( masterId, memberList );
+  }
+
+  void BSoundTouchDevice::removeZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList )
+  {
+    //
+    // enferne aus einer Zohne (gemeinsames Abspielen einer Quelle) Mitglieder
+    //
+    lg->debug( "BSoundTouchDevice::removeZoneSlave..." );
+    setUrl( "removeZoneSlave" );
+    editZone( masterId, memberList );
+  }
+
+  void BSoundTouchDevice::setDeviceName( QString &name )
+  {
+    lg->debug( QString( "BSoundTouchDevice::removeZoneSlave: set name: \"%1\"..." ).arg( name ) );
+    setUrl( "name" );
+    QString data( QString( "<name>%1</name>" ).arg( name ) );
+    startPostRequest( data );
+  }
+
+  //###########################################################################
+  // Hilfsfuntionen                                                        ####
+  //###########################################################################
+
+  void BSoundTouchDevice::editZone( const QString &masterId, const SoundTouchMemberList &memberList )
+  {
+    //
+    // füte zu einer Zohne (gemeinsames Abspielen einer Quelle) Mitglieder hinzu
+    //
+    lg->debug( "BSoundTouchDevice::editZone..." );
+    //
+    if ( memberList.count() > 0 )
+    {
+      lg->debug( QString( "BSoundTouchDevice::editZone: edit zone \"%1\" %2 members..." ).arg( masterId ).arg( memberList.count() ) );
+      QString data( QString( "<zone master=\"%1\">" ).arg( masterId ) );
+      QVector< SoundTouchMemberObject >::ConstIterator iter = memberList.constBegin();
+      for ( ; iter != memberList.constEnd(); iter++ )
+      {
+        data.append( QString( "<member ipaddress=\"%1\">%2</member>" ).arg( iter->first ).arg( iter->second ) );
+      }
+      data.append( "</zone>" );
+      startPostRequest( data );
+    }
+    else
+    {
+      lg->warn( "BSoundTouchDevice::editZone: no members for zone was given. Abort command." );
+    }
+  }
+
   //###########################################################################
   //#### hilfsfunktionen GET/POST                                          ####
   //###########################################################################
@@ -218,8 +334,8 @@ namespace radio
     //
     // für Asynchrone Verarbeitung anbinden...
     //
-    connect( reply, &QNetworkReply::finished, this, [=] { httpFinished( reply ); } );
-    connect( reply, &QIODevice::readyRead, this, [=] { httpReadyRead( reply ); } );
+    connect( reply, &QNetworkReply::finished, this, [=] { slotOnHttpFinished( reply ); } );
+    connect( reply, &QIODevice::readyRead, this, [=] { slotOnHttpReadyToRead( reply ); } );
   }
 
   void BSoundTouchDevice::setUrl( const char *path )
@@ -257,15 +373,15 @@ namespace radio
     //
     // für Asynchrone Verarbeitung anbinden...
     //
-    connect( reply, &QNetworkReply::finished, this, [=] { httpFinished( reply ); } );
-    connect( reply, &QIODevice::readyRead, this, [=] { httpReadyRead( reply ); } );
+    connect( reply, &QNetworkReply::finished, this, [=] { slotOnHttpFinished( reply ); } );
+    connect( reply, &QIODevice::readyRead, this, [=] { slotOnHttpReadyToRead( reply ); } );
   }
 
   //###########################################################################
   //#### Asyncrone HTTP Funktionen                                         ####
   //###########################################################################
 
-  void BSoundTouchDevice::httpFinished( QNetworkReply *reply )
+  void BSoundTouchDevice::slotOnHttpFinished( QNetworkReply *reply )
   {
     if ( reply->error() )
     {
@@ -289,13 +405,13 @@ namespace radio
     lg->debug( "BSoundTouchDevice::httpFinished..." );
   }
 
-  void BSoundTouchDevice::httpReadyRead( QNetworkReply *reply )
+  void BSoundTouchDevice::slotOnHttpReadyToRead( QNetworkReply *reply )
   {
     // this slot gets called every time the QNetworkReply has new data.
     // We read all of its new data and write it into the file.
     // That way we use less RAM than when reading it at the finished()
     // signal of the QNetworkReply
-    lg->debug( "BSoundTouchDevice::httpReadyRead: data recived" );
+    // lg->debug( "BSoundTouchDevice::httpReadyRead: data recived" );
     QString relpyString( reply->readAll() );
     lg->debug( relpyString );
   }

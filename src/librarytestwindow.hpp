@@ -50,6 +50,7 @@ namespace radio
     void slotNowPlayingButton( void );
     void slotOnGetPresetsButton( void );
     void slotOnGetDeviceInfoButton( void );
+    void slotOnGetGroupButton( void );
     // keypress
     void slotOnPlayButton( void );
     void slotOnPauseButton( void );
@@ -68,6 +69,9 @@ namespace radio
     void slotOnBookmarkButton( void );
     void slotOnPowerButton( void );
     void slotOnPresetButton( int preset );
+    // volume
+    // bass
+    // zone create,add,remove
   };
 }  // namespace radio
 #endif  // LIBRARYTESTWINDOW_HPP
