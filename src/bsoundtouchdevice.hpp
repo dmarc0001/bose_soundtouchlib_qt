@@ -78,6 +78,9 @@ namespace radio
                                 std::shared_ptr< Logger > logger,
                                 QObject *parent = nullptr );
     ~BSoundTouchDevice();
+    void setHostname( QString &stHost );
+    void setHttpPort( qint16 stHttpPort );
+    void setWSPort( qint16 stWSPort );
     void getSources( void );
     void getBassCapabilities( void );
     void getBass( void );

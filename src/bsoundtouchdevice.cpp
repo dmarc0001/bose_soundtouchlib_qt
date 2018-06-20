@@ -39,6 +39,21 @@ namespace radio
     lg->debug( "BSoundTouchDevice::~BSoundTouchDevice..." );
   }
 
+  void BSoundTouchDevice::setHostname( QString &stHost )
+  {
+    hostname = stHost;
+  }
+
+  void BSoundTouchDevice::setHttpPort( qint16 stHttpPort )
+  {
+    httpPort = stHttpPort;
+  }
+
+  void BSoundTouchDevice::setWSPort( qint16 stWSPort )
+  {
+    wsPort = stWSPort;
+  }
+
   //###########################################################################
   //#### Informationsanfragen HTTP-GET                                     ####
   //###########################################################################

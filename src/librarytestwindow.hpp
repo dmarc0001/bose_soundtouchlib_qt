@@ -39,6 +39,8 @@ namespace radio
     private slots:
     void slotOnConnectWsButton( void );
     void slotOnDisconnectWsButton( void );
+    // hostnameedit
+    void slotOnHostnameLineEditFinished( void );
     // get Funktionen
     void slotOnVolumeCheckButton( void );
     void slotOnSourcesListButton( void );

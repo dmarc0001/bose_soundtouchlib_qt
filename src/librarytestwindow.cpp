@@ -11,6 +11,7 @@ namespace radio
       , ui( new Ui::LibraryTestWindow() )
   {
     ui.get()->setupUi( this );
+    ui->hostnameLineEdit->setText( host );
     //
     // Logging
     //
@@ -33,6 +34,9 @@ namespace radio
     sDevice = std::unique_ptr< BSoundTouchDevice >( new BSoundTouchDevice( host, httpPort, wsPort, lg, this ) );
     //
     // connect slots mit signalen
+    // hostname editiert
+    //
+    connect( ui->hostnameLineEdit, &QLineEdit::editingFinished, this, &LibraryTestWindow::slotOnHostnameLineEditFinished );
     // GET Funktionen
     connect( ui->connectWsPushButton, &QPushButton::clicked, this, &LibraryTestWindow::slotOnConnectWsButton );
     connect( ui->disconnectWsPushButton, &QPushButton::clicked, this, &LibraryTestWindow::slotOnDisconnectWsButton );
@@ -76,6 +80,13 @@ namespace radio
   {
     lg->debug( "LibraryTestWindow::~LibraryTestWindow..." );
     lg->shutdown();
+  }
+
+  void LibraryTestWindow::slotOnHostnameLineEditFinished( void )
+  {
+    lg->debug( QString( "LibraryTestWindow::slotOnHostnameLineEditFinished: %1" ).arg( ui->hostnameLineEdit->text() ) );
+    host = ui->hostnameLineEdit->text();
+    sDevice->setHostname( host );
   }
 
   void LibraryTestWindow::slotOnConnectWsButton( void )
