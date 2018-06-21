@@ -96,6 +96,14 @@ namespace radio
         //
         responseObject = std::shared_ptr< IResponseObject >( new VolumeObject( lg, reader.get(), this ) );
       }
+      else if ( rootelemName == QLatin1String( "sources" ) )
+      {
+        //
+        // sources erhalten
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new SourcesObject( lg, reader.get(), this ) );
+      }
       else
       {
         //

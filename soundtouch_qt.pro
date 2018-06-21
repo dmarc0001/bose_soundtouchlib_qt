@@ -42,7 +42,8 @@ SOURCES += \
     src/xmlparser/deviceinfoobject.cpp \
     src/xmlparser/iresponseobject.cpp \
     src/xmlparser/nowplayingobject.cpp \
-    src/xmlparser/volumeobject.cpp
+    src/xmlparser/volumeobject.cpp \
+    src/xmlparser/sourcesobject.cpp
 
 HEADERS += \
     src/logging/Logger.hpp \
@@ -53,7 +54,8 @@ HEADERS += \
     src/xmlparser/deviceinfoobject.hpp \
     src/xmlparser/iresponseobject.hpp \
     src/xmlparser/nowplayingobject.hpp \
-    src/xmlparser/volumeobject.hpp
+    src/xmlparser/volumeobject.hpp \
+    src/xmlparser/sourcesobject.hpp
 
 FORMS += \
         ui/librarytestwindow.ui

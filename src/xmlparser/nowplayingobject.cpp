@@ -11,7 +11,7 @@ namespace radio
     // DeviceID/source finden (Attribute von <nowPlaying>)
     //
     lg->debug( "NowPlayingObject::NowPlayingObject..." );
-    lg->debug( "NowPlayingObject::NowPlayingObject: check for attribute \"deviceID\"..." );
+    lg->debug( "NowPlayingObject::NowPlayingObject: check for attribute in \"nowPlaying\"..." );
     QXmlStreamAttributes attr = reader->attributes();
     if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
     {
@@ -272,7 +272,7 @@ namespace radio
     //
     // Attribut "total"
     //
-    lg->debug( "NowPlayingObject::parseTime: check for attribute \"total\"..." );
+    lg->debug( "NowPlayingObject::parseTime: check for attribute in \"time\"..." );
     QXmlStreamAttributes attr = reader->attributes();
     if ( attr.hasAttribute( QLatin1String( "total" ) ) )
     {
@@ -301,7 +301,7 @@ namespace radio
     //
     // Attribut "artImageStatus"
     //
-    lg->debug( "NowPlayingObject::parseArt: check for attribute \"artImageStatus\"..." );
+    lg->debug( "NowPlayingObject::parseArt: check for attribute in \"art\"..." );
     QXmlStreamAttributes attr = reader->attributes();
     if ( attr.hasAttribute( QLatin1String( "artImageStatus" ) ) )
     {
@@ -331,7 +331,7 @@ namespace radio
     //
     // Attribut "source"
     //
-    lg->debug( "NowPlayingObject::parseContentItem: check for attribute \"source\"..." );
+    lg->debug( "NowPlayingObject::parseContentItem: check for attribute in \"ContentItem\"..." );
     QXmlStreamAttributes attr = reader->attributes();
     if ( attr.hasAttribute( QLatin1String( "source" ) ) )
     {

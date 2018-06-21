@@ -215,7 +215,7 @@ namespace radio
     // Network type finden (Attribute von <networkInfo>)
     //
     lg->debug( "DeviceInfoObject::parseNetworkInfo..." );
-    lg->debug( "DeviceInfoObject::parseNetworkInfo: check for attribute \"type\"..." );
+    lg->debug( "DeviceInfoObject::parseNetworkInfo: check for attribute in \"networkInfo\"..." );
     QXmlStreamAttributes attr = reader->attributes();
     if ( attr.hasAttribute( QLatin1String( "type" ) ) )
     {
