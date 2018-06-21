@@ -414,7 +414,16 @@ namespace radio
     else
     {
       std::shared_ptr< IResponseObject > response = xmlParser.getResultObject();
-      // TODO: hier verarbeiten
+      if ( response.get() == nullptr )
+      {
+        lg->crit( "BSoundTouchDevice::slotOnHttpFinished: no response from parser" );
+      }
+      else
+      {
+        lg->debug( QString( "BSoundTouchDevice::slotOnHttpFinished: result object type %1" )
+                       .arg( static_cast< qint8 >( response->getResultType() ) ) );
+        // TODO: hier verarbeiten
+      }
     }
     reply->deleteLater();
     reply = nullptr;

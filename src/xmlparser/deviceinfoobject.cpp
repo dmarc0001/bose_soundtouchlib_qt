@@ -6,6 +6,7 @@ namespace radio
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "info" ) );
+    resultType = ResultobjectType::R_DEVICE_INFO;
     //
     // Device ID finden (Attribute von <info>)
     //
@@ -14,9 +15,9 @@ namespace radio
     {
       lg->debug( "DeviceInfoObject::DeviceInfoObject: check for attribute \"deviceID\"..." );
       QXmlStreamAttributes attr = reader->attributes();
-      if ( attr.hasAttribute( "deviceID" ) )
+      if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
       {
-        deviceId = attr.value( "deviceID" ).toString();
+        deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
         lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
       }
       else
@@ -116,7 +117,7 @@ namespace radio
         lg->debug( "DeviceInfoObject::DeviceInfoObject: components detected." );
         parseComponents();
       }
-      else if ( reader->name() == "networkInfo" )
+      else if ( reader->name() == QLatin1String( "networkInfo" ) )
       {
         //
         // Objekt mit Netzwerkinformationen
@@ -134,6 +135,11 @@ namespace radio
                        .arg( reader->readElementText() ) );
       }
     }
+  }
+
+  DeviceInfoObject::~DeviceInfoObject()
+  {
+    lg->debug( "DeviceInfoObject::~DeviceInfoObject..." );
   }
 
   void DeviceInfoObject::parseComponents( void )
@@ -216,9 +222,9 @@ namespace radio
     {
       lg->debug( "DeviceInfoObject::parseNetworkInfo: check for attribute \"type\"..." );
       QXmlStreamAttributes attr = reader->attributes();
-      if ( attr.hasAttribute( "type" ) )
+      if ( attr.hasAttribute( QLatin1String( "type" ) ) )
       {
-        singleDeviceNetworkInfo._type = attr.value( "type" ).toString();
+        singleDeviceNetworkInfo._type = attr.value( QLatin1String( "type" ) ).toString();
         lg->debug( QString( "DeviceInfoObject::parseNetworkInfo: attribute \"type\" has value %1" ).arg( deviceId ) );
       }
       else

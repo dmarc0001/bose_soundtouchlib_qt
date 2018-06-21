@@ -6,4 +6,10 @@ namespace radio
       : QObject( parent ), lg( logger ), reader( xmlreader ), resultType( ResultobjectType::R_UNKNOWN )
   {
   }
+
+  ResultobjectType IResponseObject::getResultType( void )
+  {
+    return ( resultType );
+  }
+
 }  // namespace radio

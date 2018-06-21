@@ -12,7 +12,8 @@ namespace radio
   enum class ResultobjectType : quint8
   {
     R_UNKNOWN,
-    R_DEVICE_INFO
+    R_DEVICE_INFO,
+    R_NOW_PLAYING
   };
 
   class IResponseObject : public QObject
@@ -25,6 +26,8 @@ namespace radio
 
     public:
     explicit IResponseObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    virtual ~IResponseObject(){};
+    ResultobjectType getResultType( void );
   };
 }  // namespace radio
 #endif  // IRESPONSEOBJECT_HPP

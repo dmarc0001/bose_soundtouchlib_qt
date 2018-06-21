@@ -72,13 +72,21 @@ namespace radio
       //
       // zuordnung machen
       //
-      if ( rootelemName == "info" )
+      if ( rootelemName == QLatin1String( "info" ) )
       {
         //
         // Device INFO erhalten
         // erzeuge das Objekt und Parse es
         //
         responseObject = std::shared_ptr< IResponseObject >( new DeviceInfoObject( lg, reader.get(), this ) );
+      }
+      else if ( rootelemName == QLatin1String( "nowPlaying" ) )
+      {
+        //
+        // now playing erhalten
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new NowPlayingObject( lg, reader.get(), this ) );
       }
       else
       {

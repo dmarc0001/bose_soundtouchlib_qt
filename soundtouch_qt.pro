@@ -40,7 +40,8 @@ SOURCES += \
     src/config/programconfig.cpp \
     src/xmlparser/xmlresultparser.cpp \
     src/xmlparser/deviceinfoobject.cpp \
-    src/xmlparser/iresponseobject.cpp
+    src/xmlparser/iresponseobject.cpp \
+    src/xmlparser/nowplayingobject.cpp
 
 HEADERS += \
     src/logging/Logger.hpp \
@@ -49,7 +50,8 @@ HEADERS += \
     src/config/programconfig.hpp \
     src/xmlparser/xmlresultparser.hpp \
     src/xmlparser/deviceinfoobject.hpp \
-    src/xmlparser/iresponseobject.hpp
+    src/xmlparser/iresponseobject.hpp \
+    src/xmlparser/nowplayingobject.hpp
 
 FORMS += \
         ui/librarytestwindow.ui

@@ -8,6 +8,7 @@
 #include "../logging/Logger.hpp"
 #include "deviceinfoobject.hpp"
 #include "iresponseobject.hpp"
+#include "nowplayingobject.hpp"
 
 namespace radio
 {
