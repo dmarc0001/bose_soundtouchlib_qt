@@ -13,7 +13,8 @@ namespace radio
   {
     R_UNKNOWN,
     R_DEVICE_INFO,
-    R_NOW_PLAYING
+    R_NOW_PLAYING,
+    R_VOLUME
   };
 
   class IResponseObject : public QObject

@@ -11,19 +11,16 @@ namespace radio
     // Device ID finden (Attribute von <info>)
     //
     lg->debug( "DeviceInfoObject::DeviceInfoObject..." );
-    if ( reader->name() == QLatin1String( "info" ) )
+    lg->debug( "DeviceInfoObject::DeviceInfoObject: check for attribute \"deviceID\"..." );
+    QXmlStreamAttributes attr = reader->attributes();
+    if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
     {
-      lg->debug( "DeviceInfoObject::DeviceInfoObject: check for attribute \"deviceID\"..." );
-      QXmlStreamAttributes attr = reader->attributes();
-      if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
-      {
-        deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
-      }
-      else
-      {
-        lg->warn( "DeviceInfoObject::DeviceInfoObject: there is no attribute \"deviceID\"..." );
-      }
+      deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
+      lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
+    }
+    else
+    {
+      lg->warn( "DeviceInfoObject::DeviceInfoObject: there is no attribute \"deviceID\"..." );
     }
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -218,19 +215,16 @@ namespace radio
     // Network type finden (Attribute von <networkInfo>)
     //
     lg->debug( "DeviceInfoObject::parseNetworkInfo..." );
-    if ( reader->name() == QLatin1String( "networkInfo" ) )
+    lg->debug( "DeviceInfoObject::parseNetworkInfo: check for attribute \"type\"..." );
+    QXmlStreamAttributes attr = reader->attributes();
+    if ( attr.hasAttribute( QLatin1String( "type" ) ) )
     {
-      lg->debug( "DeviceInfoObject::parseNetworkInfo: check for attribute \"type\"..." );
-      QXmlStreamAttributes attr = reader->attributes();
-      if ( attr.hasAttribute( QLatin1String( "type" ) ) )
-      {
-        singleDeviceNetworkInfo._type = attr.value( QLatin1String( "type" ) ).toString();
-        lg->debug( QString( "DeviceInfoObject::parseNetworkInfo: attribute \"type\" has value %1" ).arg( deviceId ) );
-      }
-      else
-      {
-        lg->warn( "DeviceInfoObject::DeviceInfoObject: there is no attribute \"type\"..." );
-      }
+      singleDeviceNetworkInfo._type = attr.value( QLatin1String( "type" ) ).toString();
+      lg->debug( QString( "DeviceInfoObject::parseNetworkInfo: attribute \"type\" has value %1" ).arg( deviceId ) );
+    }
+    else
+    {
+      lg->warn( "DeviceInfoObject::DeviceInfoObject: there is no attribute \"type\"..." );
     }
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende

@@ -9,6 +9,7 @@
 #include "deviceinfoobject.hpp"
 #include "iresponseobject.hpp"
 #include "nowplayingobject.hpp"
+#include "volumeobject.hpp"
 
 namespace radio
 {
