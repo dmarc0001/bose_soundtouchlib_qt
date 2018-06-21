@@ -12,6 +12,7 @@ QT                                     += gui
 QT                                     += widgets
 QT                                     += websockets
 QT                                     += network
+QT                                     += xml
 
 CONFIG                                 += stl
 CONFIG                                 += c++11
@@ -36,13 +37,19 @@ SOURCES += \
     src/logging/Logger.cpp \
     src/librarytestwindow.cpp \
     src/bsoundtouchdevice.cpp \
-    src/config/programconfig.cpp
+    src/config/programconfig.cpp \
+    src/xmlparser/xmlresultparser.cpp \
+    src/xmlparser/deviceinfoobject.cpp \
+    src/xmlparser/iresponseobject.cpp
 
 HEADERS += \
     src/logging/Logger.hpp \
     src/librarytestwindow.hpp \
     src/bsoundtouchdevice.hpp \
-    src/config/programconfig.hpp
+    src/config/programconfig.hpp \
+    src/xmlparser/xmlresultparser.hpp \
+    src/xmlparser/deviceinfoobject.hpp \
+    src/xmlparser/iresponseobject.hpp
 
 FORMS += \
         ui/librarytestwindow.ui

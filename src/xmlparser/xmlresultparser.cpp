@@ -1,0 +1,97 @@
+#include "xmlresultparser.hpp"
+
+namespace radio
+{
+  XmlResultParser::XmlResultParser( std::shared_ptr< Logger > logger, QString &xmlString, QObject *parent )
+      : QObject( parent )
+      , lg( logger )
+      , reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
+      , responseObject( nullptr )
+  {
+    lg->debug( "XmlResultParser::XmlResultParser: start parsing xml string..." );
+    parseFile();
+    //
+    // Errorhandling
+    //
+    if ( reader->hasError() )
+    {
+      lg->crit( "XmlResultParser::XmlResultParser: error while parsing xml..." );
+      // TODO: Errorhandling
+    }
+    else
+    {
+      lg->debug( "XmlResultParser::XmlResultParser: finishedt parsing xml string" );
+    }
+  }
+
+  XmlResultParser::~XmlResultParser()
+  {
+    lg->debug( "XmlResultParser::~XmlResultParser..." );
+  }
+
+  bool XmlResultParser::hasError( void )
+  {
+    return ( reader->hasError() );
+  }
+
+  QString XmlResultParser::getErrorString( void )
+  {
+    if ( reader->hasError() )
+    {
+      QString errStr( QString( "%1 at line %2" ).arg( reader->errorString() ).arg( reader->lineNumber() ) );
+      return ( errStr );
+    }
+    return ( QLatin1String( "no error" ) );
+  }
+
+  std::shared_ptr< IResponseObject > XmlResultParser::getResultObject( void )
+  {
+    return ( responseObject );
+  }
+
+  bool XmlResultParser::parseFile( void )
+  {
+    QStringRef rootelemName;
+    // while ( !reader->atEnd() && !reader->hasError() )
+    if ( !reader->atEnd() && !reader->hasError() )
+    {
+      // lese nächstes Element
+      QXmlStreamReader::TokenType token = reader->readNext();
+      //
+      // Nur Start -> nächstes Element lesen
+      //
+      if ( token == QXmlStreamReader::StartDocument )
+      {
+        // weiter!
+        reader->readNext();
+      }
+      //
+      // das nächste element bearbeiten
+      //
+      rootelemName = reader->name();
+      //
+      // zuordnung machen
+      //
+      if ( rootelemName == "info" )
+      {
+        //
+        // Device INFO erhalten
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new DeviceInfoObject( lg, reader.get(), this ) );
+      }
+      else
+      {
+        //
+        // hier weiss ich auch nicht weiter, der TAG ist unbekannt
+        //
+        lg->warn( QString( "XmlResultParser::parseFile: unsupported TAG in XML struct found: %1" ).arg( reader->name().toString() ) );
+        while ( !reader->atEnd() && !reader->hasError() )
+        {
+          reader->readNext();
+        }
+      }
+    }
+    return ( reader->hasError() );
+  }
+}  // namespace radio

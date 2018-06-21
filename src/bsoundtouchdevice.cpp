@@ -1,5 +1,6 @@
 #include "bsoundtouchdevice.hpp"
 #include <QThread>
+#include "xmlparser/xmlresultparser.hpp"
 
 namespace radio
 {
@@ -399,21 +400,36 @@ namespace radio
       reply = nullptr;
       return;
     }
-
+    //
+    // hier lese ich alles am Ende der Übertagung (die Datenmenge ist klein)
+    //
+    QString relpyString( reply->readAll() );
+    lg->debug( relpyString );
+    XmlResultParser xmlParser( lg, relpyString, this );
+    if ( xmlParser.hasError() )
+    {
+      lg->crit( QString( "BSoundTouchDevice::slotOnHttpFinished: error while %1" ).arg( reply->request().url().toString() ) );
+      lg->crit( QString( "BSoundTouchDevice::slotOnHttpFinished: %1" ).arg( xmlParser.getErrorString() ) );
+    }
+    else
+    {
+      std::shared_ptr< IResponseObject > response = xmlParser.getResultObject();
+      // TODO: hier verarbeiten
+    }
     reply->deleteLater();
     reply = nullptr;
     lg->debug( "BSoundTouchDevice::httpFinished..." );
   }
 
-  void BSoundTouchDevice::slotOnHttpReadyToRead( QNetworkReply *reply )
+  void BSoundTouchDevice::slotOnHttpReadyToRead( QNetworkReply * )
   {
     // this slot gets called every time the QNetworkReply has new data.
     // We read all of its new data and write it into the file.
     // That way we use less RAM than when reading it at the finished()
     // signal of the QNetworkReply
-    // lg->debug( "BSoundTouchDevice::httpReadyRead: data recived" );
-    QString relpyString( reply->readAll() );
-    lg->debug( relpyString );
+    lg->debug( "BSoundTouchDevice::httpReadyRead: data recived" );
+    // QString relpyString( reply->readAll() );
+    // lg->debug( relpyString );
   }
 
   void BSoundTouchDevice::slotAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator )
