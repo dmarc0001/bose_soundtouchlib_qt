@@ -70,7 +70,7 @@ namespace radio
       //
       rootelemName = reader->name();
       //
-      // zuordnung machen
+      // zuordnung machen, IResponseObject ist polymorph, das erleichtert die Handhabung
       //
       if ( rootelemName == QLatin1String( "info" ) )
       {
@@ -128,6 +128,14 @@ namespace radio
         //
         responseObject = std::shared_ptr< IResponseObject >( new BassObject( lg, reader.get(), this ) );
       }
+      else if ( rootelemName == QLatin1String( "presets" ) )
+      {
+        //
+        // preset einstellungen erhalten
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new PresetsObject( lg, reader.get(), this ) );
+      }
       else
       {
         //
@@ -141,6 +149,15 @@ namespace radio
         }
       }
     }
-    return ( reader->hasError() );
+    //
+    // gab es fehler, nur Fehler melden
+    //
+    if ( reader->hasError() )
+      return ( true );
+    //
+    // Fehlerfrei, datren resetten
+    //
+    reader->clear();
+    return ( false );
   }
 }  // namespace radio

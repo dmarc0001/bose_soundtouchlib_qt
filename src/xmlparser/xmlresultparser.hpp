@@ -11,6 +11,7 @@
 #include "deviceinfoobject.hpp"
 #include "iresponseobject.hpp"
 #include "nowplayingobject.hpp"
+#include "presetsobject.hpp"
 #include "sourcesobject.hpp"
 #include "volumeobject.hpp"
 #include "zoneobject.hpp"

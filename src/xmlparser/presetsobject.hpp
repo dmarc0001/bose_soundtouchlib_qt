@@ -13,10 +13,13 @@ namespace radio
   class PresetsObject : public IResponseObject
   {
     public:
-    QVector< DevicePreset > presets;
+    QVector< radio::DevicePreset > presets;
 
     explicit PresetsObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~PresetsObject() override;
+
+    private:
+    void parseContentItem( radio::DevicePreset &preset );
   };
 }  // namespace radio
 #endif  // PRESETSOBJECT_HPP
