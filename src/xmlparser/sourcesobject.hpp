@@ -28,7 +28,7 @@ namespace radio
 
     public:
     explicit SourcesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~SourcesObject();
+    ~SourcesObject() override;
 
     private:
     void parseSourceItem( void );

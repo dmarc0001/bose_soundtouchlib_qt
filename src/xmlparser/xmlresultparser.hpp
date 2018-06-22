@@ -11,6 +11,7 @@
 #include "nowplayingobject.hpp"
 #include "sourcesobject.hpp"
 #include "volumeobject.hpp"
+#include "zoneobject.hpp"
 
 namespace radio
 {
@@ -24,7 +25,7 @@ namespace radio
 
     public:
     explicit XmlResultParser( std::shared_ptr< Logger > logger, QString &xmlString, QObject *parent = nullptr );
-    ~XmlResultParser();
+    ~XmlResultParser() override;
     bool hasError( void );
     QString getErrorString( void );
     std::shared_ptr< IResponseObject > getResultObject( void );

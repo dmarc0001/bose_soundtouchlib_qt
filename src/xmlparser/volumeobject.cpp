@@ -8,7 +8,7 @@ namespace radio
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volume" ) );
     resultType = ResultobjectType::R_VOLUME;
     //
-    // Device ID finden (Attribute von <info>)
+    // Device ID finden (Attribute von <volume>)
     //
     lg->debug( "VolumeObject::VolumeObject..." );
     lg->debug( "VolumeObject::VolumeObject: check for attribute \"deviceID\"..." );

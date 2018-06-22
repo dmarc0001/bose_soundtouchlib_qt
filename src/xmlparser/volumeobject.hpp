@@ -19,7 +19,7 @@ namespace radio
 
     public:
     explicit VolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~VolumeObject();
+    ~VolumeObject() override;
   };
 }  // namespace radio
 #endif  // VOLUMEOBJECT_HPP

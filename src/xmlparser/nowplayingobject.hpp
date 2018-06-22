@@ -70,7 +70,7 @@ namespace radio
 
     public:
     explicit NowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
-    ~NowPlayingObject();
+    ~NowPlayingObject() override;
     void parseContentItem( void );
 
     private:

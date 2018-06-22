@@ -10,6 +10,7 @@
 #include <QVector>
 #include <memory>
 
+#include "global/bsoundtouch_global.hpp"
 #include "logging/Logger.hpp"
 
 // bose developer dmarc0001
@@ -17,15 +18,6 @@
 
 namespace radio
 {
-  //
-  // Definitionen um die Benennung der Parameter lesbarer zu machen
-  // Parameter "IPADDR", "MACADDR/DEVICEID"
-  //
-  //! Paare Soundtouch <"IPADDR", "MACADDR/DEVICEID">
-  using SoundTouchMemberObject = QPair< QString, QString >;
-  //! Liste mit Paaren
-  using SoundTouchMemberList = QVector< SoundTouchMemberObject >;
-
   class BSoundTouchDevice : public QObject
   {
     Q_OBJECT

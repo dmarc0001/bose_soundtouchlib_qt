@@ -104,6 +104,14 @@ namespace radio
         //
         responseObject = std::shared_ptr< IResponseObject >( new SourcesObject( lg, reader.get(), this ) );
       }
+      else if ( rootelemName == QLatin1String( "zone" ) )
+      {
+        //
+        // zoneninfo erhalten
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new ZoneObject( lg, reader.get(), this ) );
+      }
       else
       {
         //

@@ -42,7 +42,7 @@ namespace radio
 
     public:
     DeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
-    ~DeviceInfoObject();
+    ~DeviceInfoObject() override;
 
     private:
     void parseComponents( void );
