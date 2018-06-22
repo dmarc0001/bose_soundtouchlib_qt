@@ -73,5 +73,24 @@ namespace radio
     ContentItem contentItem;
   };
 
+  class SourceItem
+  {
+    public:
+    QString source;
+    QString sourceAccount;
+    QString status;
+    bool isLocal = false;
+    bool multiroomallowed = false;
+    QString Content;
+  };
+
+  class GroupRole
+  {
+    public:
+    QString deviceId;
+    QString role;  // left or right
+    QString ipAddress;
+  };
+
 }  // namespace radio
 #endif  // BSOUNDTOUCH_GLOBAL_HPP

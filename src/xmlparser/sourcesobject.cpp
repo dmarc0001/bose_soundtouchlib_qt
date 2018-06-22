@@ -11,7 +11,7 @@ namespace radio
     // Device ID finden (Attribute von <info>)
     //
     lg->debug( "SourcesObject::SourcesObject..." );
-    lg->debug( "SourcesObject::SourcesObject: check for attribute \"deviceID\"..." );
+    lg->debug( "SourcesObject::SourcesObject: check for attributes in \"sources\"..." );
     QXmlStreamAttributes attr = reader->attributes();
     if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
     {

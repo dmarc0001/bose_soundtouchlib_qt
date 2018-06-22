@@ -19,7 +19,8 @@ namespace radio
     R_ZONES,
     R_BASS_CAPABILITIES,
     R_BASS,
-    R_PRESETS
+    R_PRESETS,
+    R_GROUPS
   };
 
   class IResponseObject : public QObject
