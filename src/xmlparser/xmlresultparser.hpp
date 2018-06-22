@@ -12,6 +12,7 @@
 #include "iresponseobject.hpp"
 #include "nowplayingobject.hpp"
 #include "presetsobject.hpp"
+#include "resulterrorobject.hpp"
 #include "resultokobject.hpp"
 #include "sourcesobject.hpp"
 #include "volumeobject.hpp"

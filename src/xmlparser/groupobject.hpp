@@ -4,8 +4,8 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QVector>
-#include "../global/bsoundtouch_global.hpp"
 #include "../logging/Logger.hpp"
+#include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
 namespace radio
