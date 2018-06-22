@@ -3,27 +3,12 @@
 
 #include <qglobal.h>
 #include <QXmlStreamReader>
+#include "../global/bsoundtouch_global.hpp"
 #include "../logging/Logger.hpp"
 #include "iresponseobject.hpp"
 
 namespace radio
 {
-  class DeviceComponent
-  {
-    public:
-    QString _componentCategory;
-    QString softwareVersion;
-    QString serialNumber;
-  };
-
-  class DeviceNetworkInfo
-  {
-    public:
-    QString _type;  //! unsupported
-    QString macAddress;
-    QString ipAddress;
-  };
-
   class DeviceInfoObject : public IResponseObject
   {
     private:

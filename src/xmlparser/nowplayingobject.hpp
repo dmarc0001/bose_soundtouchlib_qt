@@ -3,56 +3,25 @@
 
 #include <qglobal.h>
 #include <QObject>
+#include "../global/bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
 namespace radio
 {
-  class NowPlayingContentItem
-  {
-    public:
-    QString source;
-    QString location;
-    QString sourceAccount;
-    bool isPresetable;
-    QString itemName;
-    QString containerArt;
-  };
-
-  class NowPlayingArt
-  {
-    public:
-    QString artImageStatus;
-    QString artUrl;
-  };
-
-  class NowPlayingTime
-  {
-    public:
-    int total_sec;
-    int current_sec;
-  };
-
-  class NowPlayingConnectionStatusInfo
-  {
-    public:
-    QString status;
-    QString deviceName;
-  };
-
   class NowPlayingObject : public IResponseObject
   {
     private:
     QString deviceId;
     QString source;
-    NowPlayingContentItem contentItem;
+    ContentItem contentItem;
     QString track;
     QString artist;
     QString album;
     QString genre;
     QString ratingUser;  //! zweideutig "rating" user rating of the song
     QString stationName;
-    NowPlayingArt nowPlayingArt;
-    NowPlayingTime nowPlayingTime;
+    PlayingArt nowPlayingArt;
+    PlayingTime nowPlayingTime;
     bool skipEnabled = false;
     bool skipPreviousEnabled = false;
     bool skipPreviousSupported = false;
@@ -66,7 +35,7 @@ namespace radio
     QString streamType;
     QString _description;     //! unsupported
     QString stationLocation;  //! Internet only
-    NowPlayingConnectionStatusInfo nowPlayingConnectStatusInfo;
+    DeviceConnectionStatusInfo nowPlayingConnectStatusInfo;
 
     public:
     explicit NowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );

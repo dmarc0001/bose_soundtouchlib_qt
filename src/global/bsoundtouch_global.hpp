@@ -16,5 +16,62 @@ namespace radio
   //! Liste mit Paaren
   using SoundTouchMemberList = QVector< SoundTouchMemberObject >;
 
+  class ContentItem
+  {
+    public:
+    QString source;
+    QString location;
+    QString sourceAccount;
+    bool isPresetable;
+    QString itemName;
+    QString containerArt;
+  };
+
+  class PlayingArt
+  {
+    public:
+    QString artImageStatus;
+    QString artUrl;
+  };
+
+  class PlayingTime
+  {
+    public:
+    int total_sec;
+    int current_sec;
+  };
+
+  class DeviceConnectionStatusInfo
+  {
+    public:
+    QString status;
+    QString deviceName;
+  };
+
+  class DeviceComponent
+  {
+    public:
+    QString _componentCategory;
+    QString softwareVersion;
+    QString serialNumber;
+  };
+
+  class DeviceNetworkInfo
+  {
+    public:
+    QString _type;  //! unsupported
+    QString macAddress;
+    QString ipAddress;
+  };
+
+  class DevicePreset
+  {
+    public:
+    QString id;
+    quint64 createdOn;
+    quint64 updatedOn;
+    ContentItem contentItem;
+  };
+
 }  // namespace radio
 #endif  // BSOUNDTOUCH_GLOBAL_HPP
