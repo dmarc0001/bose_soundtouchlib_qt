@@ -92,5 +92,14 @@ namespace radio
     QString ipAddress;
   };
 
+  class ResponseError
+  {
+    public:
+    int value;
+    QString name;
+    QString severity;
+    QString text;
+  };
+
 }  // namespace radio
 #endif  // BSOUNDTOUCH_GLOBAL_HPP
