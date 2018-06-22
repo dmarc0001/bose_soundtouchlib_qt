@@ -16,7 +16,8 @@ namespace radio
     R_NOW_PLAYING,
     R_VOLUME,
     R_SOURCES,
-    R_ZONES
+    R_ZONES,
+    R_BASS_CAPABILITIES
   };
 
   class IResponseObject : public QObject

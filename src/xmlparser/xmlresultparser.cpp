@@ -112,12 +112,21 @@ namespace radio
         //
         responseObject = std::shared_ptr< IResponseObject >( new ZoneObject( lg, reader.get(), this ) );
       }
+      else if ( rootelemName == QLatin1String( "bassCapabilities" ) )
+      {
+        //
+        // zoneninfo erhalten
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new BassCapabilities( lg, reader.get(), this ) );
+      }
       else
       {
         //
         // hier weiss ich auch nicht weiter, der TAG ist unbekannt
         //
-        lg->warn( QString( "XmlResultParser::parseFile: unsupported TAG in XML struct found: %1" ).arg( reader->name().toString() ) );
+        lg->warn( QString( "XmlResultParser::parseFile: unsupported TAG in response XML struct found: %1" )
+                      .arg( reader->name().toString() ) );
         while ( !reader->atEnd() && !reader->hasError() )
         {
           reader->readNext();

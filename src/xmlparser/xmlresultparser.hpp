@@ -6,6 +6,7 @@
 #include <QXmlStreamReader>
 #include <memory>
 #include "../logging/Logger.hpp"
+#include "basscapabilities.hpp"
 #include "deviceinfoobject.hpp"
 #include "iresponseobject.hpp"
 #include "nowplayingobject.hpp"
