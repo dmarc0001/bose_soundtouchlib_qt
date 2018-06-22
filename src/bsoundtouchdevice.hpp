@@ -6,9 +6,12 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
+#include <QPair>
+#include <QVector>
 #include <memory>
 
 #include "logging/Logger.hpp"
+#include "xmlparser/bsoundtouch_global.hpp"
 
 // bose developer dmarc0001
 // pw dd03353e83
@@ -78,6 +81,9 @@ namespace radio
                                 std::shared_ptr< Logger > logger,
                                 QObject *parent = nullptr );
     ~BSoundTouchDevice();
+    void setHostname( const QString &stHost );
+    void setHttpPort( qint16 stHttpPort );
+    void setWSPort( qint16 stWSPort );
     void getSources( void );
     void getBassCapabilities( void );
     void getBass( void );
@@ -87,14 +93,15 @@ namespace radio
     void getVolume( void );
     void getPresets( void );
     void getDeviceInfo( void );
-    void setKey( bose_key whichkey, bose_keystate keystate, QString sender = "Gabbo" );  // POST
-    // void selectSource( source, account ); // POST
-    // void setBass(int bass); //POST
-    // void setZone( master, senderip, QList(QPair(ip, mac))) //POST
-    // void addZoneSlave(master, QList(QPair(ip, mac)) ) // POST
-    // void removeZone Slave(QList(QPair(ip, mac))) // POST
-    // void setVolume(int volune); // POST
-    // void setDeviceName( QString name ); // POST
+    void getGroup( void );                                                                    //! Soundtouch 10 only
+    void setKey( bose_key whichkey, bose_keystate keystate, QString sender = "Gabbo" );       // POST
+    void selectSource( const QString &source, const QString &account );                       //! AUX/AMAZON/INTERNET etc...
+    void setBass( int bass );                                                                 // POST
+    void setVolume( int volume );                                                             // POST
+    void setZone( const QString &masterId, const SoundTouchMemberList &memberList );          //! create zone
+    void addZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList );     // POST
+    void removeZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList );  // POST
+    void setDeviceName( QString &name );                                                      // POST
 
     private:
     void startGetRequest( const QUrl &requested );
@@ -105,14 +112,15 @@ namespace radio
     void startPostRequest( const char *requested, const QString &data );
     void startPostRequest( const QString &data );
     void setUrl( const char *path );
+    void editZone( const QString &masterId, const SoundTouchMemberList &memberList );  //! je url create,add,remove
 
     signals:
     void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );
 
     private slots:
     void slotAuthenticationRequired( QNetworkReply *, QAuthenticator *authenticator );
-    void httpFinished( QNetworkReply *reply );
-    void httpReadyRead( QNetworkReply *reply );
+    void slotOnHttpFinished( QNetworkReply *reply );
+    void slotOnHttpReadyToRead( QNetworkReply *reply );
   };
 }  // namespace radio
 #endif  // BSOUNDTOUCHDEVICE_HPP
