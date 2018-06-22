@@ -50,6 +50,7 @@ namespace radio
 
   SourcesObject::~SourcesObject()
   {
+    lg->debug( "SourcesObject::~SourcesObject..." );
   }
 
   void SourcesObject::parseSourceItem( void )

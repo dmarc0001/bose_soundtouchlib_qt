@@ -64,5 +64,6 @@ namespace radio
 
   ZoneObject::~ZoneObject()
   {
+    lg->debug( "ZoneObject::~ZoneObject..." );
   }
 }  // namespace radio
