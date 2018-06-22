@@ -6,10 +6,10 @@
 #else
 #include <QMainWindow>
 #endif
+#include <bsoundtouchdevice.hpp>
+#include <logging/Logger.hpp>
 #include <memory>
-#include "bsoundtouchdevice.hpp"
 #include "config/programconfig.hpp"
-#include "logging/Logger.hpp"
 #include "ui_librarytestwindow.h"
 
 namespace Ui

@@ -4,7 +4,7 @@
 ####                                                                       ####
 ###############################################################################
 
-TARGET                                 = soundtouch_qt
+TARGET                                 = libsoundtouch_qt
 TEMPLATE                               = lib
 #
 QT                                     += core
@@ -37,37 +37,37 @@ DEFINES                                += QT_DEPRECATED_WARNINGS
 DEFINES                                += $$DEBUG
 
 SOURCES += \
-    src/logging/Logger.cpp \
-    src/bsoundtouchdevice.cpp \
-    src/config/programconfig.cpp \
-    src/xmlparser/xmlresultparser.cpp \
-    src/xmlparser/deviceinfoobject.cpp \
-    src/xmlparser/iresponseobject.cpp \
-    src/xmlparser/nowplayingobject.cpp \
-    src/xmlparser/volumeobject.cpp \
-    src/xmlparser/sourcesobject.cpp \
-    src/xmlparser/zoneobject.cpp \
-    src/xmlparser/bassobject.cpp \
-    src/xmlparser/basscapabilitiesobject.cpp \
-    src/xmlparser/presetsobject.cpp \
-    src/xmlparser/groupobject.cpp \
-    src/xmlparser/resultokobject.cpp \
-    src/xmlparser/resulterrorobject.cpp
+    libsrc/logging/Logger.cpp \
+    libsrc/bsoundtouchdevice.cpp \
+    libsrc/xmlparser/xmlresultparser.cpp \
+    libsrc/xmlparser/deviceinfoobject.cpp \
+    libsrc/xmlparser/iresponseobject.cpp \
+    libsrc/xmlparser/nowplayingobject.cpp \
+    libsrc/xmlparser/volumeobject.cpp \
+    libsrc/xmlparser/sourcesobject.cpp \
+    libsrc/xmlparser/zoneobject.cpp \
+    libsrc/xmlparser/bassobject.cpp \
+    libsrc/xmlparser/basscapabilitiesobject.cpp \
+    libsrc/xmlparser/presetsobject.cpp \
+    libsrc/xmlparser/groupobject.cpp \
+    libsrc/xmlparser/resultokobject.cpp \
+    libsrc/xmlparser/resulterrorobject.cpp
 
 HEADERS += \
-    src/logging/Logger.hpp \
-    src/xmlparser/xmlresultparser.hpp \
-    src/xmlparser/deviceinfoobject.hpp \
-    src/xmlparser/iresponseobject.hpp \
-    src/xmlparser/nowplayingobject.hpp \
-    src/xmlparser/volumeobject.hpp \
-    src/xmlparser/sourcesobject.hpp \
-    src/xmlparser/zoneobject.hpp \
-    src/xmlparser/bsoundtouch_global.hpp \
-    src/xmlparser/bassobject.hpp \
-    src/xmlparser/basscapabilitiesobject.hpp \
-    src/xmlparser/presetsobject.hpp \
-    src/xmlparser/groupobject.hpp \
-    src/xmlparser/resultokobject.hpp \
-    src/xmlparser/resulterrorobject.hpp \
-    src/bsoundtouchdevice.hpp
+    libsrc/logging/Logger.hpp \
+    libsrc/xmlparser/xmlresultparser.hpp \
+    libsrc/xmlparser/deviceinfoobject.hpp \
+    libsrc/xmlparser/iresponseobject.hpp \
+    libsrc/xmlparser/nowplayingobject.hpp \
+    libsrc/xmlparser/volumeobject.hpp \
+    libsrc/xmlparser/sourcesobject.hpp \
+    libsrc/xmlparser/zoneobject.hpp \
+    libsrc/xmlparser/bsoundtouch_global.hpp \
+    libsrc/xmlparser/bassobject.hpp \
+    libsrc/xmlparser/basscapabilitiesobject.hpp \
+    libsrc/xmlparser/presetsobject.hpp \
+    libsrc/xmlparser/groupobject.hpp \
+    libsrc/xmlparser/resultokobject.hpp \
+    libsrc/xmlparser/resulterrorobject.hpp \
+    libsrc/bsoundtouchdevice.hpp
+
