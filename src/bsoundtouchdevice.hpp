@@ -13,12 +13,18 @@
 #include "logging/Logger.hpp"
 #include "xmlparser/bsoundtouch_global.hpp"
 
+#if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
+#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_EXPORT
+#else
+#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
 // bose developer dmarc0001
 // pw dd03353e83
 
 namespace radio
 {
-  class BSoundTouchDevice : public QObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT BSoundTouchDevice : public QObject
   {
     Q_OBJECT
 
