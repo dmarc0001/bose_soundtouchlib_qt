@@ -1,8 +1,8 @@
-#include "basscapabilities.hpp"
+#include "basscapabilitiesobject.hpp"
 
 namespace radio
 {
-  BassCapabilities::BassCapabilities( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  BassCapabilitiesObject::BassCapabilitiesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bassCapabilities" ) );
@@ -10,17 +10,17 @@ namespace radio
     //
     // Device ID finden (Attribute von <info>)
     //
-    lg->debug( "BassCapabilities::BassCapabilities..." );
-    lg->debug( "BassCapabilities::BassCapabilities: check for attribute \"deviceID\"..." );
+    lg->debug( "BassCapabilitiesObject::BassCapabilitiesObject..." );
+    lg->debug( "BassCapabilitiesObject::BassCapabilitiesObject: check for attribute \"deviceID\"..." );
     QXmlStreamAttributes attr = reader->attributes();
     if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
     {
       deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
-      lg->debug( QString( "BassCapabilities::BassCapabilities: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
+      lg->debug( QString( "BassCapabilitiesObject::BassCapabilitiesObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
     }
     else
     {
-      lg->warn( "BassCapabilities::BassCapabilities: there is no attribute \"deviceID\"..." );
+      lg->warn( "BassCapabilitiesObject::BassCapabilitiesObject: there is no attribute \"deviceID\"..." );
     }
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -36,37 +36,37 @@ namespace radio
         {
           bassAvailable = true;
         }
-        lg->debug( QString( "BassCapabilities::BassCapabilities: bassAvailible: %1" ).arg( bassAvailable ) );
+        lg->debug( QString( "BassCapabilitiesObject::BassCapabilitiesObject: bassAvailible: %1" ).arg( bassAvailable ) );
       }
       else if ( reader->name() == QLatin1String( "bassMin" ) )
       {
         bassMin = reader->readElementText().toInt();
-        lg->debug( QString( "BassCapabilities::BassCapabilities: bassMin: %1" ).arg( bassMin ) );
+        lg->debug( QString( "BassCapabilitiesObject::BassCapabilitiesObject: bassMin: %1" ).arg( bassMin ) );
       }
       else if ( reader->name() == QLatin1String( "bassMax" ) )
       {
         bassMax = reader->readElementText().toInt();
-        lg->debug( QString( "BassCapabilities::BassCapabilities: bassMax: %1" ).arg( bassMax ) );
+        lg->debug( QString( "BassCapabilitiesObject::BassCapabilitiesObject: bassMax: %1" ).arg( bassMax ) );
       }
       else if ( reader->name() == QLatin1String( "bassDefault" ) )
       {
         bassDefault = reader->readElementText().toInt();
-        lg->debug( QString( "BassCapabilities::BassCapabilities: bassDefault: %1" ).arg( bassDefault ) );
+        lg->debug( QString( "BassCapabilitiesObject::BassCapabilitiesObject: bassDefault: %1" ).arg( bassDefault ) );
       }
       else
       {
         //
         // unsupportet elements
         //
-        lg->debug( QString( "BassCapabilities::BassCapabilities: %1 -> %2" )
+        lg->debug( QString( "BassCapabilitiesObject::BassCapabilitiesObject: %1 -> %2" )
                        .arg( reader->name().toString() )
                        .arg( reader->readElementText() ) );
       }
     }
   }
 
-  BassCapabilities::~BassCapabilities()
+  BassCapabilitiesObject::~BassCapabilitiesObject()
   {
-    lg->debug( "BassCapabilities::~BassCapabilities" );
+    lg->debug( "BassCapabilitiesObject::~BassCapabilitiesObject" );
   }
 }  // namespace radio

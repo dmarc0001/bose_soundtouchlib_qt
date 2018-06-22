@@ -8,7 +8,7 @@
 
 namespace radio
 {
-  class BassCapabilities : public IResponseObject
+  class BassCapabilitiesObject : public IResponseObject
   {
     private:
     QString deviceId;
@@ -18,8 +18,8 @@ namespace radio
     int bassDefault;
 
     public:
-    BassCapabilities( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~BassCapabilities();
+    BassCapabilitiesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~BassCapabilitiesObject();
   };
 }  // namespace radio
 #endif  // BASSCAPABILITYS_HPP

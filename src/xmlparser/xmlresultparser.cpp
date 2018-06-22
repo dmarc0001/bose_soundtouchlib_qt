@@ -115,10 +115,18 @@ namespace radio
       else if ( rootelemName == QLatin1String( "bassCapabilities" ) )
       {
         //
-        // zoneninfo erhalten
+        // bass möglichkeiten erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new BassCapabilities( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new BassCapabilitiesObject( lg, reader.get(), this ) );
+      }
+      else if ( rootelemName == QLatin1String( "bass" ) )
+      {
+        //
+        // bass einstellungen erhalten
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new BassObject( lg, reader.get(), this ) );
       }
       else
       {

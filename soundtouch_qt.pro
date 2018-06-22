@@ -45,7 +45,8 @@ SOURCES += \
     src/xmlparser/volumeobject.cpp \
     src/xmlparser/sourcesobject.cpp \
     src/xmlparser/zoneobject.cpp \
-    src/xmlparser/basscapabilities.cpp
+    src/xmlparser/bassobject.cpp \
+    src/xmlparser/basscapabilitiesobject.cpp
 
 HEADERS += \
     src/logging/Logger.hpp \
@@ -60,7 +61,8 @@ HEADERS += \
     src/xmlparser/sourcesobject.hpp \
     src/xmlparser/zoneobject.hpp \
     src/global/bsoundtouch_global.hpp \
-    src/xmlparser/basscapabilities.hpp
+    src/xmlparser/bassobject.hpp \
+    src/xmlparser/basscapabilitiesobject.hpp
 
 FORMS += \
         ui/librarytestwindow.ui
