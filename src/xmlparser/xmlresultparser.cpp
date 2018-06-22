@@ -136,6 +136,14 @@ namespace radio
         //
         responseObject = std::shared_ptr< IResponseObject >( new PresetsObject( lg, reader.get(), this ) );
       }
+      else if ( rootelemName == QLatin1String( "status" ) )
+      {
+        //
+        // alles OK bei "set" Funktion
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new ResultOkObject( lg, reader.get(), this ) );
+      }
       else
       {
         //

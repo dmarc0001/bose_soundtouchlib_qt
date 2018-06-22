@@ -48,7 +48,8 @@ SOURCES += \
     src/xmlparser/bassobject.cpp \
     src/xmlparser/basscapabilitiesobject.cpp \
     src/xmlparser/presetsobject.cpp \
-    src/xmlparser/groupobject.cpp
+    src/xmlparser/groupobject.cpp \
+    src/xmlparser/resultokobject.cpp
 
 HEADERS += \
     src/logging/Logger.hpp \
@@ -66,7 +67,8 @@ HEADERS += \
     src/xmlparser/bassobject.hpp \
     src/xmlparser/basscapabilitiesobject.hpp \
     src/xmlparser/presetsobject.hpp \
-    src/xmlparser/groupobject.hpp
+    src/xmlparser/groupobject.hpp \
+    src/xmlparser/resultokobject.hpp
 
 FORMS += \
         ui/librarytestwindow.ui
