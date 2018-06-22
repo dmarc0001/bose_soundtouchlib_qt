@@ -413,4 +413,129 @@ namespace radio
     }
     lg->debug( "NowPlayingObject::parseContentItem: finished." );
   }
+  QString NowPlayingObject::getDeviceId() const
+  {
+    return deviceId;
+  }
+
+  QString NowPlayingObject::getSource() const
+  {
+    return source;
+  }
+
+  ContentItem NowPlayingObject::getContentItem() const
+  {
+    return contentItem;
+  }
+
+  QString NowPlayingObject::getTrack() const
+  {
+    return track;
+  }
+
+  QString NowPlayingObject::getArtist() const
+  {
+    return artist;
+  }
+
+  QString NowPlayingObject::getAlbum() const
+  {
+    return album;
+  }
+
+  QString NowPlayingObject::getGenre() const
+  {
+    return genre;
+  }
+
+  QString NowPlayingObject::getRatingUser() const
+  {
+    return ratingUser;
+  }
+
+  QString NowPlayingObject::getStationName() const
+  {
+    return stationName;
+  }
+
+  PlayingArt NowPlayingObject::getNowPlayingArt() const
+  {
+    return nowPlayingArt;
+  }
+
+  PlayingTime NowPlayingObject::getNowPlayingTime() const
+  {
+    return nowPlayingTime;
+  }
+
+  bool NowPlayingObject::getSkipEnabled() const
+  {
+    return skipEnabled;
+  }
+
+  bool NowPlayingObject::getSkipPreviousEnabled() const
+  {
+    return skipPreviousEnabled;
+  }
+
+  bool NowPlayingObject::getSkipPreviousSupported() const
+  {
+    return skipPreviousSupported;
+  }
+
+  bool NowPlayingObject::getFavoriteEnabled() const
+  {
+    return favoriteEnabled;
+  }
+
+  bool NowPlayingObject::getIsFavorite() const
+  {
+    return isFavorite;
+  }
+
+  bool NowPlayingObject::getRateEnabled() const
+  {
+    return rateEnabled;
+  }
+
+  QString NowPlayingObject::getRating() const
+  {
+    return rating;
+  }
+
+  QString NowPlayingObject::getPlayStatus() const
+  {
+    return playStatus;
+  }
+
+  QString NowPlayingObject::getShuffleSettings() const
+  {
+    return shuffleSettings;
+  }
+
+  QString NowPlayingObject::getRepeatSettings() const
+  {
+    return repeatSettings;
+  }
+
+  QString NowPlayingObject::getStreamType() const
+  {
+    return streamType;
+  }
+
+  QString NowPlayingObject::getDescription() const
+  {
+    return _description;
+  }
+
+  QString NowPlayingObject::getStationLocation() const
+  {
+    return stationLocation;
+  }
+
+  DeviceConnectionStatusInfo NowPlayingObject::getNowPlayingConnectStatusInfo() const
+  {
+    return nowPlayingConnectStatusInfo;
+  }
+
 }  // namespace radio

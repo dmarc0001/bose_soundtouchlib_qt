@@ -20,6 +20,12 @@ namespace radio
     public:
     BassCapabilitiesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~BassCapabilitiesObject();
+    // Funktionen um an die Daten zu kommen
+    QString getDeviceId() const;
+    bool getBassAvailable() const;
+    int getBassMin() const;
+    int getBassMax() const;
+    int getBassDefault() const;
   };
 }  // namespace radio
 #endif  // BASSCAPABILITYS_HPP

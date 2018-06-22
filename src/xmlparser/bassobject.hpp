@@ -18,6 +18,10 @@ namespace radio
     public:
     BassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~BassObject() override;
+    // getter Funktionen
+    QString getDeviceId() const;
+    int getTargetBass() const;
+    int getActualBass() const;
   };
 }  // namespace radio
 #endif  // BASSOBJECT_HPP

@@ -16,4 +16,10 @@ namespace radio
   {
     lg->debug( "ResultOkObject::~ResultOkObject..." );
   }
+
+  QString ResultOkObject::getStatus() const
+  {
+    return status;
+  }
+
 }  // namespace radio

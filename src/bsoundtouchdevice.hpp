@@ -10,8 +10,8 @@
 #include <QVector>
 #include <memory>
 
-#include "global/bsoundtouch_global.hpp"
 #include "logging/Logger.hpp"
+#include "xmlparser/bsoundtouch_global.hpp"
 
 // bose developer dmarc0001
 // pw dd03353e83

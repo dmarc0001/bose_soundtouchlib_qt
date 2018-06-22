@@ -40,11 +40,37 @@ namespace radio
     public:
     explicit NowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
     ~NowPlayingObject() override;
-    void parseContentItem( void );
+    // Getter Funktionen
+    QString getDeviceId() const;
+    QString getSource() const;
+    ContentItem getContentItem() const;
+    QString getTrack() const;
+    QString getArtist() const;
+    QString getAlbum() const;
+    QString getGenre() const;
+    QString getRatingUser() const;
+    QString getStationName() const;
+    PlayingArt getNowPlayingArt() const;
+    PlayingTime getNowPlayingTime() const;
+    bool getSkipEnabled() const;
+    bool getSkipPreviousEnabled() const;
+    bool getSkipPreviousSupported() const;
+    bool getFavoriteEnabled() const;
+    bool getIsFavorite() const;
+    bool getRateEnabled() const;
+    QString getRating() const;
+    QString getPlayStatus() const;
+    QString getShuffleSettings() const;
+    QString getRepeatSettings() const;
+    QString getStreamType() const;
+    QString getDescription() const;
+    QString getStationLocation() const;
+    DeviceConnectionStatusInfo getNowPlayingConnectStatusInfo() const;
 
     private:
     void parseArt( void );
     void parseTime( void );
+    void parseContentItem( void );
     void parseConnectionStatusInfo( void );
   };
 }  // namespace radio

@@ -19,6 +19,9 @@ namespace radio
     public:
     explicit ResultErrorObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~ResultErrorObject() override;
+    // Getter Funktionen
+    QString getDeviceId() const;
+    QVector< ResponseError > getErrors() const;
 
     private:
     void parseError( void );

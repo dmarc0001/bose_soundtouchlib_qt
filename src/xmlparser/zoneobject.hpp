@@ -19,6 +19,9 @@ namespace radio
     public:
     ZoneObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~ZoneObject() override;
+    // Getter Funktionen
+    QString getMaster() const;
+    SoundTouchMemberList getMembers() const;
   };
 }  // namespace radio
 #endif  // ZONEOBJECT_HPP

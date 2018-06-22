@@ -158,4 +158,29 @@ namespace radio
     roles.append( role );
   }
 
+  QString GroupObject::getGroupId() const
+  {
+    return groupId;
+  }
+
+  QString GroupObject::getName() const
+  {
+    return name;
+  }
+
+  QString GroupObject::getMasterDeviceId() const
+  {
+    return masterDeviceId;
+  }
+
+  QString GroupObject::getSenderIpAddress() const
+  {
+    return _senderIpAddress;
+  }
+
+  QString GroupObject::getStatus() const
+  {
+    return status;
+  }
+
 }  // namespace radio

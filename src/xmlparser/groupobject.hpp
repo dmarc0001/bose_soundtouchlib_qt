@@ -24,6 +24,12 @@ namespace radio
     public:
     explicit GroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~GroupObject() override;
+    // Getter Funktionen
+    QString getGroupId() const;
+    QString getName() const;
+    QString getMasterDeviceId() const;
+    QString getSenderIpAddress() const;
+    QString getStatus() const;
 
     private:
     void parseRoles( void );

@@ -125,4 +125,14 @@ namespace radio
     sourceItems.append( sourceItem );
   }
 
+  QString SourcesObject::getDeviceId() const
+  {
+    return deviceId;
+  }
+
+  QVector< SourceItem > SourcesObject::getSourceItems() const
+  {
+    return sourceItems;
+  }
+
 }  // namespace radio

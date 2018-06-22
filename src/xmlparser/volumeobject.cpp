@@ -72,4 +72,29 @@ namespace radio
   {
     lg->debug( "VolumeObject::~VolumeObject..." );
   }
+  QString VolumeObject::getDeviceId() const
+  {
+    return deviceId;
+  }
+
+  int VolumeObject::getVolume() const
+  {
+    return volume;
+  }
+
+  int VolumeObject::getTargetVolume() const
+  {
+    return targetvolume;
+  }
+
+  int VolumeObject::getActualVolume() const
+  {
+    return actualvolume;
+  }
+
+  bool VolumeObject::getMuteEnabled() const
+  {
+    return muteenabled;
+  }
+
 }  // namespace radio

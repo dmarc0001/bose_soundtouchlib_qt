@@ -69,4 +69,29 @@ namespace radio
   {
     lg->debug( "BassCapabilitiesObject::~BassCapabilitiesObject" );
   }
+  QString BassCapabilitiesObject::getDeviceId() const
+  {
+    return deviceId;
+  }
+
+  bool BassCapabilitiesObject::getBassAvailable() const
+  {
+    return bassAvailable;
+  }
+
+  int BassCapabilitiesObject::getBassMin() const
+  {
+    return bassMin;
+  }
+
+  int BassCapabilitiesObject::getBassMax() const
+  {
+    return bassMax;
+  }
+
+  int BassCapabilitiesObject::getBassDefault() const
+  {
+    return bassDefault;
+  }
+
 }  // namespace radio

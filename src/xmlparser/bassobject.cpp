@@ -60,4 +60,20 @@ namespace radio
   {
     lg->debug( "BassObject::~BassObject..." );
   }
+
+  QString BassObject::getDeviceId() const
+  {
+    return deviceId;
+  }
+
+  int BassObject::getTargetBass() const
+  {
+    return targetbass;
+  }
+
+  int BassObject::getActualBass() const
+  {
+    return actualbass;
+  }
+
 }  // namespace radio

@@ -28,6 +28,19 @@ namespace radio
     public:
     DeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
     ~DeviceInfoObject() override;
+    // Getter Funktionen
+    QString getDeviceId() const;
+    QString getDeviceName() const;
+    QString getDeviceType() const;
+    QString getMargeAccountUUID() const;
+    QString getMargeURL() const;
+    QString getModuleType() const;
+    QString getVariant() const;
+    QString getVariantMode() const;
+    QString getCountryCode() const;
+    QString getRegionCode() const;
+    QVector< DeviceComponent > getDeviceComponents() const;
+    QVector< DeviceNetworkInfo > getDeviceNetworkInfos() const;
 
     private:
     void parseComponents( void );

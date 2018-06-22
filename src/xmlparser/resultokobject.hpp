@@ -17,6 +17,8 @@ namespace radio
     public:
     explicit ResultOkObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~ResultOkObject() override;
+    // Getter Funktion
+    QString getStatus() const;
   };
 }  // namespace radio
 #endif  // RESULTOKOBJECT_HPP

@@ -66,4 +66,15 @@ namespace radio
   {
     lg->debug( "ZoneObject::~ZoneObject..." );
   }
+
+  QString ZoneObject::getMaster() const
+  {
+    return master;
+  }
+
+  SoundTouchMemberList ZoneObject::getMembers() const
+  {
+    return members;
+  }
+
 }  // namespace radio

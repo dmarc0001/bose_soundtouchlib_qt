@@ -181,4 +181,9 @@ namespace radio
     lg->debug( "PresetsObject::parseContentItem: finished." );
   }
 
+  QVector< radio::DevicePreset > PresetsObject::getPresets() const
+  {
+    return presets;
+  }
+
 }  // namespace radio

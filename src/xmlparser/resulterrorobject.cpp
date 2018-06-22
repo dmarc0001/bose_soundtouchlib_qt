@@ -97,4 +97,14 @@ namespace radio
     error.text = reader->readElementText();
   }
 
+  QString ResultErrorObject::getDeviceId() const
+  {
+    return deviceId;
+  }
+
+  QVector< ResponseError > ResultErrorObject::getErrors() const
+  {
+    return errors;
+  }
+
 }  // namespace radio

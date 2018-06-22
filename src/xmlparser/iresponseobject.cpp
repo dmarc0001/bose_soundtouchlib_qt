@@ -7,6 +7,13 @@ namespace radio
   {
   }
 
+  IResponseObject::~IResponseObject()
+  {
+    //
+    // hier ist erst einmal nichts aufzuräumen
+    //
+  }
+
   ResultobjectType IResponseObject::getResultType( void )
   {
     return ( resultType );

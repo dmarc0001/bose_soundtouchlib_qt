@@ -257,4 +257,65 @@ namespace radio
     }
     deviceNetworkInfos.append( singleDeviceNetworkInfo );
   }
+
+  QString DeviceInfoObject::getDeviceId() const
+  {
+    return deviceId;
+  }
+
+  QString DeviceInfoObject::getDeviceName() const
+  {
+    return deviceName;
+  }
+
+  QString DeviceInfoObject::getDeviceType() const
+  {
+    return deviceType;
+  }
+
+  QString DeviceInfoObject::getMargeAccountUUID() const
+  {
+    return _margeAccountUUID;
+  }
+
+  QString DeviceInfoObject::getMargeURL() const
+  {
+    return _margeURL;
+  }
+
+  QString DeviceInfoObject::getModuleType() const
+  {
+    return _moduleType;
+  }
+
+  QString DeviceInfoObject::getVariant() const
+  {
+    return _variant;
+  }
+
+  QString DeviceInfoObject::getVariantMode() const
+  {
+    return _variantMode;
+  }
+
+  QString DeviceInfoObject::getCountryCode() const
+  {
+    return _countryCode;
+  }
+
+  QString DeviceInfoObject::getRegionCode() const
+  {
+    return _regionCode;
+  }
+
+  QVector< DeviceComponent > DeviceInfoObject::getDeviceComponents() const
+  {
+    return deviceComponents;
+  }
+
+  QVector< DeviceNetworkInfo > DeviceInfoObject::getDeviceNetworkInfos() const
+  {
+    return deviceNetworkInfos;
+  }
+
 }  // namespace radio
