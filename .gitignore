@@ -1,4 +1,5 @@
 QT-5*/
+lib/
 *.qm
 *.pro.user
 
