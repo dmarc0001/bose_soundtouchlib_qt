@@ -22,13 +22,15 @@ namespace radio
     lg->debug( QString( "BWebsocket::BWebsocket: open url: %1..." ).arg( url.toString() ) );
     QNetworkRequest req( url );
     req.setRawHeader( QByteArray( "Sec-WebSocket-Version" ), QByteArray( "13" ) );
-    req.setRawHeader( QByteArray( "Sec-WebSocket-Protocol" ), QByteArray( "Gabbo" ) );
+    req.setRawHeader( QByteArray( "Sec-WebSocket-Protocol" ), QByteArray( "gabbo" ) );
     webSocket.open( req );
   }
 
   BWebsocket::~BWebsocket()
   {
     lg->debug( "BWebsocket::~BWebsocket..." );
+    webSocket.flush();
+    webSocket.close();
   }
 
   void BWebsocket::slotOnWSConnected( void )
@@ -39,7 +41,16 @@ namespace radio
 
   void BWebsocket::slotOnWSDisConnected( void )
   {
-    lg->debug( QString( "BWebsocket::slotOnWSDisConnected: error <%1>" ).arg( webSocket.errorString() ) );
+    if ( webSocket.closeCode() == QWebSocketProtocol::CloseCodeNormal )
+    {
+      lg->debug( "BWebsocket::slotOnWSDisConnected: normal disconnected" );
+    }
+    else
+    {
+      lg->debug( QString( "BWebsocket::slotOnWSDisConnected: reson: <%1> error <%2>" )
+                     .arg( webSocket.closeReason() )
+                     .arg( webSocket.errorString() ) );
+    }
   }
 
   void BWebsocket::slotOnWSTextMessageReceived( QString message )
