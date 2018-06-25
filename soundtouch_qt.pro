@@ -17,7 +17,16 @@ QT                                     += xml
 CONFIG                                 += stl
 CONFIG                                 += c++11
 
-DESTDIR                                = out
+#DESTDIR                                = ../out
+CONFIG(release, debug|release) {
+  DESTDIR                              = ../rout
+  LIBS                                 += -L$$OUT_PWD/../rout -llibsoundtouch_qt
+}
+CONFIG(debug, debug|release) {
+  DESTDIR                              = ../dout
+  LIBS                                 += -L$$OUT_PWD/../dout -llibsoundtouch_qt
+}
+
 MOC_DIR                                = moc
 RCC_DIR                                = rcc
 UI_DIR                                 = ui
@@ -48,6 +57,9 @@ FORMS += \
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/./release/ -llibsoundtouch_qt
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/./debug/ -llibsoundtouch_qt
 else:unix: LIBS += -L$$PWD/./lib/debug -llibsoundtouch_qt
+
+
+
 
 INCLUDEPATH += $$PWD/libsrc
 DEPENDPATH += $$PWD/libsrc

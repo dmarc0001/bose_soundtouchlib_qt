@@ -15,8 +15,14 @@ QT                                     += xml
 
 CONFIG                                 += stl
 CONFIG                                 += c++11
+#DESTDIR                                = ../out
+CONFIG(release, debug|release) {
+  DESTDIR                              = ../rout
+}
+CONFIG(debug, debug|release) {
+  DESTDIR                              = ../dout
+}
 
-DESTDIR                                = out
 MOC_DIR                                = moc
 RCC_DIR                                = rcc
 UI_DIR                                 = ui
@@ -51,7 +57,8 @@ SOURCES += \
     libsrc/xmlparser/presetsobject.cpp \
     libsrc/xmlparser/groupobject.cpp \
     libsrc/xmlparser/resultokobject.cpp \
-    libsrc/xmlparser/resulterrorobject.cpp
+    libsrc/xmlparser/resulterrorobject.cpp \
+    libsrc/websocket/bwebsocket.cpp
 
 HEADERS += \
     libsrc/logging/Logger.hpp \
@@ -69,5 +76,6 @@ HEADERS += \
     libsrc/xmlparser/groupobject.hpp \
     libsrc/xmlparser/resultokobject.hpp \
     libsrc/xmlparser/resulterrorobject.hpp \
-    libsrc/bsoundtouchdevice.hpp
+    libsrc/bsoundtouchdevice.hpp \
+    libsrc/websocket/bwebsocket.hpp
 
