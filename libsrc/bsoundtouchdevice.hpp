@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "logging/Logger.hpp"
+#include "websocket/bwebsocket.hpp"
 #include "xmlparser/soundtouch_response.hpp"
 
 #if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
@@ -66,8 +67,8 @@ namespace radio
 
     private:
     QString hostname;
-    qint16 httpPort;
     qint16 wsPort;
+    qint16 httpPort;
     std::shared_ptr< Logger > lg;
     // bool httpRequestAborted;
     // volatile bool httpRequestIsWorking;
@@ -79,17 +80,18 @@ namespace radio
     // static const char *keynames[];
     static const char *subproto;
     constexpr static int timeoutMillis = 80;
+    std::unique_ptr< BWebsocket > webSocket;
 
     public:
     explicit BSoundTouchDevice( QString &stHost,
-                                qint16 stHttpPort,
                                 qint16 stWSPort,
+                                qint16 stHttpPort,
                                 std::shared_ptr< Logger > logger,
                                 QObject *parent = nullptr );
     ~BSoundTouchDevice();
     void setHostname( const QString &stHost );
-    void setHttpPort( qint16 stHttpPort );
     void setWSPort( qint16 stWSPort );
+    void setHttpPort( qint16 stHttpPort );
     void getSources( void );
     void getBassCapabilities( void );
     void getBass( void );
@@ -108,6 +110,8 @@ namespace radio
     void addZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList );     // POST
     void removeZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList );  // POST
     void setDeviceName( QString &name );                                                      // POST
+    // websocket überwachung
+    void addVolumeListener( void );
 
     private:
     void startGetRequest( const QUrl &requested );

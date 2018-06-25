@@ -22,11 +22,11 @@ namespace radio
    * @param parent
    */
   BSoundTouchDevice::BSoundTouchDevice( QString &stHost,
-                                        qint16 stHttpPort,
                                         qint16 stWSPort,
+                                        qint16 stHttpPort,
                                         std::shared_ptr< Logger > logger,
                                         QObject *parent )
-      : QObject( parent ), hostname( stHost ), httpPort( stHttpPort ), wsPort( stWSPort ), lg( logger )
+      : QObject( parent ), hostname( stHost ), wsPort( stWSPort ), httpPort( stHttpPort ), lg( logger ), webSocket( nullptr )
   {
     lg->debug( "BSoundTouchDevice::BSoundTouchDevice..." );
     connect( &qnam, &QNetworkAccessManager::authenticationRequired, this, &BSoundTouchDevice::slotAuthenticationRequired );
@@ -451,4 +451,8 @@ namespace radio
     // authenticator->setPassword(paswort);
   }
 
+  void BSoundTouchDevice::addVolumeListener( void )
+  {
+    webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, lg, this ) );
+  }
 }  // namespace radio

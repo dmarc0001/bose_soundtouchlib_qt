@@ -31,7 +31,7 @@ namespace radio
       lg->startLogging( LG_INFO, QString( ProgramConfig::logfile ) );
     }
     lg->debug( "TestMainWindow::TestMainWindow" );
-    sDevice = std::unique_ptr< BSoundTouchDevice >( new BSoundTouchDevice( host, httpPort, wsPort, lg, this ) );
+    sDevice = std::unique_ptr< BSoundTouchDevice >( new BSoundTouchDevice( host, wsPort, httpPort, lg, this ) );
     //
     // connect slots mit signalen
     // hostname editiert
@@ -93,6 +93,7 @@ namespace radio
   void LibraryTestWindow::slotOnConnectWsButton( void )
   {
     lg->debug( "LibraryTestWindow::slotOnConnectButton..." );
+    sDevice->addVolumeListener();
   }
 
   void LibraryTestWindow::slotOnDisconnectWsButton( void )
