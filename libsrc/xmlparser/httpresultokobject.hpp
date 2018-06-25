@@ -4,19 +4,19 @@
 #include <qglobal.h>
 #include <QObject>
 #include "../logging/Logger.hpp"
-#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
-  class ResultOkObject : public IResponseObject
+  class HttpResultOkObject : public IResponseObject
   {
     private:
     QString status;
 
     public:
-    explicit ResultOkObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~ResultOkObject() override;
+    explicit HttpResultOkObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpResultOkObject() override;
     // Getter Funktion
     QString getStatus() const;
   };

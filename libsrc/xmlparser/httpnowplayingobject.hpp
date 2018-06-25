@@ -3,12 +3,12 @@
 
 #include <qglobal.h>
 #include <QObject>
-#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
-  class NowPlayingObject : public IResponseObject
+  class HttpNowPlayingObject : public IResponseObject
   {
     private:
     QString deviceId;
@@ -38,8 +38,8 @@ namespace radio
     DeviceConnectionStatusInfo nowPlayingConnectStatusInfo;
 
     public:
-    explicit NowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
-    ~NowPlayingObject() override;
+    explicit HttpNowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
+    ~HttpNowPlayingObject() override;
     // Getter Funktionen
     QString getDeviceId() const;
     QString getSource() const;

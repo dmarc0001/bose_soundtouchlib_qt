@@ -8,7 +8,7 @@
 
 namespace radio
 {
-  class BassObject : public IResponseObject
+  class HttpBassObject : public IResponseObject
   {
     private:
     QString deviceId;
@@ -16,8 +16,8 @@ namespace radio
     int actualbass;
 
     public:
-    BassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~BassObject() override;
+    HttpBassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpBassObject() override;
     // getter Funktionen
     QString getDeviceId() const;
     int getTargetBass() const;

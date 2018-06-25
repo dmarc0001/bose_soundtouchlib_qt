@@ -1,8 +1,8 @@
-#include "deviceinfoobject.hpp"
+#include "httpdeviceinfoobject.hpp"
 
 namespace radio
 {
-  DeviceInfoObject::DeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpDeviceInfoObject::HttpDeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "info" ) );
@@ -134,12 +134,12 @@ namespace radio
     }
   }
 
-  DeviceInfoObject::~DeviceInfoObject()
+  HttpDeviceInfoObject::~HttpDeviceInfoObject()
   {
     lg->debug( "DeviceInfoObject::~DeviceInfoObject..." );
   }
 
-  void DeviceInfoObject::parseComponents( void )
+  void HttpDeviceInfoObject::parseComponents( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "components" ) );
     lg->debug( "DeviceInfoObject::parseComponents..." );
@@ -160,7 +160,7 @@ namespace radio
     }
   }
 
-  void DeviceInfoObject::parseSingleComponent( void )
+  void HttpDeviceInfoObject::parseSingleComponent( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "component" ) );
 
@@ -207,7 +207,7 @@ namespace radio
     lg->debug( "DeviceInfoObject::parseSingleComponent: finished." );
   }
 
-  void DeviceInfoObject::parseNetworkInfo( void )
+  void HttpDeviceInfoObject::parseNetworkInfo( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "networkInfo" ) );
     DeviceNetworkInfo singleDeviceNetworkInfo;
@@ -258,62 +258,62 @@ namespace radio
     deviceNetworkInfos.append( singleDeviceNetworkInfo );
   }
 
-  QString DeviceInfoObject::getDeviceId() const
+  QString HttpDeviceInfoObject::getDeviceId() const
   {
     return deviceId;
   }
 
-  QString DeviceInfoObject::getDeviceName() const
+  QString HttpDeviceInfoObject::getDeviceName() const
   {
     return deviceName;
   }
 
-  QString DeviceInfoObject::getDeviceType() const
+  QString HttpDeviceInfoObject::getDeviceType() const
   {
     return deviceType;
   }
 
-  QString DeviceInfoObject::getMargeAccountUUID() const
+  QString HttpDeviceInfoObject::getMargeAccountUUID() const
   {
     return _margeAccountUUID;
   }
 
-  QString DeviceInfoObject::getMargeURL() const
+  QString HttpDeviceInfoObject::getMargeURL() const
   {
     return _margeURL;
   }
 
-  QString DeviceInfoObject::getModuleType() const
+  QString HttpDeviceInfoObject::getModuleType() const
   {
     return _moduleType;
   }
 
-  QString DeviceInfoObject::getVariant() const
+  QString HttpDeviceInfoObject::getVariant() const
   {
     return _variant;
   }
 
-  QString DeviceInfoObject::getVariantMode() const
+  QString HttpDeviceInfoObject::getVariantMode() const
   {
     return _variantMode;
   }
 
-  QString DeviceInfoObject::getCountryCode() const
+  QString HttpDeviceInfoObject::getCountryCode() const
   {
     return _countryCode;
   }
 
-  QString DeviceInfoObject::getRegionCode() const
+  QString HttpDeviceInfoObject::getRegionCode() const
   {
     return _regionCode;
   }
 
-  QVector< DeviceComponent > DeviceInfoObject::getDeviceComponents() const
+  QVector< DeviceComponent > HttpDeviceInfoObject::getDeviceComponents() const
   {
     return deviceComponents;
   }
 
-  QVector< DeviceNetworkInfo > DeviceInfoObject::getDeviceNetworkInfos() const
+  QVector< DeviceNetworkInfo > HttpDeviceInfoObject::getDeviceNetworkInfos() const
   {
     return deviceNetworkInfos;
   }

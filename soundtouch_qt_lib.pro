@@ -46,36 +46,39 @@ SOURCES += \
     libsrc/logging/Logger.cpp \
     libsrc/bsoundtouchdevice.cpp \
     libsrc/xmlparser/xmlresultparser.cpp \
-    libsrc/xmlparser/deviceinfoobject.cpp \
     libsrc/xmlparser/iresponseobject.cpp \
-    libsrc/xmlparser/nowplayingobject.cpp \
-    libsrc/xmlparser/volumeobject.cpp \
-    libsrc/xmlparser/sourcesobject.cpp \
-    libsrc/xmlparser/zoneobject.cpp \
-    libsrc/xmlparser/bassobject.cpp \
-    libsrc/xmlparser/basscapabilitiesobject.cpp \
-    libsrc/xmlparser/presetsobject.cpp \
-    libsrc/xmlparser/groupobject.cpp \
-    libsrc/xmlparser/resultokobject.cpp \
-    libsrc/xmlparser/resulterrorobject.cpp \
-    libsrc/websocket/bwebsocket.cpp
+    libsrc/websocket/bwebsocket.cpp \
+    libsrc/xmlparser/httpbasscapabilitiesobject.cpp \
+    libsrc/xmlparser/httpbassobject.cpp \
+    libsrc/xmlparser/httpdeviceinfoobject.cpp \
+    libsrc/xmlparser/httpgroupobject.cpp \
+    libsrc/xmlparser/httppresetsobject.cpp \
+    libsrc/xmlparser/httpnowplayingobject.cpp \
+    libsrc/xmlparser/httpresulterrorobject.cpp \
+    libsrc/xmlparser/httpresultokobject.cpp \
+    libsrc/xmlparser/httpsourcesobject.cpp \
+    libsrc/xmlparser/httpvolumeobject.cpp \
+    libsrc/xmlparser/httpzoneobject.cpp \
+    libsrc/xmlparser/wspresetupdateobject.cpp
 
 HEADERS += \
     libsrc/logging/Logger.hpp \
     libsrc/xmlparser/xmlresultparser.hpp \
-    libsrc/xmlparser/deviceinfoobject.hpp \
     libsrc/xmlparser/iresponseobject.hpp \
-    libsrc/xmlparser/nowplayingobject.hpp \
-    libsrc/xmlparser/volumeobject.hpp \
-    libsrc/xmlparser/sourcesobject.hpp \
-    libsrc/xmlparser/zoneobject.hpp \
     libsrc/xmlparser/bsoundtouch_global.hpp \
-    libsrc/xmlparser/bassobject.hpp \
-    libsrc/xmlparser/basscapabilitiesobject.hpp \
-    libsrc/xmlparser/presetsobject.hpp \
-    libsrc/xmlparser/groupobject.hpp \
-    libsrc/xmlparser/resultokobject.hpp \
-    libsrc/xmlparser/resulterrorobject.hpp \
     libsrc/bsoundtouchdevice.hpp \
-    libsrc/websocket/bwebsocket.hpp
+    libsrc/websocket/bwebsocket.hpp \
+    libsrc/xmlparser/httpbasscapabilitiesobject.hpp \
+    libsrc/xmlparser/httpbassobject.hpp \
+    libsrc/xmlparser/httpdeviceinfoobject.hpp \
+    libsrc/xmlparser/httpgroupobject.hpp \
+    libsrc/xmlparser/httppresetsobject.hpp \
+    libsrc/xmlparser/httpnowplayingobject.hpp \
+    libsrc/xmlparser/httpresulterrorobject.hpp \
+    libsrc/xmlparser/httpresultokobject.hpp \
+    libsrc/xmlparser/httpsourcesobject.hpp \
+    libsrc/xmlparser/httpvolumeobject.hpp \
+    libsrc/xmlparser/httpzoneobject.hpp \
+    libsrc/xmlparser/wspresetupdateobject.hpp \
+    libsrc/xmlparser/soundtouch_response.hpp
 

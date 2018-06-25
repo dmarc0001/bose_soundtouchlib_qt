@@ -5,13 +5,13 @@
 #include <QObject>
 #include <QVector>
 #include "../logging/Logger.hpp"
-#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
   //! class with SoundTouch 10 only important
-  class GroupObject : public IResponseObject
+  class HttpGroupObject : public IResponseObject
   {
     private:
     QString groupId;
@@ -22,8 +22,8 @@ namespace radio
     QString status;
 
     public:
-    explicit GroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~GroupObject() override;
+    explicit HttpGroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpGroupObject() override;
     // Getter Funktionen
     QString getGroupId() const;
     QString getName() const;

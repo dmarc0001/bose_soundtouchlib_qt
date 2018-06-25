@@ -1,8 +1,8 @@
-#include "sourcesobject.hpp"
+#include "httpsourcesobject.hpp"
 
 namespace radio
 {
-  SourcesObject::SourcesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpSourcesObject::HttpSourcesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "sources" ) );
@@ -48,12 +48,12 @@ namespace radio
     }
   }
 
-  SourcesObject::~SourcesObject()
+  HttpSourcesObject::~HttpSourcesObject()
   {
     lg->debug( "SourcesObject::~SourcesObject..." );
   }
 
-  void SourcesObject::parseSourceItem( void )
+  void HttpSourcesObject::parseSourceItem( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "sourceItem" ) );
     SourceItem sourceItem;
@@ -125,12 +125,12 @@ namespace radio
     sourceItems.append( sourceItem );
   }
 
-  QString SourcesObject::getDeviceId() const
+  QString HttpSourcesObject::getDeviceId() const
   {
     return deviceId;
   }
 
-  QVector< SourceItem > SourcesObject::getSourceItems() const
+  QVector< SourceItem > HttpSourcesObject::getSourceItems() const
   {
     return sourceItems;
   }

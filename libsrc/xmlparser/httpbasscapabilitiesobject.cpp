@@ -1,8 +1,8 @@
-#include "basscapabilitiesobject.hpp"
+#include "httpbasscapabilitiesobject.hpp"
 
 namespace radio
 {
-  BassCapabilitiesObject::BassCapabilitiesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpBassCapabilitiesObject::HttpBassCapabilitiesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bassCapabilities" ) );
@@ -65,31 +65,31 @@ namespace radio
     }
   }
 
-  BassCapabilitiesObject::~BassCapabilitiesObject()
+  HttpBassCapabilitiesObject::~HttpBassCapabilitiesObject()
   {
     lg->debug( "BassCapabilitiesObject::~BassCapabilitiesObject" );
   }
-  QString BassCapabilitiesObject::getDeviceId() const
+  QString HttpBassCapabilitiesObject::getDeviceId() const
   {
     return deviceId;
   }
 
-  bool BassCapabilitiesObject::getBassAvailable() const
+  bool HttpBassCapabilitiesObject::getBassAvailable() const
   {
     return bassAvailable;
   }
 
-  int BassCapabilitiesObject::getBassMin() const
+  int HttpBassCapabilitiesObject::getBassMin() const
   {
     return bassMin;
   }
 
-  int BassCapabilitiesObject::getBassMax() const
+  int HttpBassCapabilitiesObject::getBassMax() const
   {
     return bassMax;
   }
 
-  int BassCapabilitiesObject::getBassDefault() const
+  int HttpBassCapabilitiesObject::getBassDefault() const
   {
     return bassDefault;
   }

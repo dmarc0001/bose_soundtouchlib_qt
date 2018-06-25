@@ -8,7 +8,7 @@
 
 namespace radio
 {
-  class BassCapabilitiesObject : public IResponseObject
+  class HttpBassCapabilitiesObject : public IResponseObject
   {
     private:
     QString deviceId;
@@ -18,8 +18,8 @@ namespace radio
     int bassDefault;
 
     public:
-    BassCapabilitiesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~BassCapabilitiesObject();
+    HttpBassCapabilitiesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpBassCapabilitiesObject();
     // Funktionen um an die Daten zu kommen
     QString getDeviceId() const;
     bool getBassAvailable() const;

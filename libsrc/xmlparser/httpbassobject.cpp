@@ -1,8 +1,8 @@
-#include "bassobject.hpp"
+#include "httpbassobject.hpp"
 
 namespace radio
 {
-  BassObject::BassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpBassObject::HttpBassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bass" ) );
@@ -56,22 +56,22 @@ namespace radio
     }
   }
 
-  BassObject::~BassObject()
+  HttpBassObject::~HttpBassObject()
   {
     lg->debug( "BassObject::~BassObject..." );
   }
 
-  QString BassObject::getDeviceId() const
+  QString HttpBassObject::getDeviceId() const
   {
     return deviceId;
   }
 
-  int BassObject::getTargetBass() const
+  int HttpBassObject::getTargetBass() const
   {
     return targetbass;
   }
 
-  int BassObject::getActualBass() const
+  int HttpBassObject::getActualBass() const
   {
     return actualbass;
   }

@@ -5,20 +5,20 @@
 #include <QObject>
 #include <memory>
 #include "../logging/Logger.hpp"
-#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
-  class ZoneObject : public IResponseObject
+  class HttpZoneObject : public IResponseObject
   {
     private:
     QString master;
     SoundTouchMemberList members;
 
     public:
-    ZoneObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~ZoneObject() override;
+    explicit HttpZoneObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpZoneObject() override;
     // Getter Funktionen
     QString getMaster() const;
     SoundTouchMemberList getMembers() const;

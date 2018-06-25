@@ -1,8 +1,8 @@
-#include "presetsobject.hpp"
+#include "httppresetsobject.hpp"
 
 namespace radio
 {
-  PresetsObject::PresetsObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpPresetsObject::HttpPresetsObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "presets" ) );
@@ -82,12 +82,12 @@ namespace radio
     }
   }
 
-  PresetsObject::~PresetsObject()
+  HttpPresetsObject::~HttpPresetsObject()
   {
     lg->debug( "PresetsObject::~PresetsObject..." );
   }
 
-  void PresetsObject::parseContentItem( radio::DevicePreset &preset )
+  void HttpPresetsObject::parseContentItem( radio::DevicePreset &preset )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "ContentItem" ) );
     //
@@ -181,7 +181,7 @@ namespace radio
     lg->debug( "PresetsObject::parseContentItem: finished." );
   }
 
-  QVector< radio::DevicePreset > PresetsObject::getPresets() const
+  QVector< radio::DevicePreset > HttpPresetsObject::getPresets() const
   {
     return presets;
   }

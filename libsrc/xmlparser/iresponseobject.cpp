@@ -2,9 +2,9 @@
 
 namespace radio
 {
-  const char *IResponseObject::responseTypeNames[] = {"OK",     "ERROR",   "DEVICE_INFO", "NOW_PLAYING",
-                                                      "VOLUME", "SOURCES", "ZONES",       "BASS_CAPABILITIES",
-                                                      "BASS",   "PRESETS", "GROUPS",      "UNKNOWN"};
+  const char *IResponseObject::responseTypeNames[] = {
+      "OK",   "ERROR",   "DEVICE_INFO", "NOW_PLAYING",    "VOLUME", "SOURCES", "ZONES", "BASS_CAPABILITIES",
+      "BASS", "PRESETS", "GROUPS",      "PRESETS_UPDATE", "UNKNOWN"};
 
   IResponseObject::IResponseObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : QObject( parent ), lg( logger ), reader( xmlreader ), resultType( ResultobjectType::R_UNKNOWN )

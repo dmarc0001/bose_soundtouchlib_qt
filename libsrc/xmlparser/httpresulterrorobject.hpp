@@ -5,20 +5,20 @@
 #include <QObject>
 #include <QVector>
 #include "../logging/Logger.hpp"
-#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
-  class ResultErrorObject : public IResponseObject
+  class HttpResultErrorObject : public IResponseObject
   {
     private:
     QString deviceId;
     QVector< ResponseError > errors;
 
     public:
-    explicit ResultErrorObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~ResultErrorObject() override;
+    explicit HttpResultErrorObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpResultErrorObject() override;
     // Getter Funktionen
     QString getDeviceId() const;
     QVector< ResponseError > getErrors() const;

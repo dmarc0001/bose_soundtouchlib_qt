@@ -8,7 +8,7 @@
 
 namespace radio
 {
-  class VolumeObject : public IResponseObject
+  class HttpVolumeObject : public IResponseObject
   {
     private:
     QString deviceId;
@@ -18,8 +18,8 @@ namespace radio
     bool muteenabled = false;
 
     public:
-    explicit VolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~VolumeObject() override;
+    explicit HttpVolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpVolumeObject() override;
     QString getDeviceId() const;
     int getVolume() const;
     int getTargetVolume() const;

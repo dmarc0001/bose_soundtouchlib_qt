@@ -1,8 +1,8 @@
-#include "zoneobject.hpp"
+#include "httpzoneobject.hpp"
 
 namespace radio
 {
-  ZoneObject::ZoneObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpZoneObject::HttpZoneObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "zone" ) );
@@ -62,17 +62,17 @@ namespace radio
     }
   }
 
-  ZoneObject::~ZoneObject()
+  HttpZoneObject::~HttpZoneObject()
   {
     lg->debug( "ZoneObject::~ZoneObject..." );
   }
 
-  QString ZoneObject::getMaster() const
+  QString HttpZoneObject::getMaster() const
   {
     return master;
   }
 
-  SoundTouchMemberList ZoneObject::getMembers() const
+  SoundTouchMemberList HttpZoneObject::getMembers() const
   {
     return members;
   }

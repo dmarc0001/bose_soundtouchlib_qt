@@ -1,8 +1,8 @@
-#include "volumeobject.hpp"
+#include "httpvolumeobject.hpp"
 
 namespace radio
 {
-  VolumeObject::VolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpVolumeObject::HttpVolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volume" ) );
@@ -68,31 +68,31 @@ namespace radio
     }
   }
 
-  VolumeObject::~VolumeObject()
+  HttpVolumeObject::~HttpVolumeObject()
   {
     lg->debug( "VolumeObject::~VolumeObject..." );
   }
-  QString VolumeObject::getDeviceId() const
+  QString HttpVolumeObject::getDeviceId() const
   {
     return deviceId;
   }
 
-  int VolumeObject::getVolume() const
+  int HttpVolumeObject::getVolume() const
   {
     return volume;
   }
 
-  int VolumeObject::getTargetVolume() const
+  int HttpVolumeObject::getTargetVolume() const
   {
     return targetvolume;
   }
 
-  int VolumeObject::getActualVolume() const
+  int HttpVolumeObject::getActualVolume() const
   {
     return actualvolume;
   }
 
-  bool VolumeObject::getMuteEnabled() const
+  bool HttpVolumeObject::getMuteEnabled() const
   {
     return muteenabled;
   }

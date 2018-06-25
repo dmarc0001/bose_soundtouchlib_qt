@@ -1,8 +1,8 @@
-#include "nowplayingobject.hpp"
+#include "httpnowplayingobject.hpp"
 
 namespace radio
 {
-  NowPlayingObject::NowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpNowPlayingObject::HttpNowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "nowPlaying" ) );
@@ -225,12 +225,12 @@ namespace radio
     }
   }
 
-  NowPlayingObject::~NowPlayingObject()
+  HttpNowPlayingObject::~HttpNowPlayingObject()
   {
     lg->debug( "NowPlayingObject::~NowPlayingObject..." );
   }
 
-  void NowPlayingObject::parseConnectionStatusInfo( void )
+  void HttpNowPlayingObject::parseConnectionStatusInfo( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "time" ) );
     //
@@ -262,7 +262,7 @@ namespace radio
     }
   }
 
-  void NowPlayingObject::parseTime( void )
+  void HttpNowPlayingObject::parseTime( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "time" ) );
     //
@@ -291,7 +291,7 @@ namespace radio
     lg->debug( "NowPlayingObject::parseTime: finished" );
   }
 
-  void NowPlayingObject::parseArt( void )
+  void HttpNowPlayingObject::parseArt( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "art" ) );
     //
@@ -321,7 +321,7 @@ namespace radio
     lg->debug( "NowPlayingObject::parseArt: finished" );
   }
 
-  void NowPlayingObject::parseContentItem( void )
+  void HttpNowPlayingObject::parseContentItem( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "ContentItem" ) );
     //
@@ -413,127 +413,127 @@ namespace radio
     }
     lg->debug( "NowPlayingObject::parseContentItem: finished." );
   }
-  QString NowPlayingObject::getDeviceId() const
+  QString HttpNowPlayingObject::getDeviceId() const
   {
     return deviceId;
   }
 
-  QString NowPlayingObject::getSource() const
+  QString HttpNowPlayingObject::getSource() const
   {
     return source;
   }
 
-  ContentItem NowPlayingObject::getContentItem() const
+  ContentItem HttpNowPlayingObject::getContentItem() const
   {
     return contentItem;
   }
 
-  QString NowPlayingObject::getTrack() const
+  QString HttpNowPlayingObject::getTrack() const
   {
     return track;
   }
 
-  QString NowPlayingObject::getArtist() const
+  QString HttpNowPlayingObject::getArtist() const
   {
     return artist;
   }
 
-  QString NowPlayingObject::getAlbum() const
+  QString HttpNowPlayingObject::getAlbum() const
   {
     return album;
   }
 
-  QString NowPlayingObject::getGenre() const
+  QString HttpNowPlayingObject::getGenre() const
   {
     return genre;
   }
 
-  QString NowPlayingObject::getRatingUser() const
+  QString HttpNowPlayingObject::getRatingUser() const
   {
     return ratingUser;
   }
 
-  QString NowPlayingObject::getStationName() const
+  QString HttpNowPlayingObject::getStationName() const
   {
     return stationName;
   }
 
-  PlayingArt NowPlayingObject::getNowPlayingArt() const
+  PlayingArt HttpNowPlayingObject::getNowPlayingArt() const
   {
     return nowPlayingArt;
   }
 
-  PlayingTime NowPlayingObject::getNowPlayingTime() const
+  PlayingTime HttpNowPlayingObject::getNowPlayingTime() const
   {
     return nowPlayingTime;
   }
 
-  bool NowPlayingObject::getSkipEnabled() const
+  bool HttpNowPlayingObject::getSkipEnabled() const
   {
     return skipEnabled;
   }
 
-  bool NowPlayingObject::getSkipPreviousEnabled() const
+  bool HttpNowPlayingObject::getSkipPreviousEnabled() const
   {
     return skipPreviousEnabled;
   }
 
-  bool NowPlayingObject::getSkipPreviousSupported() const
+  bool HttpNowPlayingObject::getSkipPreviousSupported() const
   {
     return skipPreviousSupported;
   }
 
-  bool NowPlayingObject::getFavoriteEnabled() const
+  bool HttpNowPlayingObject::getFavoriteEnabled() const
   {
     return favoriteEnabled;
   }
 
-  bool NowPlayingObject::getIsFavorite() const
+  bool HttpNowPlayingObject::getIsFavorite() const
   {
     return isFavorite;
   }
 
-  bool NowPlayingObject::getRateEnabled() const
+  bool HttpNowPlayingObject::getRateEnabled() const
   {
     return rateEnabled;
   }
 
-  QString NowPlayingObject::getRating() const
+  QString HttpNowPlayingObject::getRating() const
   {
     return rating;
   }
 
-  QString NowPlayingObject::getPlayStatus() const
+  QString HttpNowPlayingObject::getPlayStatus() const
   {
     return playStatus;
   }
 
-  QString NowPlayingObject::getShuffleSettings() const
+  QString HttpNowPlayingObject::getShuffleSettings() const
   {
     return shuffleSettings;
   }
 
-  QString NowPlayingObject::getRepeatSettings() const
+  QString HttpNowPlayingObject::getRepeatSettings() const
   {
     return repeatSettings;
   }
 
-  QString NowPlayingObject::getStreamType() const
+  QString HttpNowPlayingObject::getStreamType() const
   {
     return streamType;
   }
 
-  QString NowPlayingObject::getDescription() const
+  QString HttpNowPlayingObject::getDescription() const
   {
     return _description;
   }
 
-  QString NowPlayingObject::getStationLocation() const
+  QString HttpNowPlayingObject::getStationLocation() const
   {
     return stationLocation;
   }
 
-  DeviceConnectionStatusInfo NowPlayingObject::getNowPlayingConnectStatusInfo() const
+  DeviceConnectionStatusInfo HttpNowPlayingObject::getNowPlayingConnectStatusInfo() const
   {
     return nowPlayingConnectStatusInfo;
   }

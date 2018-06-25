@@ -6,17 +6,17 @@
 #include <QXmlStreamReader>
 #include <memory>
 #include "../logging/Logger.hpp"
-#include "basscapabilitiesobject.hpp"
-#include "bassobject.hpp"
-#include "deviceinfoobject.hpp"
+#include "httpbasscapabilitiesobject.hpp"
+#include "httpbassobject.hpp"
+#include "httpdeviceinfoobject.hpp"
 #include "iresponseobject.hpp"
-#include "nowplayingobject.hpp"
-#include "presetsobject.hpp"
-#include "resulterrorobject.hpp"
-#include "resultokobject.hpp"
-#include "sourcesobject.hpp"
-#include "volumeobject.hpp"
-#include "zoneobject.hpp"
+#include "httpnowplayingobject.hpp"
+#include "httppresetsobject.hpp"
+#include "httpresulterrorobject.hpp"
+#include "httpresultokobject.hpp"
+#include "httpsourcesobject.hpp"
+#include "httpvolumeobject.hpp"
+#include "httpzoneobject.hpp"
 
 namespace radio
 {

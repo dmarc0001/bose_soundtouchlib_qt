@@ -78,7 +78,7 @@ namespace radio
         // Device INFO erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new DeviceInfoObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpDeviceInfoObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "nowPlaying" ) )
       {
@@ -86,7 +86,7 @@ namespace radio
         // now playing erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new NowPlayingObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpNowPlayingObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "volume" ) )
       {
@@ -94,7 +94,7 @@ namespace radio
         // volume erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new VolumeObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpVolumeObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "sources" ) )
       {
@@ -102,7 +102,7 @@ namespace radio
         // sources erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new SourcesObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpSourcesObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "zone" ) )
       {
@@ -110,7 +110,7 @@ namespace radio
         // zoneninfo erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new ZoneObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpZoneObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "bassCapabilities" ) )
       {
@@ -118,7 +118,7 @@ namespace radio
         // bass möglichkeiten erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new BassCapabilitiesObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpBassCapabilitiesObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "bass" ) )
       {
@@ -126,7 +126,7 @@ namespace radio
         // bass einstellungen erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new BassObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpBassObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "presets" ) )
       {
@@ -134,7 +134,7 @@ namespace radio
         // preset einstellungen erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new PresetsObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpPresetsObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "status" ) )
       {
@@ -142,7 +142,7 @@ namespace radio
         // alles OK bei "set" Funktion
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new ResultOkObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpResultOkObject( lg, reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "errors" ) )
       {
@@ -150,7 +150,7 @@ namespace radio
         // FEHLER bei "set" Funktion
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new ResultErrorObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpResultErrorObject( lg, reader.get(), this ) );
       }
       else
       {

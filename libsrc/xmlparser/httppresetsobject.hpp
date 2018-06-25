@@ -5,19 +5,19 @@
 #include <QObject>
 #include <QVector>
 #include "../logging/Logger.hpp"
-#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
-  class PresetsObject : public IResponseObject
+  class HttpPresetsObject : public IResponseObject
   {
     private:
     QVector< radio::DevicePreset > presets;
 
     public:
-    explicit PresetsObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
-    ~PresetsObject() override;
+    explicit HttpPresetsObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ~HttpPresetsObject() override;
     // Getter Funktionen
     QVector< radio::DevicePreset > getPresets() const;
 

@@ -1,8 +1,8 @@
-#include "groupobject.hpp"
+#include "httpgroupobject.hpp"
 
 namespace radio
 {
-  GroupObject::GroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpGroupObject::HttpGroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "group" ) );
@@ -79,12 +79,12 @@ namespace radio
     }
   }
 
-  GroupObject::~GroupObject()
+  HttpGroupObject::~HttpGroupObject()
   {
     lg->debug( "GroupObject::~GroupObject()..." );
   }
 
-  void GroupObject::parseRoles( void )
+  void HttpGroupObject::parseRoles( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "roles" ) );
     //
@@ -111,7 +111,7 @@ namespace radio
     }
   }
 
-  void GroupObject::parseGroupRole( void )
+  void HttpGroupObject::parseGroupRole( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "groupRole" ) );
     //
@@ -158,27 +158,27 @@ namespace radio
     roles.append( role );
   }
 
-  QString GroupObject::getGroupId() const
+  QString HttpGroupObject::getGroupId() const
   {
     return groupId;
   }
 
-  QString GroupObject::getName() const
+  QString HttpGroupObject::getName() const
   {
     return name;
   }
 
-  QString GroupObject::getMasterDeviceId() const
+  QString HttpGroupObject::getMasterDeviceId() const
   {
     return masterDeviceId;
   }
 
-  QString GroupObject::getSenderIpAddress() const
+  QString HttpGroupObject::getSenderIpAddress() const
   {
     return _senderIpAddress;
   }
 
-  QString GroupObject::getStatus() const
+  QString HttpGroupObject::getStatus() const
   {
     return status;
   }

@@ -4,12 +4,12 @@
 #include <qglobal.h>
 #include <QXmlStreamReader>
 #include "../logging/Logger.hpp"
-#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
-  class DeviceInfoObject : public IResponseObject
+  class HttpDeviceInfoObject : public IResponseObject
   {
     private:
     QString deviceId;
@@ -26,8 +26,8 @@ namespace radio
     QVector< DeviceNetworkInfo > deviceNetworkInfos;
 
     public:
-    DeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
-    ~DeviceInfoObject() override;
+    HttpDeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
+    ~HttpDeviceInfoObject() override;
     // Getter Funktionen
     QString getDeviceId() const;
     QString getDeviceName() const;

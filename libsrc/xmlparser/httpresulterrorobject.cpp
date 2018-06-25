@@ -1,8 +1,8 @@
-#include "resulterrorobject.hpp"
+#include "httpresulterrorobject.hpp"
 
 namespace radio
 {
-  ResultErrorObject::ResultErrorObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
+  HttpResultErrorObject::HttpResultErrorObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "errors" ) );
@@ -49,12 +49,12 @@ namespace radio
     }
   }
 
-  ResultErrorObject::~ResultErrorObject()
+  HttpResultErrorObject::~HttpResultErrorObject()
   {
     lg->debug( "ResultErrorObject::~ResultErrorObject..." );
   }
 
-  void ResultErrorObject::parseError( void )
+  void HttpResultErrorObject::parseError( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "error" ) );
     //
@@ -97,12 +97,12 @@ namespace radio
     error.text = reader->readElementText();
   }
 
-  QString ResultErrorObject::getDeviceId() const
+  QString HttpResultErrorObject::getDeviceId() const
   {
     return deviceId;
   }
 
-  QVector< ResponseError > ResultErrorObject::getErrors() const
+  QVector< ResponseError > HttpResultErrorObject::getErrors() const
   {
     return errors;
   }
