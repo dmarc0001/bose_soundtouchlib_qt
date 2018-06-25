@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "logging/Logger.hpp"
-#include "xmlparser/bsoundtouch_global.hpp"
+#include "xmlparser/soundtouch_response.hpp"
 
 #if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
 #define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_EXPORT

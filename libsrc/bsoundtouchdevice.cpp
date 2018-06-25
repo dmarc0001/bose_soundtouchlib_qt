@@ -420,8 +420,7 @@ namespace radio
       }
       else
       {
-        lg->debug( QString( "BSoundTouchDevice::slotOnHttpFinished: result object type %1" )
-                       .arg( static_cast< qint8 >( response->getResultType() ) ) );
+        lg->debug( QString( "BSoundTouchDevice::slotOnHttpFinished: result object type %1" ).arg( response->getResultTypeName() ) );
         // TODO: hier verarbeiten
       }
     }

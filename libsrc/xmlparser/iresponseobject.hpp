@@ -6,25 +6,10 @@
 #include <QXmlStreamReader>
 #include <memory>
 #include "../logging/Logger.hpp"
+#include "soundtouch_response.hpp"
 
 namespace radio
 {
-  enum class ResultobjectType : quint8
-  {
-    R_OK,
-    R_ERROR,
-    R_DEVICE_INFO,
-    R_NOW_PLAYING,
-    R_VOLUME,
-    R_SOURCES,
-    R_ZONES,
-    R_BASS_CAPABILITIES,
-    R_BASS,
-    R_PRESETS,
-    R_GROUPS,
-    R_UNKNOWN,
-  };
-
   class IResponseObject : public QObject
   {
     Q_OBJECT
@@ -34,9 +19,13 @@ namespace radio
     ResultobjectType resultType;
 
     public:
+    static const char *responseTypeNames[];
+
+    public:
     explicit IResponseObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     virtual ~IResponseObject();
     ResultobjectType getResultType( void );
+    QString getResultTypeName( void ) const;
   };
 }  // namespace radio
 #endif  // IRESPONSEOBJECT_HPP

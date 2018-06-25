@@ -3,7 +3,7 @@
 
 #include <qglobal.h>
 #include <QObject>
-#include "bsoundtouch_global.hpp"
+#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
 
 namespace radio

@@ -2,6 +2,10 @@
 
 namespace radio
 {
+  const char *IResponseObject::responseTypeNames[] = {"OK",     "ERROR",   "DEVICE_INFO", "NOW_PLAYING",
+                                                      "VOLUME", "SOURCES", "ZONES",       "BASS_CAPABILITIES",
+                                                      "BASS",   "PRESETS", "GROUPS",      "UNKNOWN"};
+
   IResponseObject::IResponseObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : QObject( parent ), lg( logger ), reader( xmlreader ), resultType( ResultobjectType::R_UNKNOWN )
   {
@@ -19,4 +23,8 @@ namespace radio
     return ( resultType );
   }
 
+  QString IResponseObject::getResultTypeName( void ) const
+  {
+    return ( QString( IResponseObject::responseTypeNames[ static_cast< int >( resultType ) ] ) );
+  }
 }  // namespace radio

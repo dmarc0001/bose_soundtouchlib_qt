@@ -5,7 +5,7 @@
 #include <QObject>
 #include <memory>
 #include "../logging/Logger.hpp"
-#include "bsoundtouch_global.hpp"
+#include "soundtouch_response.hpp"
 #include "iresponseobject.hpp"
 
 namespace radio
