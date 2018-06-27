@@ -2,16 +2,14 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpSourcesObject::HttpSourcesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpSourcesObject::HttpSourcesObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "sources" ) );
     resultType = ResultobjectType::R_SOURCES;
     //
     // Device ID finden (Attribute von <info>)
     //
-    lg->debug( "SourcesObject::SourcesObject..." );
-    lg->debug( "SourcesObject::SourcesObject: check for attributes in \"sources\"..." );
+    qDebug() << "...";
     deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -33,15 +31,14 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug(
-            QString( "SourcesObject::SourcesObject: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   HttpSourcesObject::~HttpSourcesObject()
   {
-    lg->debug( "SourcesObject::~SourcesObject..." );
+    qDebug() << "...";
   }
 
   void HttpSourcesObject::parseSourceItem( void )
@@ -51,8 +48,7 @@ namespace bose_soundtoch_lib
     //
     // source infos finden (Attribute von <sourceItem>)
     //
-    lg->debug( "SourcesObject::parseSourceItem..." );
-    lg->debug( "SourcesObject::parseSourceItem: check for attribute in \"sourceItem\"..." );
+    qDebug() << "...";
     sourceItem.source = getAttibute( reader, QLatin1String( "source" ) );
     // sourceAccount
     sourceItem.sourceAccount = getAttibute( reader, QLatin1String( "sourceAccount" ) );
@@ -69,7 +65,7 @@ namespace bose_soundtoch_lib
       sourceItem.multiroomallowed = true;
     }
     sourceItem.Content = reader->readElementText();
-    lg->debug( QString( "SourcesObject::parseSourceItem: entry \"Content\" has value %1" ).arg( sourceItem.Content ) );
+    qDebug() << "entry \"Content\" has value " << sourceItem.Content;
     //
     // in die Liste aufnehmen
     //
@@ -81,4 +77,4 @@ namespace bose_soundtoch_lib
     return sourceItems;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

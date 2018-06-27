@@ -2,16 +2,14 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpVolumeObject::HttpVolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpVolumeObject::HttpVolumeObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volume" ) );
     resultType = ResultobjectType::R_VOLUME;
     //
     // Device ID finden (Attribute von <volume>)
     //
-    lg->debug( "VolumeObject::VolumeObject..." );
-    lg->debug( "VolumeObject::VolumeObject: check for attribute \"deviceID\"..." );
+    qDebug() << "...";
     deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -27,7 +25,7 @@ namespace bose_soundtoch_lib
         // zu erreichende Lautstärke (0..100)
         //
         targetvolume = reader->readElementText().toInt();
-        lg->debug( QString( "VolumeObject::VolumeObject: volume to reach: %1" ).arg( targetvolume ) );
+        qDebug() << "volume to reach: " << targetvolume;
       }
       else if ( reader->name() == QLatin1String( "actualvolume" ) )
       {
@@ -35,7 +33,7 @@ namespace bose_soundtoch_lib
         // aktuelle Lautstärke (0..100)
         //
         actualvolume = reader->readElementText().toInt();
-        lg->debug( QString( "VolumeObject::VolumeObject: current volume: %1" ).arg( actualvolume ) );
+        qDebug() << "current volume: " << actualvolume;
       }
       else if ( reader->name() == QLatin1String( "muteenabled" ) )
       {
@@ -46,22 +44,21 @@ namespace bose_soundtoch_lib
         {
           muteenabled = true;
         }
-        lg->debug( QString( "VolumeObject::VolumeObject: mute enabled: %1" ).arg( muteenabled ) );
+        qDebug() << "mute enabled: " << muteenabled;
       }
       else
       {
         //
         // unsupportet elements
         //
-        lg->debug(
-            QString( "VolumeObject::VolumeObject: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   HttpVolumeObject::~HttpVolumeObject()
   {
-    lg->debug( "VolumeObject::~VolumeObject..." );
+    qDebug() << "...";
   }
 
   int HttpVolumeObject::getVolume() const
@@ -84,4 +81,4 @@ namespace bose_soundtoch_lib
     return muteenabled;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

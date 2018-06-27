@@ -2,16 +2,14 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpResultErrorObject::HttpResultErrorObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpResultErrorObject::HttpResultErrorObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "errors" ) );
     resultType = ResultobjectType::R_ERROR;
     //
     // ID finden (Attribute von <group>)
     //
-    lg->debug( "ResultErrorObject::ResultErrorObject..." );
-    lg->debug( "ResultErrorObject::ResultErrorObject: check for attributes in \"errors\"..." );
+    qDebug() << "...";
     deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -33,16 +31,14 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug( QString( "ResultErrorObject::ResultErrorObject: %1 -> %2" )
-                       .arg( reader->name().toString() )
-                       .arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " -> " << reader->readElementText();
       }
     }
   }
 
   HttpResultErrorObject::~HttpResultErrorObject()
   {
-    lg->debug( "ResultErrorObject::~ResultErrorObject..." );
+    qDebug() << "...";
   }
 
   void HttpResultErrorObject::parseError( void )
@@ -52,8 +48,7 @@ namespace bose_soundtoch_lib
     // einzelnen Fehler parsen und speichern
     //
     ResponseError error;
-    lg->debug( "ResultErrorObject::parseError..." );
-    lg->debug( "ResultErrorObject::parseError: check for attributes in \"error\"..." );
+    qDebug() << "...";
     error.value = getAttibute( reader, QLatin1String( "value" ) ).toInt();
     error.name = getAttibute( reader, QLatin1String( "name" ) );
     error.severity = getAttibute( reader, QLatin1String( "severity" ) );
@@ -68,4 +63,4 @@ namespace bose_soundtoch_lib
     return errors;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

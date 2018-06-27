@@ -2,8 +2,7 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpNowPlayingObject::HttpNowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpNowPlayingObject::HttpNowPlayingObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() &&
               ( reader->name() == QLatin1String( "nowPlaying" ) || reader->name() == QLatin1String( "nowPlayingUpdated" ) ) );
@@ -29,8 +28,7 @@ namespace bose_soundtoch_lib
     //
     // DeviceID/source finden (Attribute von <nowPlaying>)
     //
-    lg->debug( "NowPlayingObject::NowPlayingObject..." );
-    lg->debug( "NowPlayingObject::NowPlayingObject: check for attribute in \"nowPlaying\"..." );
+    qDebug() << "...";
     deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     source = getAttibute( reader, QLatin1String( "source" ) );
     sourceAccount = getAttibute( reader, QLatin1String( "sourceAccount" ) );
@@ -44,8 +42,7 @@ namespace bose_soundtoch_lib
         //
         // Objet mit Attributen (kannman bei /select nutzen)
         //
-        lg->debug( "NowPlayingObject::NowPlayingObject: ContentItem object detected." );
-        contentItem = std::unique_ptr< ContentItem >( new ContentItem( lg, reader, this ) );
+        contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
         // parseContentItem();
       }
       else if ( reader->name() == QLatin1String( "track" ) )
@@ -54,7 +51,7 @@ namespace bose_soundtoch_lib
         // gespielter track
         //
         track = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: track: %1" ).arg( track ) );
+        qDebug() << "track: " << track;
       }
       else if ( reader->name() == QLatin1String( "artist" ) )
       {
@@ -62,7 +59,7 @@ namespace bose_soundtoch_lib
         // gespielter künstler
         //
         artist = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: artist: %1" ).arg( artist ) );
+        qDebug() << "artist: " << artist;
       }
       else if ( reader->name() == QLatin1String( "album" ) )
       {
@@ -70,7 +67,7 @@ namespace bose_soundtoch_lib
         // gespieltes album
         //
         album = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: album: %1" ).arg( album ) );
+        qDebug() << "album: " << album;
       }
       else if ( reader->name() == QLatin1String( "genre" ) )
       {
@@ -78,7 +75,7 @@ namespace bose_soundtoch_lib
         // gespieltes genre
         //
         genre = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: genre: %1" ).arg( genre ) );
+        qDebug() << "genre: " << genre;
       }
       else if ( reader->name() == QLatin1String( "stationName" ) )
       {
@@ -86,7 +83,7 @@ namespace bose_soundtoch_lib
         // gespielte station/playlist
         //
         stationName = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: station or playlist: %1" ).arg( stationName ) );
+        qDebug() << "station or playlist: " << stationName;
       }
       else if ( reader->name() == QLatin1String( "art" ) )
       {
@@ -108,7 +105,7 @@ namespace bose_soundtoch_lib
         // weiter springen möglich?
         //
         skipEnabled = true;
-        lg->debug( "NowPlayingObject::NowPlayingObject: skip enabled." );
+        qDebug() << "skip enabled.";
       }
       else if ( reader->name() == QLatin1String( "skipPreviousEnabled" ) )
       {
@@ -116,7 +113,7 @@ namespace bose_soundtoch_lib
         // zurück springen möglich?
         //
         skipPreviousEnabled = true;
-        lg->debug( "NowPlayingObject::NowPlayingObject: skip previous enabled." );
+        qDebug() << "skip previous enabled.";
       }
       else if ( reader->name() == QLatin1String( "skipPreviousSupported" ) )
       {
@@ -127,7 +124,7 @@ namespace bose_soundtoch_lib
         {
           skipPreviousSupported = true;
         }
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: skip previous supported:" ).arg( skipPreviousSupported ) );
+        qDebug() << "skip previous supported: " << skipPreviousSupported;
       }
       else if ( reader->name() == QLatin1String( "favoriteEnabled" ) )
       {
@@ -135,7 +132,7 @@ namespace bose_soundtoch_lib
         // als favorite möglich?
         //
         favoriteEnabled = true;
-        lg->debug( "NowPlayingObject::NowPlayingObject: favoriteEnabled enabled." );
+        qDebug() << "favoriteEnabled enabled.";
       }
       else if ( reader->name() == QLatin1String( "isFavorite" ) )
       {
@@ -143,7 +140,7 @@ namespace bose_soundtoch_lib
         // als favorite möglich?
         //
         isFavorite = true;
-        lg->debug( "NowPlayingObject::NowPlayingObject: isFavorite enabled." );
+        qDebug() << "isFavorite enabled.";
       }
       else if ( reader->name() == QLatin1String( "rateEnabled" ) )
       {
@@ -151,7 +148,7 @@ namespace bose_soundtoch_lib
         // bewertung möglich?
         //
         rateEnabled = true;
-        lg->debug( "NowPlayingObject::NowPlayingObject: rateEnabled enabled." );
+        qDebug() << "rateEnabled enabled.";
       }
       else if ( reader->name() == QLatin1String( "rating" ) )
       {
@@ -159,7 +156,7 @@ namespace bose_soundtoch_lib
         // Bewertng (zweideutig in der Doku)
         //
         rating = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: rating: %1" ).arg( rating ) );
+        qDebug() << "rating: " << rating;
       }
       else if ( reader->name() == QLatin1String( "playStatus" ) )
       {
@@ -167,7 +164,7 @@ namespace bose_soundtoch_lib
         // welcher Status beim abspielen
         //
         playStatus = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: playStatus: %1" ).arg( playStatus ) );
+        qDebug() << "playStatus: " << playStatus;
       }
       else if ( reader->name() == QLatin1String( "shuffleSettings" ) )
       {
@@ -175,7 +172,7 @@ namespace bose_soundtoch_lib
         // zufallabspielen einstellungen
         //
         shuffleSettings = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: shuffleSettings: %1" ).arg( shuffleSettings ) );
+        qDebug() << "shuffleSettings: " << shuffleSettings;
       }
       else if ( reader->name() == QLatin1String( "repeatSettings" ) )
       {
@@ -183,7 +180,7 @@ namespace bose_soundtoch_lib
         // Wiederholungseinstellungen
         //
         repeatSettings = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: repeatSettings: %1" ).arg( repeatSettings ) );
+        qDebug() << "repeatSettings: %1" << repeatSettings;
       }
       else if ( reader->name() == QLatin1String( "streamType" ) )
       {
@@ -191,7 +188,7 @@ namespace bose_soundtoch_lib
         // Art des Streams
         //
         streamType = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: streamType: %1" ).arg( streamType ) );
+        qDebug() << "streamType: " << streamType;
       }
       else if ( reader->name() == QLatin1String( "description" ) )
       {
@@ -199,7 +196,7 @@ namespace bose_soundtoch_lib
         // Beschreibung des Streams
         //
         _description = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: stream description: %1" ).arg( _description ) );
+        qDebug() << "stream description: " << _description;
       }
       else if ( reader->name() == QLatin1String( "stationLocation" ) )
       {
@@ -207,7 +204,7 @@ namespace bose_soundtoch_lib
         // station standort (internet only)
         //
         stationLocation = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: station location: %1" ).arg( stationLocation ) );
+        qDebug() << "station location: " << stationLocation;
       }
       else if ( reader->name() == QLatin1String( "connectionStatusInfo" ) )
       {
@@ -218,16 +215,14 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug( QString( "NowPlayingObject::NowPlayingObject: %1 -> %2" )
-                       .arg( reader->name().toString() )
-                       .arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   HttpNowPlayingObject::~HttpNowPlayingObject()
   {
-    lg->debug( "NowPlayingObject::~NowPlayingObject..." );
+    qDebug() << "...";
   }
 
   void HttpNowPlayingObject::parseConnectionStatusInfo( void )
@@ -236,7 +231,7 @@ namespace bose_soundtoch_lib
     //
     // Spielzeit
     //
-    lg->debug( "NowPlayingObject::parseConnectionStatusInfo..." );
+    qDebug() << "...";
     while ( reader->readNextStartElement() )
     {
       //
@@ -245,19 +240,16 @@ namespace bose_soundtoch_lib
       if ( reader->name() == QLatin1String( "status" ) )
       {
         nowPlayingConnectStatusInfo.status = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::parseConnectionStatusInfo: status: %1" ).arg( nowPlayingConnectStatusInfo.status ) );
+        qDebug() << "status: " << nowPlayingConnectStatusInfo.status;
       }
       else if ( reader->name() == QLatin1String( "deviceName" ) )
       {
         nowPlayingConnectStatusInfo.deviceName = reader->readElementText();
-        lg->debug(
-            QString( "NowPlayingObject::parseConnectionStatusInfo: device name: %1" ).arg( nowPlayingConnectStatusInfo.deviceName ) );
+        qDebug() << "device name: " << nowPlayingConnectStatusInfo.deviceName;
       }
       else
       {
-        lg->warn( QString( "NowPlayingObject::parseContentItem: unsupportet entry %1 -> %2 " )
-                      .arg( reader->name().toString() )
-                      .arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
@@ -268,18 +260,16 @@ namespace bose_soundtoch_lib
     //
     // Spielzeit
     //
-    lg->debug( "NowPlayingObject::parseTime..." );
+    qDebug() << "...";
     //
     // Attribut "total"
     //
-    lg->debug( "NowPlayingObject::parseTime: check for attribute in \"time\"..." );
     nowPlayingTime.total_sec = getAttibute( reader, QLatin1String( "total" ) ).toInt();
     //
     // jetzt den Inhalt
     //
     nowPlayingTime.current_sec = reader->readElementText().toInt();
-    lg->debug( QString( "NowPlayingObject::parseTime: current play time: %1" ).arg( nowPlayingTime.current_sec ) );
-    lg->debug( "NowPlayingObject::parseTime: finished" );
+    qDebug() << "current play time: " << nowPlayingTime.current_sec;
   }
 
   void HttpNowPlayingObject::parseArt( void )
@@ -288,18 +278,16 @@ namespace bose_soundtoch_lib
     //
     // Logo(Icon o.A für Sender/Playlist
     //
-    lg->debug( "NowPlayingObject::parseArt..." );
+    qDebug() << "...";
     //
     // Attribut "artImageStatus"
     //
-    lg->debug( "NowPlayingObject::parseArt: check for attribute in \"art\"..." );
     nowPlayingArt.artImageStatus = getAttibute( reader, QLatin1String( "artImageStatus" ) ).toInt();
     //
     // jetzt den Inhalt
     //
     nowPlayingArt.artUrl = reader->readElementText();
-    lg->debug( QString( "NowPlayingObject::parseArt: artUrl: %1" ).arg( nowPlayingArt.artUrl ) );
-    lg->debug( "NowPlayingObject::parseArt: finished" );
+    qDebug() << "artUrl: " << nowPlayingArt.artUrl;
   }
 
   QString HttpNowPlayingObject::getSource() const
@@ -427,4 +415,4 @@ namespace bose_soundtoch_lib
     return sourceAccount;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  WsVolumeUpdated::WsVolumeUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsVolumeUpdated::WsVolumeUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volumeUpdated" ) );
     resultType = ResultobjectType::U_VOLUME;
-    lg->debug( "WsVolumeUpdate::WsVolumeUpdate..." );
+    qDebug() << "...";
     //
     if ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -30,7 +29,7 @@ namespace bose_soundtoch_lib
             // zu erreichende Lautstärke (0..100)
             //
             targetvolume = reader->readElementText().toInt();
-            lg->debug( QString( "WsVolumeUpdate::WsVolumeUpdate: volume to reach: %1" ).arg( targetvolume ) );
+            qDebug() << "volume to reach: " << targetvolume;
           }
           else if ( reader->name() == QLatin1String( "actualvolume" ) )
           {
@@ -38,7 +37,7 @@ namespace bose_soundtoch_lib
             // aktuelle Lautstärke (0..100)
             //
             actualvolume = reader->readElementText().toInt();
-            lg->debug( QString( "WsVolumeUpdate::WsVolumeUpdate: current volume: %1" ).arg( actualvolume ) );
+            qDebug() << "current volume: " << actualvolume;
           }
           else if ( reader->name() == QLatin1String( "muteenabled" ) )
           {
@@ -49,16 +48,14 @@ namespace bose_soundtoch_lib
             {
               muteenabled = true;
             }
-            lg->debug( QString( "WsVolumeUpdate::WsVolumeUpdate: mute enabled: %1" ).arg( muteenabled ) );
+            qDebug() << "mute enabled: " << muteenabled;
           }
           else
           {
             //
             // unsupportet elements
             //
-            lg->debug( QString( "WsVolumeUpdate::WsVolumeUpdate: %1 -> %2" )
-                           .arg( reader->name().toString() )
-                           .arg( reader->readElementText() ) );
+            qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
           }
         }
       }
@@ -89,4 +86,4 @@ namespace bose_soundtoch_lib
     return muteenabled;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

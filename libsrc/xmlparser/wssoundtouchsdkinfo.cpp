@@ -2,8 +2,7 @@
 
 namespace bose_soundtoch_lib
 {
-  WsSoundTouchSdkInfo::WsSoundTouchSdkInfo( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsSoundTouchSdkInfo::WsSoundTouchSdkInfo( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "SoundTouchSdkInfo" ) );
     resultType = ResultobjectType::U_SDKINFO;
@@ -12,14 +11,12 @@ namespace bose_soundtoch_lib
     //
     serverVersion = getAttibute( reader, QLatin1String( "serverVersion" ) );
     serverBuild = getAttibute( reader, QLatin1String( "serverBuild" ) );
-    lg->debug( QString( "WsSoundTouchSdkInfo::WsSoundTouchSdkInfo: server version: <%1>, server build: <%2>" )
-                   .arg( serverVersion )
-                   .arg( serverBuild ) );
+    qDebug() << "sdk server version: " << serverVersion << ", server build:" << serverBuild;
   }
 
   WsSoundTouchSdkInfo::~WsSoundTouchSdkInfo()
   {
-    lg->debug( "WsSoundTouchSdkInfo::~WsSoundTouchSdkInfo" );
+    qDebug() << "...";
   }
 
   QString WsSoundTouchSdkInfo::getServerVersion() const
@@ -32,4 +29,4 @@ namespace bose_soundtoch_lib
     return serverBuild;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

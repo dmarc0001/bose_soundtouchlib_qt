@@ -3,7 +3,7 @@
 
 #include <qglobal.h>
 #include <QObject>
-#include "../logging/Logger.hpp"
+#include <QtDebug>
 #include "iresponseobject.hpp"
 
 namespace bose_soundtoch_lib
@@ -15,11 +15,11 @@ namespace bose_soundtoch_lib
     int actualbass;
 
     public:
-    HttpBassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    HttpBassObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpBassObject() override;
     // getter Funktionen
     int getTargetBass() const;
     int getActualBass() const;
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // BASSOBJECT_HPP

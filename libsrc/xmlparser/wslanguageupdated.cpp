@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  WsLanguageUpdated::WsLanguageUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsLanguageUpdated::WsLanguageUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "languageUpdated" ) );
     resultType = ResultobjectType::U_RECENTS_UNSUPPORTED;
-    lg->debug( "WsLanguageUpdated::WsLanguageUpdated (unsupported)..." );
+    qDebug() << "...";
     language = reader->readElementText();
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -17,7 +16,7 @@ namespace bose_soundtoch_lib
 
   WsLanguageUpdated::~WsLanguageUpdated()
   {
-    lg->debug( "WsRecentsUpdate::~WsRecentsUpdate..." );
+    qDebug() << "...";
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

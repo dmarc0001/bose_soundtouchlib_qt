@@ -3,8 +3,8 @@
 
 #include <qglobal.h>
 #include <QObject>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -17,11 +17,11 @@ namespace bose_soundtoch_lib
     SoundTouchMemberList members;
 
     public:
-    explicit HttpZoneObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpZoneObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpZoneObject() override;
     // Getter Funktionen
     QString getMaster() const;
     SoundTouchMemberList getMembers() const;
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // ZONEOBJECT_HPP

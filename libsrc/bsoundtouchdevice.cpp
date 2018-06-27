@@ -461,7 +461,7 @@ namespace bose_soundtoch_lib
   {
     if ( webSocket.get() == nullptr )
     {
-      webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, lg, this ) );
+      webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, this ) );
       //
       // signale verbinden
       //

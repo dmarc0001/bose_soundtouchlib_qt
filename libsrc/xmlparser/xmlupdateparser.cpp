@@ -2,31 +2,32 @@
 
 namespace bose_soundtoch_lib
 {
-  XMLUpdateParser::XMLUpdateParser( std::shared_ptr< Logger > logger, QString &xmlString, QObject *parent )
+  XMLUpdateParser::XMLUpdateParser( QString &xmlString, QObject *parent )
       : QObject( parent )
-      , lg( logger )
       , reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
       , responseObject( nullptr )
   {
-    lg->debug( "XMLUpdateParser::XMLUpdateParser: start parsing xml string..." );
+    qDebug() << "start update parsing xml string...";
     parseFile();
     //
     // Errorhandling
     //
     if ( reader->hasError() )
     {
-      lg->crit( "XMLUpdateParser::XMLUpdateParser: error while parsing xml..." );
+      qCritical() << "error while parsing xml...";
+      //
       // TODO: Errorhandling
+      //
     }
     else
     {
-      lg->debug( "XMLUpdateParser::XMLUpdateParser: finishedt parsing xml string" );
+      qDebug() << "finished parsing xml string";
     }
   }
 
   XMLUpdateParser::~XMLUpdateParser()
   {
-    lg->debug( "XMLUpdateParser::~XMLUpdateParser..." );
+    qDebug() << "...";
   }
 
   bool XMLUpdateParser::hasError( void )
@@ -79,14 +80,14 @@ namespace bose_soundtoch_lib
         // SDK Info (beim Verbinden übertragen
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new WsSoundTouchSdkInfo( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new WsSoundTouchSdkInfo( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "userActivityUpdate" ) )
       {
         //
         // Benutzer aktiv geändert
         // Activiti update ist NICHT in <updates>
-        responseObject = std::shared_ptr< IResponseObject >( new WsUserActivityUpdated( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new WsUserActivityUpdated( reader.get(), this ) );
         // responseObject->setDeviceId( deviceId );
       }
 
@@ -104,7 +105,7 @@ namespace bose_soundtoch_lib
           //
           if ( updateElementName == QLatin1String( "presetsUpdates" ) )
           {
-            responseObject = std::shared_ptr< IResponseObject >( new WsPresetUpdateObject( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsPresetUpdateObject( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // nowPlayingUpdate
@@ -113,7 +114,7 @@ namespace bose_soundtoch_lib
             //
             // ich kann hier das HttpNowPlayingObjekt recyclen (via "using" in der Headerdatei)
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsNowPlayingUpdate( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsNowPlayingUpdate( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // nowSelection
@@ -122,7 +123,7 @@ namespace bose_soundtoch_lib
             //
             // Selection geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsNowSelectionUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsNowSelectionUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // volume geändert
@@ -131,7 +132,7 @@ namespace bose_soundtoch_lib
             //
             // Lautstärke geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsVolumeUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsVolumeUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // Bass geändert
@@ -140,7 +141,7 @@ namespace bose_soundtoch_lib
             //
             // Bass geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsBassUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsBassUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // Zone geändert
@@ -149,7 +150,7 @@ namespace bose_soundtoch_lib
             //
             // Zonenmitgliedschaft geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsZoneUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsZoneUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // Info geändert
@@ -158,7 +159,7 @@ namespace bose_soundtoch_lib
             //
             // Geräteinfo geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsInfoUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsInfoUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // Gerätename geändert
@@ -167,7 +168,7 @@ namespace bose_soundtoch_lib
             //
             // Gerätename geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsNameUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsNameUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // error update
@@ -176,7 +177,7 @@ namespace bose_soundtoch_lib
             //
             // Fehlermeldung geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsErrorUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsErrorUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // goup update
@@ -185,7 +186,7 @@ namespace bose_soundtoch_lib
             //
             // Gruppe (SounfTouch 10 only) geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsGroupUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsGroupUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           //
@@ -197,7 +198,7 @@ namespace bose_soundtoch_lib
             //
             // Browsing update
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsBrowseUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsBrowseUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // recents
@@ -206,7 +207,7 @@ namespace bose_soundtoch_lib
             //
             // neuigkeiten update
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsRecentsUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsRecentsUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // source updated
@@ -215,7 +216,7 @@ namespace bose_soundtoch_lib
             //
             // Sources update
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsSourceUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsSourceUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // language update
@@ -224,7 +225,7 @@ namespace bose_soundtoch_lib
             //
             // Sprache geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsLanguageUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsLanguageUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // user activity update
@@ -234,7 +235,7 @@ namespace bose_soundtoch_lib
             //
             // Benutzer aktiv geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsUserActivityUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsUserActivityUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // user inactivity
@@ -243,7 +244,7 @@ namespace bose_soundtoch_lib
             //
             // Benutzer inaktiv geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsUserInactivityUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsUserInactivityUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // connection state
@@ -252,7 +253,7 @@ namespace bose_soundtoch_lib
             //
             // Verbindungsstatus geändert
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsConnectionStateUpdated( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsConnectionStateUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // audioproducttonecontrols
@@ -261,7 +262,7 @@ namespace bose_soundtoch_lib
             //
             // BOSE intern
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsAudioProductToneControls( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsAudioProductToneControls( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // audioproductlevelcontrols
@@ -270,7 +271,7 @@ namespace bose_soundtoch_lib
             //
             // BOSE intern
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsAudioProductLevelControls( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsAudioProductLevelControls( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           // audiospcontrols
@@ -279,7 +280,7 @@ namespace bose_soundtoch_lib
             //
             // BOSE intern
             //
-            responseObject = std::shared_ptr< IResponseObject >( new WsAudioSpControls( lg, reader.get(), this ) );
+            responseObject = std::shared_ptr< IResponseObject >( new WsAudioSpControls( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
           else
@@ -287,8 +288,7 @@ namespace bose_soundtoch_lib
             //
             // hier weiss ich auch nicht weiter, der TAG ist unbekannt
             //
-            lg->warn( QString( "XMLUpdateParser::parseFile: unsupported TAG behind <updates> in response XML struct found: %1" )
-                          .arg( reader->name().toString() ) );
+            qWarning() << "unsupported TAG behind <updates> in response XML struct found: " << reader->name().toString();
           }
           // den Rest weg lesen
           while ( reader->readNextStartElement() && !reader->hasError() && !reader->atEnd() )
@@ -300,8 +300,7 @@ namespace bose_soundtoch_lib
         //
         // hier weiss ich auch nicht weiter, der TAG ist unbekannt
         //
-        lg->warn( QString( "XMLUpdateParser::parseFile: unsupported TAG in response XML struct found: %1" )
-                      .arg( reader->name().toString() ) );
+        qWarning() << "unsupported TAG in update response XML struct found: " << reader->name().toString();
         while ( !reader->atEnd() && !reader->hasError() )
         {
           reader->readNext();

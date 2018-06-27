@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QXmlStreamReader>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "httpbasscapabilitiesobject.hpp"
 #include "httpbassobject.hpp"
 #include "httpdeviceinfoobject.hpp"
@@ -25,12 +24,11 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     private:
-    std::shared_ptr< Logger > lg;
     std::unique_ptr< QXmlStreamReader > reader;
     std::shared_ptr< IResponseObject > responseObject;  //! polymorphes Objekt, enthält Ergebnise
 
     public:
-    explicit XmlResultParser( std::shared_ptr< Logger > logger, QString &xmlString, QObject *parent = nullptr );
+    explicit XmlResultParser( QString &xmlString, QObject *parent = nullptr );
     ~XmlResultParser() override;
     bool hasError( void );
     QString getErrorString( void );

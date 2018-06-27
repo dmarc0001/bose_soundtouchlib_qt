@@ -2,19 +2,18 @@
 
 namespace bose_soundtoch_lib
 {
-  WsUserActivityUpdated::WsUserActivityUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsUserActivityUpdated::WsUserActivityUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "userActivityUpdate" ) );
+    qDebug() << "(unsupported)...";
     resultType = ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED;
     // als root tag...
     deviceId = getAttibute( reader, QLatin1String( "deviceId" ) );
-    lg->debug( "WsUserActivityUpdated::WsUserActivityUpdated (unsupported)..." );
   }
 
   WsUserActivityUpdated::~WsUserActivityUpdated()
   {
-    lg->debug( "WsUserActivityUpdated::~WsUserActivityUpdated..." );
+    qDebug() << "...";
   }
 
 }  // namespace bose_soundtoch_lib

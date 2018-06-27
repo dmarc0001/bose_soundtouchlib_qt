@@ -4,8 +4,8 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QString>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -18,9 +18,9 @@ namespace bose_soundtoch_lib
     QString sourceAccount;
 
     public:
-    explicit WsBrowseUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsBrowseUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsBrowseUpdated() override;
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 
 #endif  // WSBROWSEUPDATED_HPP

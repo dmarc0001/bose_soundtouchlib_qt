@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  WsAudioSpControls::WsAudioSpControls( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsAudioSpControls::WsAudioSpControls( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "audiospcontrols" ) );
     resultType = ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED;
-    lg->debug( "WsAudioSpControls::WsAudioSpControls (unsupported)..." );
+    qDebug() << "(unsupported)...";
     controls = reader->readElementText();
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -17,7 +16,7 @@ namespace bose_soundtoch_lib
 
   WsAudioSpControls::~WsAudioSpControls()
   {
-    lg->debug( "WsAudioSpControls::~WsAudioSpControls..." );
+    qDebug() << "...";
   }
 
 }  // namespace bose_soundtoch_lib

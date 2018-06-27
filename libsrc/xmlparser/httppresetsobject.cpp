@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpPresetsObject::HttpPresetsObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpPresetsObject::HttpPresetsObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "presets" ) );
     resultType = ResultobjectType::R_PRESETS;
-    lg->debug( "PresetsObject::PresetsObject..." );
+    qDebug() << "...";
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -22,7 +21,6 @@ namespace bose_soundtoch_lib
         //
         // Ein Eintrag über ein preset
         //
-        lg->debug( "PresetsObject::PresetsObject: check for attributes in \"preset\"..." );
         preset.id = getAttibute( reader, QLatin1String( "id" ) );
         preset.createdOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
         preset.updatedOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
@@ -33,16 +31,14 @@ namespace bose_soundtoch_lib
         {
           if ( reader->name() == QLatin1String( "ContentItem" ) )
           {
-            preset.contentItem = std::unique_ptr< ContentItem >( new ContentItem( lg, reader, this ) );
+            preset.contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
           }
           else
           {
             //
             // unsupportet elements
             //
-            lg->debug( QString( "SourcesObject::SourcesObject: %1 -> %2" )
-                           .arg( reader->name().toString() )
-                           .arg( reader->readElementText() ) );
+            qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
           }
         }
       }
@@ -51,15 +47,14 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug(
-            QString( "SourcesObject::SourcesObject: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   HttpPresetsObject::~HttpPresetsObject()
   {
-    lg->debug( "PresetsObject::~PresetsObject..." );
+    qDebug() << "...";
   }
 
   QVector< bose_soundtoch_lib::DevicePreset > HttpPresetsObject::getPresets() const
@@ -67,4 +62,4 @@ namespace bose_soundtoch_lib
     return presets;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

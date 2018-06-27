@@ -40,8 +40,8 @@ namespace bose_soundtoch_lib
       {ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED, "UPDATE AUDIO SP CONTROLS (unsupported)"},
       {ResultobjectType::R_UNKNOWN, "UNKNOWN"}};
 
-  IResponseObject::IResponseObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : QObject( parent ), lg( logger ), reader( xmlreader ), resultType( ResultobjectType::R_UNKNOWN )
+  IResponseObject::IResponseObject( QXmlStreamReader *xmlreader, QObject *parent )
+      : QObject( parent ), reader( xmlreader ), resultType( ResultobjectType::R_UNKNOWN )
   {
     deviceId.clear();
   }

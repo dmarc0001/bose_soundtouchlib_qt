@@ -2,19 +2,17 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpResultOkObject::HttpResultOkObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpResultOkObject::HttpResultOkObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "status" ) );
     resultType = ResultobjectType::R_OK;
-
     status = reader->readElementText();
-    lg->debug( QString( "ResultOkObject::ResultOkObject: positive result status is %1" ).arg( status ) );
+    qDebug() << "positive result status is " << status;
   }
 
   HttpResultOkObject::~HttpResultOkObject()
   {
-    lg->debug( "ResultOkObject::~ResultOkObject..." );
+    qDebug() << "...";
   }
 
   QString HttpResultOkObject::getStatus() const
@@ -22,4 +20,4 @@ namespace bose_soundtoch_lib
     return status;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

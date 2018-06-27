@@ -2,16 +2,14 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpDeviceInfoObject::HttpDeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpDeviceInfoObject::HttpDeviceInfoObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "info" ) );
     resultType = ResultobjectType::R_DEVICE_INFO;
     //
     // Device ID finden (Attribute von <info>)
     //
-    lg->debug( "DeviceInfoObject::DeviceInfoObject..." );
-    lg->debug( "DeviceInfoObject::DeviceInfoObject: check for attribute \"deviceID\"..." );
+    qDebug() << "...";
     deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -29,7 +27,7 @@ namespace bose_soundtoch_lib
         // Geräetename direkt als Element
         //
         deviceName = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: device name: " ).append( deviceName ) );
+        qDebug() << "device name: " << deviceName;
       }
       else if ( reader->name() == QLatin1String( "type" ) )
       {
@@ -37,7 +35,7 @@ namespace bose_soundtoch_lib
         // Type des Gerätes als Element
         //
         deviceType = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: device type: " ).append( deviceType ) );
+        qDebug() << "device type: " << deviceType;
       }
       // unsupported strings 2018-05-01
       else if ( reader->name() == QLatin1String( "margeAccountUUID" ) )
@@ -46,7 +44,7 @@ namespace bose_soundtoch_lib
         // margeAccountUUID des Gerätes als Element
         //
         _margeAccountUUID = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: module margeAccountUUID: " ).append( _margeAccountUUID ) );
+        qDebug() << "module margeAccountUUID: " << _margeAccountUUID;
       }
       else if ( reader->name() == QLatin1String( "margeURL" ) )
       {
@@ -54,7 +52,7 @@ namespace bose_soundtoch_lib
         // margeURL des Gerätes als Element
         //
         _margeURL = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: module margeURL: " ).append( _margeURL ) );
+        qDebug() << "module margeURL: " << _margeURL;
       }
       else if ( reader->name() == QLatin1String( "moduleType" ) )
       {
@@ -62,7 +60,7 @@ namespace bose_soundtoch_lib
         // Modultype des Gerätes als Element
         //
         _moduleType = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: module type: " ).append( _moduleType ) );
+        qDebug() << "module type: " << _moduleType;
       }
       else if ( reader->name() == QLatin1String( "variant" ) )
       {
@@ -70,7 +68,7 @@ namespace bose_soundtoch_lib
         // Variante des Gerätes als Element
         //
         _variant = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: module variant: " ).append( _variant ) );
+        qDebug() << "module variant: " << _variant;
       }
       else if ( reader->name() == QLatin1String( "variantMode" ) )
       {
@@ -78,7 +76,7 @@ namespace bose_soundtoch_lib
         // Variant Mode des Gerätes als Element
         //
         _variantMode = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: module variant mode: " ).append( _variantMode ) );
+        qDebug() << "module variant mode: " << _variantMode;
       }
       else if ( reader->name() == QLatin1String( "countryCode" ) )
       {
@@ -86,7 +84,7 @@ namespace bose_soundtoch_lib
         // Ländercode des Gerätes als Element
         //
         _countryCode = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: module country code: " ).append( _countryCode ) );
+        qDebug() << "module country code: " << _countryCode;
       }
       else if ( reader->name() == QLatin1String( "regionCode" ) )
       {
@@ -94,7 +92,7 @@ namespace bose_soundtoch_lib
         // Regioncode des Gerätes als Element
         //
         _regionCode = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: module region code: " ).append( _regionCode ) );
+        qDebug() << "module region code: " << _regionCode;
       }
       // OBJEKTE
       else if ( reader->name() == QLatin1String( "components" ) )
@@ -102,7 +100,6 @@ namespace bose_soundtoch_lib
         //
         // Liste der Gerätekomponenten unterobjekte sind "component"
         //
-        lg->debug( "DeviceInfoObject::DeviceInfoObject: components detected." );
         parseComponents();
       }
       else if ( reader->name() == QLatin1String( "networkInfo" ) )
@@ -110,7 +107,6 @@ namespace bose_soundtoch_lib
         //
         // Objekt mit Netzwerkinformationen
         //
-        lg->debug( "DeviceInfoObject::DeviceInfoObject: network info detected." );
         parseNetworkInfo();
       }
       else
@@ -118,29 +114,25 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: %1 -> %2" )
-                       .arg( reader->name().toString() )
-                       .arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   HttpDeviceInfoObject::~HttpDeviceInfoObject()
   {
-    lg->debug( "DeviceInfoObject::~DeviceInfoObject..." );
+    qDebug() << "...";
   }
 
   void HttpDeviceInfoObject::parseComponents( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "components" ) );
-    lg->debug( "DeviceInfoObject::parseComponents..." );
-
+    qDebug() << "...";
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
     while ( reader->readNextStartElement() )
     {
-      lg->debug( "DeviceInfoObject::parseComponents: single component detected." );
       if ( reader->name() == QLatin1String( "component" ) )
       {
         //
@@ -154,11 +146,10 @@ namespace bose_soundtoch_lib
   void HttpDeviceInfoObject::parseSingleComponent( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "component" ) );
-
+    qDebug() << "...";
     //
     // lese die Komponente aus und trage sie in die Liste der Komponenten ein
     //
-    lg->debug( "DeviceInfoObject::parseSingleComponent..." );
     while ( reader->readNextStartElement() )
     {
       // neues lokales Element
@@ -170,24 +161,21 @@ namespace bose_soundtoch_lib
       {
         // UNSUPPORTED
         currComponent._componentCategory = reader->readElementText();
-        lg->debug(
-            QString( "DeviceInfoObject::parseSingleComponent: component category: %1" ).arg( currComponent._componentCategory ) );
+        qDebug() << "component category: " << currComponent._componentCategory;
       }
       else if ( reader->name() == QLatin1String( "softwareVersion" ) )
       {
         currComponent.softwareVersion = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::parseSingleComponent: software version: %1" ).arg( currComponent.softwareVersion ) );
+        qDebug() << "software version: " << currComponent.softwareVersion;
       }
       else if ( reader->name() == QLatin1String( "serialNumber" ) )
       {
         currComponent.serialNumber = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::parseSingleComponent: serial number: %1" ).arg( currComponent.serialNumber ) );
+        qDebug() << "serial number: " << currComponent.serialNumber;
       }
       else
       {
-        lg->warn( QString( "DeviceInfoObject::parseSingleComponent: unsupportet entry %1 -> %2 " )
-                      .arg( reader->name().toString() )
-                      .arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
       //
       // und die Komponente hinzufügen
@@ -195,18 +183,16 @@ namespace bose_soundtoch_lib
       //
       deviceComponents.append( currComponent );
     }
-    lg->debug( "DeviceInfoObject::parseSingleComponent: finished." );
   }
 
   void HttpDeviceInfoObject::parseNetworkInfo( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "networkInfo" ) );
     DeviceNetworkInfo singleDeviceNetworkInfo;
+    qDebug() << "...";
     //
     // Network type finden (Attribute von <networkInfo>)
     //
-    lg->debug( "DeviceInfoObject::parseNetworkInfo..." );
-    lg->debug( "DeviceInfoObject::parseNetworkInfo: check for attribute in \"networkInfo\"..." );
     singleDeviceNetworkInfo._type = getAttibute( reader, QLatin1String( "type" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -217,24 +203,22 @@ namespace bose_soundtoch_lib
       if ( reader->name() == QLatin1String( "macAddress" ) )
       {
         singleDeviceNetworkInfo.macAddress = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::parseNetworkInfo: macAddress: %1" ).arg( singleDeviceNetworkInfo.macAddress ) );
+        qDebug() << "macAddress: " << singleDeviceNetworkInfo.macAddress;
       }
       else if ( reader->name() == QLatin1String( "ipAddress" ) )
       {
         singleDeviceNetworkInfo.macAddress = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::parseNetworkInfo: ipAddress: %1" ).arg( singleDeviceNetworkInfo.macAddress ) );
+        qDebug() << "ipAddress: " << singleDeviceNetworkInfo.macAddress;
       }
       else if ( reader->name() == QLatin1String( "type" ) )
       {
         // unsupported
         singleDeviceNetworkInfo._type = reader->readElementText();
-        lg->debug( QString( "DeviceInfoObject::parseNetworkInfo: type: %1" ).arg( singleDeviceNetworkInfo._type ) );
+        qDebug() << "type: " << singleDeviceNetworkInfo._type;
       }
       else
       {
-        lg->warn( QString( "DeviceInfoObject::parseNetworkInfo: unsupportet entry %1 -> %2 " )
-                      .arg( reader->name().toString() )
-                      .arg( reader->readElementText() ) );
+        qWarning() << "unsupportet etag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
     deviceNetworkInfos.append( singleDeviceNetworkInfo );
@@ -295,4 +279,4 @@ namespace bose_soundtoch_lib
     return deviceNetworkInfos;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

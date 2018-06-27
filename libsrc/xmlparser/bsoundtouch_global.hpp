@@ -7,8 +7,8 @@
 #include <QString>
 #include <QVector>
 #include <QXmlStreamReader>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 
 namespace bose_soundtoch_lib
 {
@@ -74,7 +74,6 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     protected:
-    std::shared_ptr< Logger > lg;
     QXmlStreamReader *reader;
 
     public:
@@ -84,7 +83,7 @@ namespace bose_soundtoch_lib
     bool isPresetable;
     QString itemName;
     QString containerArt;
-    explicit ContentItem( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit ContentItem( QXmlStreamReader *xmlreader, QObject *parent );
     ContentItem( const ContentItem &cp ) = default;
     // ContentItem( const ContentItem *cp );
     ~ContentItem();

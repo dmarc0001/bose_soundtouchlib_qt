@@ -3,7 +3,7 @@
 
 #include <qglobal.h>
 #include <QObject>
-#include "../logging/Logger.hpp"
+#include <QtDebug>
 #include "iresponseobject.hpp"
 
 namespace bose_soundtoch_lib
@@ -17,12 +17,12 @@ namespace bose_soundtoch_lib
     bool muteenabled = false;
 
     public:
-    explicit HttpVolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpVolumeObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpVolumeObject() override;
     int getVolume() const;
     int getTargetVolume() const;
     int getActualVolume() const;
     bool getMuteEnabled() const;
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // VOLUMEOBJECT_HPP

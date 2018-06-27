@@ -3,7 +3,7 @@
 
 #include <qglobal.h>
 #include <QObject>
-#include "../logging/Logger.hpp"
+#include <QtDebug>
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -15,10 +15,10 @@ namespace bose_soundtoch_lib
     QString status;
 
     public:
-    explicit HttpResultOkObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpResultOkObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpResultOkObject() override;
     // Getter Funktion
     QString getStatus() const;
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // RESULTOKOBJECT_HPP

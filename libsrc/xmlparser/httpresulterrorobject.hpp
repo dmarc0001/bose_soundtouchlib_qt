@@ -4,7 +4,7 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QVector>
-#include "../logging/Logger.hpp"
+#include <QtDebug>
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -16,7 +16,7 @@ namespace bose_soundtoch_lib
     QVector< ResponseError > errors;
 
     public:
-    explicit HttpResultErrorObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpResultErrorObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpResultErrorObject() override;
     // Getter Funktionen
     QVector< ResponseError > getErrors() const;
@@ -24,5 +24,5 @@ namespace bose_soundtoch_lib
     private:
     void parseError( void );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // RESULTERROROBJECT_HPP

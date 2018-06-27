@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  WsBassUpdated::WsBassUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent ), updatet( false )
+  WsBassUpdated::WsBassUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent ), updatet( false )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bassUpdated" ) );
     resultType = ResultobjectType::U_BASS;
-    lg->debug( "WsBassUpdated::WsBassUpdated..." );
+    qDebug() << "...";
     updatet = true;
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -17,7 +16,7 @@ namespace bose_soundtoch_lib
 
   WsBassUpdated::~WsBassUpdated()
   {
-    lg->debug( "WsBassUpdated::~WsBassUpdated..." );
+    qDebug() << "...";
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

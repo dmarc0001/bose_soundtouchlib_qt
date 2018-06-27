@@ -3,6 +3,7 @@
 
 #include <qglobal.h>
 #include <QObject>
+#include <QtDebug>
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -38,7 +39,7 @@ namespace bose_soundtoch_lib
     DeviceConnectionStatusInfo nowPlayingConnectStatusInfo;
 
     public:
-    explicit HttpNowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
+    explicit HttpNowPlayingObject( QXmlStreamReader *xmlreader, QObject *parent = nullptr );
     ~HttpNowPlayingObject() override;
     // Getter Funktionen
     QString getSource() const;
@@ -73,5 +74,5 @@ namespace bose_soundtoch_lib
     void parseTime( void );
     void parseConnectionStatusInfo( void );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // NOWPLAYINGOBJECT_HPP

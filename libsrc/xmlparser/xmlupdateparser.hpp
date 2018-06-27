@@ -4,8 +4,8 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QXmlStreamReader>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "iresponseobject.hpp"
 #include "wsaudioproductlevelcontrols.hpp"
 #include "wsaudioproducttonecontrols.hpp"
@@ -35,12 +35,11 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     private:
-    std::shared_ptr< Logger > lg;
     std::unique_ptr< QXmlStreamReader > reader;
     std::shared_ptr< IResponseObject > responseObject;  //! polymorphes Objekt, enthält Ergebnise
 
     public:
-    explicit XMLUpdateParser( std::shared_ptr< Logger > logger, QString &xmlString, QObject *parent = nullptr );
+    explicit XMLUpdateParser( QString &xmlString, QObject *parent = nullptr );
     ~XMLUpdateParser() override;
     bool hasError( void );
     QString getErrorString( void );

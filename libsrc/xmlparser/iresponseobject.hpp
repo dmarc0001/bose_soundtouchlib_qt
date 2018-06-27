@@ -5,8 +5,8 @@
 #include <QMap>
 #include <QObject>
 #include <QXmlStreamReader>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "bsoundtouch_global.hpp"
 
 namespace bose_soundtoch_lib
@@ -18,13 +18,12 @@ namespace bose_soundtoch_lib
     static const QMap< ResultobjectType, QString > typeNames;
 
     protected:
-    std::shared_ptr< Logger > lg;
     QXmlStreamReader *reader;
     ResultobjectType resultType;
     QString deviceId;
 
     public:
-    explicit IResponseObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit IResponseObject( QXmlStreamReader *xmlreader, QObject *parent );
     virtual ~IResponseObject();
     ResultobjectType getResultType( void );
     void setDeviceId( QString &devId );

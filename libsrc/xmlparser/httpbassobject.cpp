@@ -2,16 +2,14 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpBassObject::HttpBassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpBassObject::HttpBassObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bass" ) );
     resultType = ResultobjectType::R_BASS;
     //
     // Device ID finden (Attribute von <info>)
     //
-    lg->debug( "BassObject::BassObject..." );
-    lg->debug( "BassObject::BassObject: check for attribute in \"bass\"..." );
+    qDebug() << "...";
     deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -27,7 +25,7 @@ namespace bose_soundtoch_lib
         // Bass zieleinstellung
         //
         targetbass = reader->readElementText().toInt();
-        lg->debug( QString( "BassObject::BassObject: bass target is %1" ).arg( targetbass ) );
+        qDebug() << "bass target is " << targetbass;
       }
       else if ( reader->name() == QLatin1String( "actualbass" ) )
       {
@@ -35,21 +33,21 @@ namespace bose_soundtoch_lib
         // Bass aktuelle einstellung
         //
         actualbass = reader->readElementText().toInt();
-        lg->debug( QString( "BassObject::BassObject: bass is actual %1" ).arg( actualbass ) );
+        qDebug() << "bass is actual " << actualbass;
       }
       else
       {
         //
         // unsupportet elements
         //
-        lg->debug( QString( "BassObject::BassObject: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   HttpBassObject::~HttpBassObject()
   {
-    lg->debug( "BassObject::~BassObject..." );
+    qDebug() << "...";
   }
 
   int HttpBassObject::getTargetBass() const
@@ -62,4 +60,4 @@ namespace bose_soundtoch_lib
     return actualbass;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

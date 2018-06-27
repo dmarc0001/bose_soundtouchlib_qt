@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  WsErrorUpdated::WsErrorUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsErrorUpdated::WsErrorUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "errorUpdate" ) );
     resultType = ResultobjectType::U_ERROR;
-    lg->debug( "WsErrorUpdated::WsErrorUpdated..." );
+    qDebug() << "...";
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
       //
@@ -27,15 +26,14 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug(
-            QString( "WsErrorUpdated::WsErrorUpdated: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   WsErrorUpdated::~WsErrorUpdated()
   {
-    lg->debug( "WsErrorUpdated::~WsErrorUpdated..." );
+    qDebug() << "...";
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

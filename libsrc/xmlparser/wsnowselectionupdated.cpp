@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  WsNowSelectionUpdated::WsNowSelectionUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsNowSelectionUpdated::WsNowSelectionUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "nowSelectionUpdated" ) );
     resultType = ResultobjectType::U_SELECTION;
-    lg->debug( "WsPresetUpdateObject::WsPresetUpdateObject..." );
+    qDebug() << "...";
     //
     if ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -16,7 +15,6 @@ namespace bose_soundtoch_lib
       //
       if ( reader->name() == QLatin1String( "preset" ) )
       {
-        lg->debug( "WsNowSelectionUpdated::WsNowSelectionUpdated: check for attributes in \"preset\"..." );
         preset.id = getAttibute( reader, QLatin1String( "id" ) );
         preset.createdOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
         preset.updatedOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
@@ -27,16 +25,14 @@ namespace bose_soundtoch_lib
         {
           if ( reader->name() == QLatin1String( "ContentItem" ) )
           {
-            preset.contentItem = std::unique_ptr< ContentItem >( new ContentItem( lg, reader, this ) );
+            preset.contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
           }
           else
           {
             //
             // unsupportet elements
             //
-            lg->debug( QString( "WsNowSelectionUpdated::WsNowSelectionUpdated: %1 -> %2" )
-                           .arg( reader->name().toString() )
-                           .arg( reader->readElementText() ) );
+            qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
           }
         }
       }
@@ -45,9 +41,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->warn( QString( "WsNowSelectionUpdated::WsNowSelectionUpdated: unsupported %1 -> %2" )
-                      .arg( reader->name().toString() )
-                      .arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
     while ( reader->readNextStartElement() && !reader->hasError() )
@@ -58,11 +52,11 @@ namespace bose_soundtoch_lib
 
   WsNowSelectionUpdated::~WsNowSelectionUpdated()
   {
-    lg->debug( "WsNowSelectionUpdated::~WsNowSelectionUpdated..." );
+    qDebug() << "...";
   }
 
   DevicePreset WsNowSelectionUpdated::getDevicePresets() const
   {
     return ( preset );
   }
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

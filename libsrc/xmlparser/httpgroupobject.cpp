@@ -2,8 +2,7 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpGroupObject::HttpGroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  HttpGroupObject::HttpGroupObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     //
     // Objekt für zwei Fälle
@@ -34,8 +33,7 @@ namespace bose_soundtoch_lib
     //
     // ID finden (Attribute von <group>)
     //
-    lg->debug( "GroupObject::GroupObject..." );
-    lg->debug( "GroupObject::GroupObject: check for attribute in \"group\"..." );
+    qDebug() << "...";
     groupId = getAttibute( reader, QLatin1String( "id" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -51,7 +49,7 @@ namespace bose_soundtoch_lib
         // Name der Gruppe
         //
         name = reader->readElementText();
-        lg->debug( QString( "GroupObject::GroupObject: group name is %1" ).arg( name ) );
+        qDebug() << "group name is " << name;
       }
       else if ( reader->name() == QLatin1String( "masterDeviceId" ) )
       {
@@ -59,7 +57,7 @@ namespace bose_soundtoch_lib
         // ID des Masters in der Gruppe
         //
         masterDeviceId = reader->readElementText();
-        lg->debug( QString( "GroupObject::GroupObject: master device is %1" ).arg( masterDeviceId ) );
+        qDebug() << "master device is " << masterDeviceId;
       }
       else if ( reader->name() == QLatin1String( "senderIpAddress" ) )
       {
@@ -67,7 +65,7 @@ namespace bose_soundtoch_lib
         // IP des Senders
         //
         _senderIpAddress = reader->readElementText();
-        lg->debug( QString( "GroupObject::GroupObject: sender ip is %1" ).arg( _senderIpAddress ) );
+        qDebug() << "sender ip is " << _senderIpAddress;
       }
       else if ( reader->name() == QLatin1String( "status" ) )
       {
@@ -75,7 +73,7 @@ namespace bose_soundtoch_lib
         // Status der Gruppe
         //
         status = reader->readElementText();
-        lg->debug( QString( "GroupObject::GroupObject: group status is %1" ).arg( status ) );
+        qDebug() << "group status is " << status;
       }
       else if ( reader->name() == QLatin1String( "roles" ) )
       {
@@ -89,14 +87,14 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug( QString( "GroupObject::GroupObject: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
 
   HttpGroupObject::~HttpGroupObject()
   {
-    lg->debug( "GroupObject::~GroupObject()..." );
+    qDebug() << "...";
   }
 
   void HttpGroupObject::parseRoles( void )
@@ -105,7 +103,7 @@ namespace bose_soundtoch_lib
     //
     // Rollen des Gerätes in der Gruppe lesen
     //
-    lg->debug( "GroupObject::parseRoles..." );
+    qDebug() << "...";
     //
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -121,7 +119,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug( QString( "GroupObject::GroupObject: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }
@@ -132,7 +130,7 @@ namespace bose_soundtoch_lib
     //
     // Rollen des Gerätes in der Gruppe lesen
     //
-    lg->debug( "GroupObject::parseGroupRole..." );
+    qDebug() << "...";
     GroupRole role;
     //
     while ( reader->readNextStartElement() && !reader->hasError() )
@@ -143,7 +141,7 @@ namespace bose_soundtoch_lib
         // Geräte ID dieser Rolle
         //
         role.deviceId = reader->readElementText();
-        lg->debug( QString( "GroupObject::GroupObject: grouprole deviceId is %1" ).arg( role.deviceId ) );
+        qDebug() << "grouprole deviceId is " << role.deviceId;
       }
       if ( reader->name() == QLatin1String( "role" ) )
       {
@@ -151,7 +149,7 @@ namespace bose_soundtoch_lib
         // Rolle des Gerätes
         //
         role.role = reader->readElementText();
-        lg->debug( QString( "GroupObject::GroupObject: grouprole is %1" ).arg( role.role ) );
+        qDebug() << "grouprole is " << role.role;
       }
       if ( reader->name() == QLatin1String( "ipAddress" ) )
       {
@@ -159,15 +157,14 @@ namespace bose_soundtoch_lib
         // Adrese des Gerätes
         //
         role.ipAddress = reader->readElementText();
-        lg->debug( QString( "GroupObject::GroupObject: group device addr is %1" ).arg( role.ipAddress ) );
+        qDebug() << "group device addr is " << role.ipAddress;
       }
       else
       {
         //
         // unsupportet elements
         //
-        lg->debug(
-            QString( "GroupObject::parseGroupRole: %1 -> %2" ).arg( reader->name().toString() ).arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
     roles.append( role );
@@ -198,4 +195,4 @@ namespace bose_soundtoch_lib
     return status;
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

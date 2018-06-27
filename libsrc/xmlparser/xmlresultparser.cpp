@@ -2,31 +2,32 @@
 
 namespace bose_soundtoch_lib
 {
-  XmlResultParser::XmlResultParser( std::shared_ptr< Logger > logger, QString &xmlString, QObject *parent )
+  XmlResultParser::XmlResultParser( QString &xmlString, QObject *parent )
       : QObject( parent )
-      , lg( logger )
       , reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
       , responseObject( nullptr )
   {
-    lg->debug( "XmlResultParser::XmlResultParser: start parsing xml string..." );
+    qDebug() << "...";
     parseFile();
     //
     // Errorhandling
     //
     if ( reader->hasError() )
     {
-      lg->crit( "XmlResultParser::XmlResultParser: error while parsing xml..." );
+      qCritical() << "error while parsing xml...";
+      //
       // TODO: Errorhandling
+      //
     }
     else
     {
-      lg->debug( "XmlResultParser::XmlResultParser: finishedt parsing xml string" );
+      qDebug() << "finished parsing response xml string";
     }
   }
 
   XmlResultParser::~XmlResultParser()
   {
-    lg->debug( "XmlResultParser::~XmlResultParser..." );
+    qDebug() << "...";
   }
 
   bool XmlResultParser::hasError( void )
@@ -78,7 +79,7 @@ namespace bose_soundtoch_lib
         // Device INFO erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpDeviceInfoObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpDeviceInfoObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "nowPlaying" ) )
       {
@@ -86,7 +87,7 @@ namespace bose_soundtoch_lib
         // now playing erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpNowPlayingObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpNowPlayingObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "volume" ) )
       {
@@ -94,7 +95,7 @@ namespace bose_soundtoch_lib
         // volume erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpVolumeObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpVolumeObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "sources" ) )
       {
@@ -102,7 +103,7 @@ namespace bose_soundtoch_lib
         // sources erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpSourcesObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpSourcesObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "zone" ) )
       {
@@ -110,7 +111,7 @@ namespace bose_soundtoch_lib
         // zoneninfo erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpZoneObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpZoneObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "bassCapabilities" ) )
       {
@@ -118,7 +119,7 @@ namespace bose_soundtoch_lib
         // bass möglichkeiten erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpBassCapabilitiesObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpBassCapabilitiesObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "bass" ) )
       {
@@ -126,7 +127,7 @@ namespace bose_soundtoch_lib
         // bass einstellungen erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpBassObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpBassObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "presets" ) )
       {
@@ -134,7 +135,7 @@ namespace bose_soundtoch_lib
         // preset einstellungen erhalten
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpPresetsObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpPresetsObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "group" ) )
       {
@@ -142,7 +143,7 @@ namespace bose_soundtoch_lib
         // Gruppeneinstellungen (nur SoundTouch10)
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpGroupObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpGroupObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "status" ) )
       {
@@ -150,7 +151,7 @@ namespace bose_soundtoch_lib
         // alles OK bei "set" Funktion
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpResultOkObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpResultOkObject( reader.get(), this ) );
       }
       else if ( rootelemName == QLatin1String( "errors" ) )
       {
@@ -158,15 +159,14 @@ namespace bose_soundtoch_lib
         // FEHLER bei "set" Funktion
         // erzeuge das Objekt und Parse es
         //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpResultErrorObject( lg, reader.get(), this ) );
+        responseObject = std::shared_ptr< IResponseObject >( new HttpResultErrorObject( reader.get(), this ) );
       }
       else
       {
         //
         // hier weiss ich auch nicht weiter, der TAG ist unbekannt
         //
-        lg->warn( QString( "XmlResultParser::parseFile: unsupported TAG in response XML struct found: %1" )
-                      .arg( reader->name().toString() ) );
+        qWarning() << "unsupported tag in response XML struct found: " << reader->name().toString();
         while ( reader->readNextStartElement() && !reader->hasError() && !reader->atEnd() )
           ;
         /*

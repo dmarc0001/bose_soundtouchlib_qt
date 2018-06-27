@@ -2,14 +2,12 @@
 
 namespace bose_soundtoch_lib
 {
-  WsAudioProductLevelControls::WsAudioProductLevelControls( std::shared_ptr< Logger > logger,
-                                                            QXmlStreamReader *xmlreader,
-                                                            QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsAudioProductLevelControls::WsAudioProductLevelControls( QXmlStreamReader *xmlreader, QObject *parent )
+      : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "audioproductlevelcontrols" ) );
     resultType = ResultobjectType::U_RECENTS_UNSUPPORTED;
-    lg->debug( "WsAudioProductLevelControls::WsAudioProductLevelControls (unsupported)..." );
+    qDebug() << "(unsupported)...";
     controls = reader->readElementText();
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -19,7 +17,7 @@ namespace bose_soundtoch_lib
 
   WsAudioProductLevelControls::~WsAudioProductLevelControls()
   {
-    lg->debug( "WsAudioProductLevelControls::~WsAudioProductLevelControls..." );
+    qDebug() << "...";
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

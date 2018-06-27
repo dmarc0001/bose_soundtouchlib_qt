@@ -3,7 +3,7 @@
 
 #include <qglobal.h>
 #include <QXmlStreamReader>
-#include "../logging/Logger.hpp"
+#include <QtDebug>
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -25,7 +25,7 @@ namespace bose_soundtoch_lib
     QVector< DeviceNetworkInfo > deviceNetworkInfos;
 
     public:
-    HttpDeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
+    HttpDeviceInfoObject( QXmlStreamReader *xmlreader, QObject *parent = nullptr );
     ~HttpDeviceInfoObject() override;
     // Getter Funktionen
     QString getDeviceName() const;
@@ -45,5 +45,5 @@ namespace bose_soundtoch_lib
     void parseSingleComponent( void );
     void parseNetworkInfo( void );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // DEVICEINFOOBJECT_HPP

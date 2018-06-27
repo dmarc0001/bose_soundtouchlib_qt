@@ -4,8 +4,8 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QString>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -20,13 +20,13 @@ namespace bose_soundtoch_lib
     bool muteenabled = false;
 
     public:
-    explicit WsVolumeUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsVolumeUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsVolumeUpdated() override;
     int getVolume() const;
     int getTargetVolume() const;
     int getActualVolume() const;
     bool getMuteEnabled() const;
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 
 #endif  // WSVOLUMEUPDATE_HPP

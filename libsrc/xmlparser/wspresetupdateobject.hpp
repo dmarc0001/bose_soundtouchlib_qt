@@ -5,8 +5,8 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -18,12 +18,12 @@ namespace bose_soundtoch_lib
     QVector< DevicePreset > devicePresets;
 
     public:
-    explicit WsPresetUpdateObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsPresetUpdateObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsPresetUpdateObject() override;
     QVector< DevicePreset > getDevicePresets( void ) const;
 
     private:
     void parseAndAddPreset( void );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // WSPRESETUPDATEOBJECT_HPP

@@ -4,8 +4,8 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QString>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -17,7 +17,7 @@ namespace bose_soundtoch_lib
     QString controls;
 
     public:
-    explicit WsAudioSpControls( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsAudioSpControls( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsAudioSpControls() override;
   };
 }  // namespace bose_soundtoch_lib

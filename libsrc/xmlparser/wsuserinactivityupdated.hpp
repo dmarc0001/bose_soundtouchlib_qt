@@ -4,8 +4,8 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QString>
+#include <QtDebug>
 #include <memory>
-#include "../logging/Logger.hpp"
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -14,9 +14,9 @@ namespace bose_soundtoch_lib
   class WsUserInactivityUpdated : public IResponseObject
   {
     public:
-    explicit WsUserInactivityUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsUserInactivityUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsUserInactivityUpdated() override;
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 
 #endif  // WSUSERINACTIVITYUPDATED_HPP

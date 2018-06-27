@@ -4,7 +4,7 @@
 #include <qglobal.h>
 #include <QObject>
 #include <QVector>
-#include "../logging/Logger.hpp"
+#include <QtDebug>
 #include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
 
@@ -22,7 +22,7 @@ namespace bose_soundtoch_lib
     QString status;
 
     public:
-    explicit HttpGroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpGroupObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpGroupObject() override;
     // Getter Funktionen
     QString getGroupId() const;
@@ -35,5 +35,5 @@ namespace bose_soundtoch_lib
     void parseRoles( void );
     void parseGroupRole( void );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // GROUPOBJECT_HPP

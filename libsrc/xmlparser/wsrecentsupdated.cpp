@@ -2,12 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  WsRecentsUpdated::WsRecentsUpdated( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( logger, xmlreader, parent )
+  WsRecentsUpdated::WsRecentsUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recentsUpdated" ) );
     resultType = ResultobjectType::U_RECENTS_UNSUPPORTED;
-    lg->debug( "WsRecentsUpdate::WsRecentsUpdate (unsupported)..." );
+    qDebug() << "(unsupported)...";
     if ( reader->readNextStartElement() && !reader->hasError() )
     {
       // elemente zuende lesen und ignorieren
@@ -21,8 +20,7 @@ namespace bose_soundtoch_lib
           }
           else
           {
-            lg->warn( QString( "WsRecentsUpdated::WsRecentsUpdated: recentsUpdated->recents: found: %1, expected: recent" )
-                          .arg( reader->name().toString() ) );
+            qWarning() << "recentsUpdated->recents: expected: recent, found: " << reader->name().toString();
           }
         }
       }
@@ -31,9 +29,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        lg->debug( QString( "WsRecentsUpdated::WsRecentsUpdated: <%1> -> \"%2\"" )
-                       .arg( reader->name().toString() )
-                       .arg( reader->readElementText() ) );
+        qWarning() << "unsupported tag:" << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
     while ( reader->readNextStartElement() && !reader->hasError() )
@@ -42,12 +38,13 @@ namespace bose_soundtoch_lib
 
   WsRecentsUpdated::~WsRecentsUpdated()
   {
-    lg->debug( "WsRecentsUpdate::~WsRecentsUpdate..." );
+    qDebug() << "...";
   }
 
   void WsRecentsUpdated::readRecent( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recent" ) );
+    qDebug() << "...";
     DeviceRecent recent;
     recent.deviceId = getAttibute( reader, QLatin1String( "deviceId" ) );
     recent.utcTime = static_cast< qint64 >( getAttibute( reader, QLatin1String( "utcTime" ) ).toLong() );
@@ -56,11 +53,11 @@ namespace bose_soundtoch_lib
     {
       if ( reader->name() == QLatin1String( "contentItem" ) )
       {
-        recent.contentItem = std::shared_ptr< ContentItem >( new ContentItem( lg, reader, this ) );
+        recent.contentItem = std::shared_ptr< ContentItem >( new ContentItem( reader, this ) );
       }
       else
       {
-        lg->warn( QString( "WsRecentsUpdated::readRecent: expected item <contentItem> read: %1" ).arg( reader->name().toString() ) );
+        qWarning() << "expected item <contentItem> read: " << reader->name().toString();
       }
     }
     recents.append( recent );
