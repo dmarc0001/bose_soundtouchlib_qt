@@ -23,7 +23,12 @@ namespace bose_soundtoch_lib
    * @param parent
    */
   BSoundTouchDevice::BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent )
-      : QObject( parent ), hostname( stHost ), wsPort( stWSPort ), httpPort( stHttpPort ), webSocket( nullptr )
+      : QObject( parent )
+      , hostname( stHost )
+      , wsPort( stWSPort )
+      , httpPort( stHttpPort )
+      , webSocket( nullptr )
+      , threshold( QtMsgType::QtFatalMsg )
   {
     qDebug() << "...";
     connect( &qnam, &QNetworkAccessManager::authenticationRequired, this, &BSoundTouchDevice::slotAuthenticationRequired );
@@ -34,7 +39,7 @@ namespace bose_soundtoch_lib
    */
   BSoundTouchDevice::~BSoundTouchDevice()
   {
-    lg->debug( "BSoundTouchDevice::~BSoundTouchDevice..." );
+    qDebug() << "...";
   }
 
   void BSoundTouchDevice::setHostname( const QString &stHost )
@@ -145,10 +150,8 @@ namespace bose_soundtoch_lib
   {
     QString data;
     //
-    lg->info( QString( "BSoundTouchDevice::setKey: %1 %2 to %4" )
-                  .arg( BSoundTouchDevice::keynames[ static_cast< int >( whichkey ) ] )
-                  .arg( BSoundTouchDevice::keystati[ static_cast< int >( keystate ) ] )
-                  .arg( hostname ) );
+    qDebug() << BSoundTouchDevice::keynames[ static_cast< int >( whichkey ) ] << " "
+             << BSoundTouchDevice::keystati[ static_cast< int >( keystate ) ] << " to " << hostname;
     //
     // die URL steht schon einmal fest
     //
@@ -161,7 +164,7 @@ namespace bose_soundtoch_lib
     {
       if ( keystate == bose_keystate::KEY_TOGGLE )
       {
-        lg->info( "BSoundTouchDevice::setKey: power switch (toggle)..." );
+        qInfo() << "power switch (toggle)...";
         data = QString( "<key state=\"%1\" sender=\"%2\">%3</key>" )
                    .arg( keystati[ static_cast< int >( bose_keystate::KEY_PRESSED ) ] )
                    .arg( BSoundTouchDevice::subproto )
@@ -177,7 +180,7 @@ namespace bose_soundtoch_lib
       }
       else
       {
-        lg->info( QString( "BSoundTouchDevice::setKey: power switch (%1)..." ).arg( keystati[ static_cast< int >( keystate ) ] ) );
+        qInfo() << "power switch (" << keystati[ static_cast< int >( keystate ) ] << ")...";
         data = QString( "<key state=\"%1\" sender=\"%2\">%3</key>" )
                    .arg( keystati[ static_cast< int >( keystate ) ] )
                    .arg( BSoundTouchDevice::subproto )
@@ -221,7 +224,7 @@ namespace bose_soundtoch_lib
     // TODO: wie geht es dann weiter?
     //
     setUrl( "select" );
-    lg->info( QString( "BSoundTouchDevice::selectSource: select source: %1, account: %2" ).arg( source ).arg( account ) );
+    qInfo() << "select source: " << source << "account: " << account;
     QString data( QString( "<ContentItem source=\"%1\" sourceAccount=\"%2\"></ContentItem>" ).arg( source ).arg( account ) );
     startPostRequest( data );
   }
@@ -233,7 +236,7 @@ namespace bose_soundtoch_lib
     // TODO: Grenzen prüfen
     //
     setUrl( "bass" );
-    lg->info( QString( "BSoundTouchDevice::setBass: set bass to %1" ).arg( bass ) );
+    qInfo() << "set bass to " << bass;
     QString data( QString( "<bass>%1</bass>" ).arg( bass ) );
     startPostRequest( data );
   }
@@ -248,7 +251,7 @@ namespace bose_soundtoch_lib
     if ( volume > 100 )
       volume = 100;
     setUrl( "volume" );
-    lg->info( QString( "BSoundTouchDevice::setVolume: set volume to %1" ).arg( volume ) );
+    qInfo() << "set volume to " << volume;
     QString data( QString( "<volume>%1</volume>" ).arg( volume ) );
     startPostRequest( data );
   }
@@ -258,7 +261,7 @@ namespace bose_soundtoch_lib
     //
     // erstelle eine Zohne (gemeinsames Abspielen einer Quelle) mit Mitlgliedern
     //
-    lg->debug( "BSoundTouchDevice::setZone..." );
+    qInfo() << "set zone...";
     setUrl( "setZone" );
     editZone( masterId, memberList );
   }
@@ -268,7 +271,7 @@ namespace bose_soundtoch_lib
     //
     // führe zu einer Zohne (gemeinsames Abspielen einer Quelle) Mitglieder hinzu
     //
-    lg->debug( "BSoundTouchDevice::addZoneSlave..." );
+    qInfo() << "add zone slave(s)...";
     setUrl( "addZoneSlave" );
     editZone( masterId, memberList );
   }
@@ -278,14 +281,14 @@ namespace bose_soundtoch_lib
     //
     // enferne aus einer Zohne (gemeinsames Abspielen einer Quelle) Mitglieder
     //
-    lg->debug( "BSoundTouchDevice::removeZoneSlave..." );
+    qInfo() << "remove zone slave(s)...";
     setUrl( "removeZoneSlave" );
     editZone( masterId, memberList );
   }
 
   void BSoundTouchDevice::setDeviceName( QString &name )
   {
-    lg->debug( QString( "BSoundTouchDevice::removeZoneSlave: set name: \"%1\"..." ).arg( name ) );
+    qInfo() << "set devce name to: " << name;
     setUrl( "name" );
     QString data( QString( "<name>%1</name>" ).arg( name ) );
     startPostRequest( data );
@@ -300,11 +303,11 @@ namespace bose_soundtoch_lib
     //
     // füte zu einer Zohne (gemeinsames Abspielen einer Quelle) Mitglieder hinzu
     //
-    lg->debug( "BSoundTouchDevice::editZone..." );
+    qDebug() << "...";
     //
     if ( memberList.count() > 0 )
     {
-      lg->debug( QString( "BSoundTouchDevice::editZone: edit zone \"%1\" %2 members..." ).arg( masterId ).arg( memberList.count() ) );
+      qDebug() << "edit zone \"" << masterId << "\": " << memberList.count() << " members...";
       QString data( QString( "<zone master=\"%1\">" ).arg( masterId ) );
       QVector< SoundTouchMemberObject >::ConstIterator iter = memberList.constBegin();
       for ( ; iter != memberList.constEnd(); iter++ )
@@ -316,7 +319,7 @@ namespace bose_soundtoch_lib
     }
     else
     {
-      lg->warn( "BSoundTouchDevice::editZone: no members for zone was given. Abort command." );
+      qWarning() << "no members for zone was given. Abort command.";
     }
   }
 
@@ -326,7 +329,7 @@ namespace bose_soundtoch_lib
 
   void BSoundTouchDevice::startGetRequest( void )
   {
-    lg->debug( QString( "BSoundTouchDevice::start GET Request: %1" ).arg( url.toString() ) );
+    qDebug() << "GET Request: " << url.toString();
     QNetworkReply *reply = qnam.get( QNetworkRequest( url ) );
     //
     // für Asynchrone Verarbeitung anbinden...
@@ -357,8 +360,8 @@ namespace bose_soundtoch_lib
     QByteArray buffer;
     QNetworkRequest request( url );
 
-    lg->debug( QString( "BSoundTouchDevice::startPostRequest: start POST request: %1" ).arg( url.toString() ) );
-    lg->debug( QString( "BSoundTouchDevice::startPostRequest: \"%1\"" ).arg( data ) );
+    qDebug() << "start POST request: " << url.toString();
+    qDebug() << "start POST data: " << data;
     //
     // post übernimmt QbyteArray, daher eine kleine Konvertierung
     //
@@ -380,11 +383,12 @@ namespace bose_soundtoch_lib
 
   void BSoundTouchDevice::slotOnHttpFinished( QNetworkReply *reply )
   {
+    qDebug() << "...";
     if ( reply->error() )
     {
+      qWarning() << "reply error: " << reply->error();
       reply->deleteLater();
       reply = nullptr;
-      lg->debug( "BSoundTouchDevice::httpFinished...(error)" );
       return;
     }
 
@@ -392,7 +396,7 @@ namespace bose_soundtoch_lib
     if ( !redirectionTarget.isNull() )
     {
       reply->deleteLater();
-      lg->debug( "BSoundTouchDevice::httpFinished...(redirected)" );
+      qDebug() << "redirected...";
       reply = nullptr;
       return;
     }
@@ -400,29 +404,30 @@ namespace bose_soundtoch_lib
     // hier lese ich alles am Ende der Übertagung (die Datenmenge ist klein)
     //
     QString relpyString( reply->readAll() );
-    lg->debug( relpyString );
-    XmlResultParser xmlParser( lg, relpyString, this );
+    qDebug() << relpyString;
+    XmlResultParser xmlParser( relpyString, this );
     if ( xmlParser.hasError() )
     {
-      lg->crit( QString( "BSoundTouchDevice::slotOnHttpFinished: error while %1" ).arg( reply->request().url().toString() ) );
-      lg->crit( QString( "BSoundTouchDevice::slotOnHttpFinished: %1" ).arg( xmlParser.getErrorString() ) );
+      qCritical() << "error while " << reply->request().url().toString();
+      qCritical() << "error: " << xmlParser.getErrorString();
     }
     else
     {
       std::shared_ptr< IResponseObject > response = xmlParser.getResultObject();
       if ( response.get() == nullptr )
       {
-        lg->crit( "BSoundTouchDevice::slotOnHttpFinished: no response from parser" );
+        qCritical() << "no response from xml response parser";
       }
       else
       {
-        lg->debug( QString( "BSoundTouchDevice::slotOnHttpFinished: result object type %1" ).arg( response->getResultTypeName() ) );
+        qDebug() << "result object type: " << response->getResultTypeName();
+        //
         // TODO: hier verarbeiten
+        //
       }
     }
     reply->deleteLater();
     reply = nullptr;
-    lg->debug( "BSoundTouchDevice::httpFinished..." );
   }
 
   void BSoundTouchDevice::slotOnHttpReadyToRead( QNetworkReply * )
@@ -431,14 +436,14 @@ namespace bose_soundtoch_lib
     // We read all of its new data and write it into the file.
     // That way we use less RAM than when reading it at the finished()
     // signal of the QNetworkReply
-    lg->debug( "BSoundTouchDevice::httpReadyRead: data recived" );
+    qDebug() << "data recived...";
     // QString relpyString( reply->readAll() );
     // lg->debug( relpyString );
   }
 
   void BSoundTouchDevice::slotAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator )
   {
-    lg->info( "BSoundTouchDevice::slotAuthenticationRequired: raise signal for auth (if programmed....)" );
+    qInfo() << "raise signal for auth (if programmed....)";
     emit sigAuthenticationRequired( repl, authenticator );
     //
     // innerhalb der SIGNAL Behandlung machen
@@ -470,43 +475,75 @@ namespace bose_soundtoch_lib
 
   void BSoundTouchDevice::slotOnWSConnected( void )
   {
-    lg->debug( "BSoundTouchDevice::slotOnWSConnected..." );
+    qDebug() << "...";
     emit sigOnWSConnected();
   }
 
   void BSoundTouchDevice::slotOnWSDisConnected( void )
   {
-    lg->debug( "BSoundTouchDevice::slotOnWSDisConnected..." );
+    qDebug() << "...";
     emit sigOnWSDisConnected();
   }
 
   void BSoundTouchDevice::slotOnWSTextMessageReceived( QString message )
   {
-    lg->debug( "BSoundTouchDevice::slotOnWSTextMessageReceived..." );
+    qDebug() << "...";
     //
     // die nachricht nach bekannten Obketken parsen
     //
 
-    XMLUpdateParser xmlParser( lg, message, this );
+    XMLUpdateParser xmlParser( message, this );
     if ( xmlParser.hasError() )
     {
-      lg->crit( QString( "BSoundTouchDevice::slotOnHttpFinished: %1" ).arg( xmlParser.getErrorString() ) );
+      qCritical() << "xml parser error: " << xmlParser.getErrorString();
     }
     else
     {
       std::shared_ptr< IResponseObject > response = xmlParser.getResultObject();
       if ( response.get() == nullptr )
       {
-        lg->crit( "BSoundTouchDevice::slotOnHttpFinished: no response from parser" );
+        qCritical() << "no response from xml update parser";
       }
       else
       {
-        lg->debug( QString( "BSoundTouchDevice::slotOnHttpFinished: result object type %1" ).arg( response->getResultTypeName() ) );
+        qDebug() << "result object type: " << response->getResultTypeName();
+        //
         // TODO: hier verarbeiten
+        //
       }
     }
-
     emit sigOnWSTextMessageReceived( message );
+  }
+
+  void BSoundTouchDevice::myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg )
+  {
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch ( type )
+    {
+      case QtDebugMsg:
+        fprintf( stdout, "DEBUG: %s (%s)\n", localMsg.constData(), context.function );
+        fflush( stdout );
+        // fprintf( stdout, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtInfoMsg:
+        fprintf( stdout, "INFO: %s\n", localMsg.constData() );
+        // fprintf( stdout, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtWarningMsg:
+        fprintf( stdout, "WARNING: %s\n", localMsg.constData() );
+        // fprintf( stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtCriticalMsg:
+        fprintf( stderr, "CRITICAL: %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
+        fflush( stderr );
+        // fprintf( stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtFatalMsg:
+        fprintf( stderr, "FATAL: %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
+        fflush( stderr );
+        // fprintf( stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+    }
   }
 
 }  // namespace bose_soundtoch_lib

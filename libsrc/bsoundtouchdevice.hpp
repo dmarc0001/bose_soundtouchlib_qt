@@ -1,6 +1,7 @@
 #ifndef BSOUNDTOUCHDEVICE_HPP
 #define BSOUNDTOUCHDEVICE_HPP
 
+#include <stdio.h>
 #include <QAuthenticator>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -8,6 +9,7 @@
 #include <QObject>
 #include <QPair>
 #include <QVector>
+#include <QtDebug>
 #include <memory>
 #include "websocket/bwebsocket.hpp"
 #include "xmlparser/bsoundtouch_global.hpp"
@@ -67,10 +69,7 @@ namespace bose_soundtoch_lib
     QString hostname;
     qint16 wsPort;
     qint16 httpPort;
-    std::shared_ptr< Logger > lg;
-    // bool httpRequestAborted;
-    // volatile bool httpRequestIsWorking;
-    // volatile qint16 httpTimeout;
+    QtMsgType threshold;
     QUrl url;
     QNetworkAccessManager qnam;
     // QNetworkReply *reply;
@@ -81,11 +80,7 @@ namespace bose_soundtoch_lib
     std::unique_ptr< BWebsocket > webSocket;
 
     public:
-    explicit BSoundTouchDevice( QString &stHost,
-                                qint16 stWSPort,
-                                qint16 stHttpPort,
-                                std::shared_ptr< Logger > logger,
-                                QObject *parent = nullptr );
+    explicit BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent = nullptr );
     ~BSoundTouchDevice();
     void setHostname( const QString &stHost );
     void setWSPort( qint16 stWSPort );
@@ -122,6 +117,7 @@ namespace bose_soundtoch_lib
     void setUrl( const char *path );
     void editZone( const QString &masterId, const SoundTouchMemberList &memberList );  //! je url create,add,remove
     void connectWs( void );  //! verbinde gerät mit Websocket, falls noch nciht geschehen
+    static void myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg );
 
     signals:
     void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );

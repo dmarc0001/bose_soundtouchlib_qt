@@ -3,9 +3,9 @@
 
 #include <qglobal.h>
 #include <QObject>
+#include <QtDebug>
 #include <QtWebSockets/QWebSocket>
 #include <memory>
-#include "../logging/Logger.hpp"
 
 namespace bose_soundtoch_lib
 {
@@ -16,12 +16,11 @@ namespace bose_soundtoch_lib
     private:
     QString hostname;
     qint16 wsPort;
-    std::shared_ptr< Logger > lg;
     QWebSocket webSocket;
     QUrl url;
 
     public:
-    explicit BWebsocket( QString &stHost, qint16 stWSPort, std::shared_ptr< Logger > logger, QObject *parent );
+    explicit BWebsocket( QString &stHost, qint16 stWSPort, QObject *parent );
     ~BWebsocket();
     void open( void );
 
@@ -35,5 +34,5 @@ namespace bose_soundtoch_lib
     void slotOnWSDisConnected( void );
     void slotOnWSTextMessageReceived( QString message );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // BWEBSOCKET_HPP

@@ -2,10 +2,10 @@
 
 namespace bose_soundtoch_lib
 {
-  BWebsocket::BWebsocket( QString &stHost, qint16 stWSPort, std::shared_ptr< Logger > logger, QObject *parent )
-      : QObject( parent ), hostname( stHost ), wsPort( stWSPort ), lg( logger )
+  BWebsocket::BWebsocket( QString &stHost, qint16 stWSPort, QObject *parent )
+      : QObject( parent ), hostname( stHost ), wsPort( stWSPort )
   {
-    lg->debug( "BWebsocket::BWebsocket..." );
+    qDebug() << "...";
     //
     // erstelle eine URL zum verbinden
     //
@@ -14,7 +14,7 @@ namespace bose_soundtoch_lib
 
   BWebsocket::~BWebsocket()
   {
-    lg->debug( "BWebsocket::~BWebsocket..." );
+    qDebug() << "...";
     webSocket.flush();
     webSocket.close();
   }
@@ -29,7 +29,7 @@ namespace bose_soundtoch_lib
     //
     // öffne den Socket
     //
-    lg->debug( QString( "BWebsocket::open: open url: %1..." ).arg( url.toString() ) );
+    qDebug() << "open url: " << url.toString();
     QNetworkRequest req( url );
     req.setRawHeader( QByteArray( "Sec-WebSocket-Version" ), QByteArray( "13" ) );
     req.setRawHeader( QByteArray( "Sec-WebSocket-Protocol" ), QByteArray( "gabbo" ) );
@@ -38,7 +38,7 @@ namespace bose_soundtoch_lib
 
   void BWebsocket::slotOnWSConnected( void )
   {
-    lg->debug( "BWebsocket::slotOnWSConnected..." );
+    qDebug() << "...";
     connect( &webSocket, &QWebSocket::textMessageReceived, this, &BWebsocket::slotOnWSTextMessageReceived );
     emit sigOnWSConnected();
   }
@@ -47,21 +47,19 @@ namespace bose_soundtoch_lib
   {
     if ( webSocket.closeCode() == QWebSocketProtocol::CloseCodeNormal )
     {
-      lg->debug( "BWebsocket::slotOnWSDisConnected: normal disconnected" );
+      qDebug() << "normal disconnected";
     }
     else
     {
-      lg->debug( QString( "BWebsocket::slotOnWSDisConnected: reson: <%1> error <%2>" )
-                     .arg( webSocket.closeReason() )
-                     .arg( webSocket.errorString() ) );
+      qWarning() << "reson: " << webSocket.closeReason() << " error: " << webSocket.errorString();
     }
     emit sigOnWSDisConnected();
   }
 
   void BWebsocket::slotOnWSTextMessageReceived( QString message )
   {
-    lg->debug( QString( "BWebsocket::slotOnWSTextMessageReceived: %1" ).arg( message ) );
+    qDebug() << message;
     emit sigOnWSTextMessageReceived( message );
   }
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
