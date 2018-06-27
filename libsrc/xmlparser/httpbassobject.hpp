@@ -6,12 +6,11 @@
 #include "../logging/Logger.hpp"
 #include "iresponseobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class HttpBassObject : public IResponseObject
   {
     private:
-    QString deviceId;
     int targetbass;
     int actualbass;
 
@@ -19,7 +18,6 @@ namespace radio
     HttpBassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpBassObject() override;
     // getter Funktionen
-    QString getDeviceId() const;
     int getTargetBass() const;
     int getActualBass() const;
   };

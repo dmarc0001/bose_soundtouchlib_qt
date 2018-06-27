@@ -6,12 +6,11 @@
 #include "../logging/Logger.hpp"
 #include "iresponseobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class HttpVolumeObject : public IResponseObject
   {
     private:
-    QString deviceId;
     int volume;
     int targetvolume;
     int actualvolume;
@@ -20,7 +19,6 @@ namespace radio
     public:
     explicit HttpVolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpVolumeObject() override;
-    QString getDeviceId() const;
     int getVolume() const;
     int getTargetVolume() const;
     int getActualVolume() const;

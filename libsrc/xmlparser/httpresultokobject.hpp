@@ -4,10 +4,10 @@
 #include <qglobal.h>
 #include <QObject>
 #include "../logging/Logger.hpp"
+#include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
-#include "soundtouch_response.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class HttpResultOkObject : public IResponseObject
   {

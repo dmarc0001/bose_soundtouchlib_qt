@@ -1,6 +1,6 @@
 #include "httpresultokobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpResultOkObject::HttpResultOkObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )

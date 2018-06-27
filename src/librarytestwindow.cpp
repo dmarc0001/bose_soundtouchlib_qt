@@ -1,6 +1,6 @@
 #include "librarytestwindow.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   LibraryTestWindow::LibraryTestWindow( QString hostname, int wsPortnum, int httpPortnum, bool isDebug, QWidget *parent )
       : QMainWindow( parent )
@@ -8,6 +8,7 @@ namespace radio
       , wsPort( wsPortnum )
       , httpPort( httpPortnum )
       , isDebug( isDebug )
+      , threshold( QtMsgType::QtInfoMsg )
       , ui( new Ui::LibraryTestWindow() )
   {
     ui.get()->setupUi( this );
@@ -15,23 +16,17 @@ namespace radio
     //
     // Logging
     //
-    lg = std::shared_ptr< Logger >( new Logger() );
+    qInstallMessageHandler( &LibraryTestWindow::myMessageOutput );
+
     if ( isDebug )
     {
       //
       // loggen mit debug
       //
-      lg->startLogging( LG_DEBUG, QString( ProgramConfig::logfile ) );
+      threshold = QtMsgType::QtDebugMsg;
+      qDebug() << "Logging DEBUGMODE";
     }
-    else
-    {
-      //
-      // alles ab info loggen
-      //
-      lg->startLogging( LG_INFO, QString( ProgramConfig::logfile ) );
-    }
-    lg->debug( "TestMainWindow::TestMainWindow" );
-    sDevice = std::unique_ptr< BSoundTouchDevice >( new BSoundTouchDevice( host, wsPort, httpPort, lg, this ) );
+    sDevice = std::unique_ptr< BSoundTouchDevice >( new BSoundTouchDevice( host, wsPort, httpPort, this ) );
     //
     // connect slots mit signalen
     // hostname editiert
@@ -79,180 +74,178 @@ namespace radio
 
   LibraryTestWindow::~LibraryTestWindow()
   {
-    lg->debug( "LibraryTestWindow::~LibraryTestWindow..." );
-    lg->shutdown();
+    qDebug() << "...";
   }
 
   void LibraryTestWindow::slotOnHostnameLineEditFinished( void )
   {
-    lg->debug( QString( "LibraryTestWindow::slotOnHostnameLineEditFinished: %1" ).arg( ui->hostnameLineEdit->text() ) );
-    host = ui->hostnameLineEdit->text();
+    qDebug() << "editet hostname: " << ui->hostnameLineEdit->text();
     sDevice->setHostname( host );
   }
 
   void LibraryTestWindow::slotOnConnectWsButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnConnectButton..." );
+    qDebug() << "...";
     sDevice->addVolumeListener();
   }
 
   void LibraryTestWindow::slotOnDisconnectWsButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnDisconnectButton..." );
+    qDebug() << "...";
   }
 
   void LibraryTestWindow::slotOnVolumeCheckButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnVolumeCheckButton..." );
+    qDebug() << "...";
     sDevice->getVolume();
   }
 
   void LibraryTestWindow::slotOnSourcesListButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnSourcesListButton..." );
+    qDebug() << "...";
     sDevice->getSources();
   }
 
   void LibraryTestWindow::slotOnBassCapabilitiesButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnBassCapabilitiesButton..." );
+    qDebug() << "...";
     sDevice->getBassCapabilities();
   }
 
   void LibraryTestWindow::slotOnBassButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnBassButton..." );
+    qDebug() << "...";
     sDevice->getBass();
   }
 
   void LibraryTestWindow::slotOnGetZoneButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnGetZoneButton..." );
+    qDebug() << "...";
     sDevice->getZone();
   }
 
   void LibraryTestWindow::slotNowPlayingButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotNowPlayingButton..." );
+    qDebug() << "...";
     sDevice->getNowPlaying();
   }
 
   void LibraryTestWindow::slotOnGetPresetsButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnGetPresetsButton..." );
+    qDebug() << "...";
     sDevice->getPresets();
   }
 
   void LibraryTestWindow::slotOnGetDeviceInfoButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnGetDeviceInfoButton..." );
+    qDebug() << "...";
     sDevice->getDeviceInfo();
   }
 
   void LibraryTestWindow::slotOnGetGroupButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnGetGroupButton.." );
+    qDebug() << "...";
     sDevice->getGroup();
   }
   void LibraryTestWindow::slotOnPlayButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnPlayButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_PLAY, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnPauseButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnPauseButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_PAUSE, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnPreviousButon( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnPreviousButon..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_PREV_TRACK, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnNextButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnNextButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_NEXT_TRACK, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnMuteButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnMuteButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_MUTE, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnShuffleOnButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnShuffleOnButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_SHUFFLE_ON, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnShuffleOffButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnShuffleOffButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_SHUFFLE_OFF, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnRepeatOneButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnRepeatOneButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_REPEAT_ONE, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnRepeatAllButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnRepeatAllButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_REPEAT_ALL, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnRepeatOffButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnRepeatOffButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_REPEAT_OFF, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnAddFavoriteButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnAddFavoriteButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_ADD_FAVORITE, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnRemoveFavoriteButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnRemoveFavoriteButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_REMOVE_FAVORITE, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnThumbsUpButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnThumbsUpButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_THUMBS_UP, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnThumbsDownButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnThumbsDownButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_THUMBS_DOWN, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnBookmarkButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnBookmarkButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_BOOKMARK, BSoundTouchDevice::bose_keystate::KEY_PRESSED );
   }
 
   void LibraryTestWindow::slotOnPowerButton( void )
   {
-    lg->debug( "LibraryTestWindow::slotOnPowerButton..." );
+    qDebug() << "...";
     sDevice->setKey( BSoundTouchDevice::bose_key::KEY_POWER, BSoundTouchDevice::bose_keystate::KEY_TOGGLE );
   }
 
   void LibraryTestWindow::slotOnPresetButton( int preset )
   {
-    lg->debug( QString( "LibraryTestWindow::slotOnPresetButton: pressed: %1" ).arg( preset ) );
+    qDebug() << "pressed: " << preset;
     BSoundTouchDevice::bose_key whichkey;
     //
     // nur "release", "pressed" setzt den preset neu
@@ -287,8 +280,36 @@ namespace radio
     //
     // jetzt den richtigen button senden (release ist "abspielen")
     //
-    lg->debug( QString( "LibraryTestWindow::slotOnPresetButton: send: %1" )
-                   .arg( BSoundTouchDevice::keynames[ static_cast< int >( whichkey ) ] ) );
+    qDebug() << "send: " << BSoundTouchDevice::keynames[ static_cast< int >( whichkey ) ];
     sDevice->setKey( whichkey, BSoundTouchDevice::bose_keystate::KEY_RELEASED );
   }
-}  // namespace radio
+
+  void LibraryTestWindow::myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg )
+  {
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch ( type )
+    {
+      case QtDebugMsg:
+        fprintf( stdout, "DEBUG: %s (%s)\n", localMsg.constData(), context.function );
+        // fprintf( stdout, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtInfoMsg:
+        fprintf( stdout, "INFO: %s\n", localMsg.constData() );
+        // fprintf( stdout, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtWarningMsg:
+        fprintf( stdout, "WARNING: %s\n", localMsg.constData() );
+        // fprintf( stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtCriticalMsg:
+        fprintf( stdout, "CRITICAL: %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
+        // fprintf( stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+      case QtFatalMsg:
+        fprintf( stdout, "FATAL: %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
+        // fprintf( stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
+        break;
+    }
+  }
+
+}  // namespace bose_soundtoch_lib

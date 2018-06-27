@@ -3,17 +3,17 @@
 
 #include <qglobal.h>
 #include <QObject>
+#include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
-#include "soundtouch_response.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class HttpNowPlayingObject : public IResponseObject
   {
     private:
-    QString deviceId;
     QString source;
-    ContentItem contentItem;
+    QString sourceAccount;
+    std::shared_ptr< ContentItem > contentItem;
     QString track;
     QString artist;
     QString album;
@@ -41,9 +41,8 @@ namespace radio
     explicit HttpNowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
     ~HttpNowPlayingObject() override;
     // Getter Funktionen
-    QString getDeviceId() const;
     QString getSource() const;
-    ContentItem getContentItem() const;
+    std::shared_ptr< ContentItem > getContentItem() const;
     QString getTrack() const;
     QString getArtist() const;
     QString getAlbum() const;
@@ -67,10 +66,11 @@ namespace radio
     QString getStationLocation() const;
     DeviceConnectionStatusInfo getNowPlayingConnectStatusInfo() const;
 
+    QString getSourceAccount() const;
+
     private:
     void parseArt( void );
     void parseTime( void );
-    void parseContentItem( void );
     void parseConnectionStatusInfo( void );
   };
 }  // namespace radio

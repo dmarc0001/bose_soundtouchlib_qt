@@ -9,7 +9,7 @@
 #include "httpbasscapabilitiesobject.hpp"
 #include "httpbassobject.hpp"
 #include "httpdeviceinfoobject.hpp"
-#include "iresponseobject.hpp"
+#include "httpgroupobject.hpp"
 #include "httpnowplayingobject.hpp"
 #include "httppresetsobject.hpp"
 #include "httpresulterrorobject.hpp"
@@ -17,8 +17,9 @@
 #include "httpsourcesobject.hpp"
 #include "httpvolumeobject.hpp"
 #include "httpzoneobject.hpp"
+#include "iresponseobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class XmlResultParser : public QObject
   {
@@ -38,5 +39,5 @@ namespace radio
     private:
     bool parseFile( void );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // XMLRESULTPARSER_HPP

@@ -7,7 +7,7 @@
 #include <memory>
 #include "../logging/Logger.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class BWebsocket : public QObject
   {
@@ -23,6 +23,12 @@ namespace radio
     public:
     explicit BWebsocket( QString &stHost, qint16 stWSPort, std::shared_ptr< Logger > logger, QObject *parent );
     ~BWebsocket();
+    void open( void );
+
+    signals:
+    void sigOnWSConnected( void );
+    void sigOnWSDisConnected( void );
+    void sigOnWSTextMessageReceived( QString message );
 
     private slots:
     void slotOnWSConnected( void );

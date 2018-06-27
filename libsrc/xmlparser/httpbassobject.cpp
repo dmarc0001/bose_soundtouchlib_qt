@@ -1,6 +1,6 @@
 #include "httpbassobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpBassObject::HttpBassObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
@@ -12,16 +12,7 @@ namespace radio
     //
     lg->debug( "BassObject::BassObject..." );
     lg->debug( "BassObject::BassObject: check for attribute in \"bass\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
-    {
-      deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
-      lg->debug( QString( "BassObject::BassObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
-    }
-    else
-    {
-      lg->warn( "SourcesObject::SourcesObject: there is no attribute \"deviceID\"..." );
-    }
+    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -59,11 +50,6 @@ namespace radio
   HttpBassObject::~HttpBassObject()
   {
     lg->debug( "BassObject::~BassObject..." );
-  }
-
-  QString HttpBassObject::getDeviceId() const
-  {
-    return deviceId;
   }
 
   int HttpBassObject::getTargetBass() const

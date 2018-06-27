@@ -1,36 +1,39 @@
 #include "httpnowplayingobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpNowPlayingObject::HttpNowPlayingObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "nowPlaying" ) );
-    resultType = ResultobjectType::R_NOW_PLAYING;
+    Q_ASSERT( reader->isStartElement() &&
+              ( reader->name() == QLatin1String( "nowPlaying" ) || reader->name() == QLatin1String( "nowPlayingUpdated" ) ) );
+    if ( reader->name() == QLatin1String( "nowPlaying" ) )
+    {
+      resultType = ResultobjectType::R_NOW_PLAYING;
+    }
+    else
+    {
+      if ( reader->readNextStartElement() && !reader->hasError() )
+      {
+        if ( reader->name() == QLatin1String( "nowPlaying" ) )
+        {
+          resultType = ResultobjectType::U_NOWPLAYING;
+        }
+        else
+        {
+          resultType = ResultobjectType::R_UNKNOWN;
+          return;
+        }
+      }
+    }
     //
     // DeviceID/source finden (Attribute von <nowPlaying>)
     //
     lg->debug( "NowPlayingObject::NowPlayingObject..." );
     lg->debug( "NowPlayingObject::NowPlayingObject: check for attribute in \"nowPlaying\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
-    {
-      deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
-      lg->debug( QString( "NowPlayingObject::NowPlayingObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::NowPlayingObject: there is no attribute \"deviceID\"..." );
-    }
-    if ( attr.hasAttribute( QLatin1String( "source" ) ) )
-    {
-      source = attr.value( QLatin1String( "source" ) ).toString();
-      lg->debug( QString( "NowPlayingObject::NowPlayingObject: attribute \"source\" has value %1" ).arg( source ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::NowPlayingObject: there is no attribute \"source\"..." );
-    }
+    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
+    source = getAttibute( reader, QLatin1String( "source" ) );
+    sourceAccount = getAttibute( reader, QLatin1String( "sourceAccount" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -42,7 +45,8 @@ namespace radio
         // Objet mit Attributen (kannman bei /select nutzen)
         //
         lg->debug( "NowPlayingObject::NowPlayingObject: ContentItem object detected." );
-        parseContentItem();
+        contentItem = std::unique_ptr< ContentItem >( new ContentItem( lg, reader, this ) );
+        // parseContentItem();
       }
       else if ( reader->name() == QLatin1String( "track" ) )
       {
@@ -111,7 +115,7 @@ namespace radio
         //
         // zurück springen möglich?
         //
-        skipEnabled = true;
+        skipPreviousEnabled = true;
         lg->debug( "NowPlayingObject::NowPlayingObject: skip previous enabled." );
       }
       else if ( reader->name() == QLatin1String( "skipPreviousSupported" ) )
@@ -119,15 +123,11 @@ namespace radio
         //
         // zurück springen unterstützt?
         //
-        QXmlStreamAttributes attr = reader->attributes();
-        if ( attr.hasAttribute( "value" ) )
+        if ( getAttibute( reader, QLatin1String( "value" ) ) == QLatin1String( "true" ) )
         {
-          if ( attr.value( QLatin1String( "value" ) ) == QLatin1String( "true" ) )
-          {
-            skipPreviousSupported = true;
-          }
-          lg->debug( QString( "NowPlayingObject::NowPlayingObject: skip previous supported:" ).arg( skipPreviousSupported ) );
+          skipPreviousSupported = true;
         }
+        lg->debug( QString( "NowPlayingObject::NowPlayingObject: skip previous supported:" ).arg( skipPreviousSupported ) );
       }
       else if ( reader->name() == QLatin1String( "favoriteEnabled" ) )
       {
@@ -273,16 +273,7 @@ namespace radio
     // Attribut "total"
     //
     lg->debug( "NowPlayingObject::parseTime: check for attribute in \"time\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "total" ) ) )
-    {
-      nowPlayingTime.total_sec = attr.value( QLatin1String( "total" ) ).toInt();
-      lg->debug( QString( "NowPlayingObject::parseTime: attribute \"total\" has value %1" ).arg( nowPlayingTime.total_sec ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::parseTime: there is no attribute \"total\"..." );
-    }
+    nowPlayingTime.total_sec = getAttibute( reader, QLatin1String( "total" ) ).toInt();
     //
     // jetzt den Inhalt
     //
@@ -302,17 +293,7 @@ namespace radio
     // Attribut "artImageStatus"
     //
     lg->debug( "NowPlayingObject::parseArt: check for attribute in \"art\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "artImageStatus" ) ) )
-    {
-      nowPlayingArt.artImageStatus = attr.value( QLatin1String( "artImageStatus" ) ).toString();
-      lg->debug(
-          QString( "NowPlayingObject::parseArt: attribute \"artImageStatus\" has value %1" ).arg( nowPlayingArt.artImageStatus ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::parseArt: there is no attribute \"source\"..." );
-    }
+    nowPlayingArt.artImageStatus = getAttibute( reader, QLatin1String( "artImageStatus" ) ).toInt();
     //
     // jetzt den Inhalt
     //
@@ -321,111 +302,14 @@ namespace radio
     lg->debug( "NowPlayingObject::parseArt: finished" );
   }
 
-  void HttpNowPlayingObject::parseContentItem( void )
-  {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "ContentItem" ) );
-    //
-    // source/location/sourceAccount/isPresetable finden (Attribute von <ContentItem>)
-    //
-    lg->debug( "NowPlayingObject::parseContentItem..." );
-    //
-    // Attribut "source"
-    //
-    lg->debug( "NowPlayingObject::parseContentItem: check for attribute in \"ContentItem\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "source" ) ) )
-    {
-      contentItem.source = attr.value( QLatin1String( "source" ) ).toString();
-      lg->debug( QString( "NowPlayingObject::parseContentItem: attribute \"source\" has value %1" ).arg( contentItem.source ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::parseContentItem: there is no attribute \"source\"..." );
-    }
-    //
-    // Attribut "location"
-    //
-    lg->debug( "NowPlayingObject::parseContentItem: check for attribute \"location\"..." );
-    if ( attr.hasAttribute( QLatin1String( "location" ) ) )
-    {
-      contentItem.location = attr.value( QLatin1String( "location" ) ).toString();
-      lg->debug( QString( "NowPlayingObject::parseContentItem: attribute \"location\" has value %1" ).arg( contentItem.location ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::parseContentItem: there is no attribute \"location\"..." );
-    }
-    //
-    // Attribut "sourceAccount"
-    //
-    lg->debug( "NowPlayingObject::parseContentItem: check for attribute \"sourceAccount\"..." );
-    if ( attr.hasAttribute( QLatin1String( "sourceAccount" ) ) )
-    {
-      contentItem.sourceAccount = attr.value( QLatin1String( "sourceAccount" ) ).toString();
-      lg->debug(
-          QString( "NowPlayingObject::parseContentItem: attribute \"sourceAccount\" has value %1" ).arg( contentItem.sourceAccount ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::parseContentItem: there is no attribute \"sourceAccount\"..." );
-    }
-    //
-    // Attribut "isPresetable"
-    //
-    lg->debug( "NowPlayingObject::parseContentItem: check for attribute \"isPresetable\"..." );
-    if ( attr.hasAttribute( "isPresetable" ) )
-    {
-      if ( attr.value( QLatin1String( "isPresetable" ) ) == "true" )
-        contentItem.isPresetable = true;
-      else
-        contentItem.isPresetable = false;
-      lg->debug(
-          QString( "NowPlayingObject::parseContentItem: attribute \"isPresetable\" has value %1" ).arg( contentItem.isPresetable ) );
-    }
-    else
-    {
-      lg->warn( "NowPlayingObject::parseContentItem: there is no attribute \"isPresetable\"..." );
-    }
-    //
-    // jetzt die Elemente
-    //
-    while ( reader->readNextStartElement() )
-    {
-      //
-      // welchen Eintrag hab ich gefunden?
-      //
-      if ( reader->name() == QLatin1String( "itemName" ) )
-      {
-        contentItem.itemName = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::parseContentItem: itemName: %1" ).arg( contentItem.itemName ) );
-      }
-      else if ( reader->name() == QLatin1String( "containerArt" ) )
-      {
-        contentItem.containerArt = reader->readElementText();
-        lg->debug( QString( "NowPlayingObject::parseContentItem: containerArt: %1" ).arg( contentItem.containerArt ) );
-      }
-      else
-      {
-        lg->warn( QString( "NowPlayingObject::parseContentItem: unsupportet entry %1 -> %2 " )
-                      .arg( reader->name().toString() )
-                      .arg( reader->readElementText() ) );
-      }
-    }
-    lg->debug( "NowPlayingObject::parseContentItem: finished." );
-  }
-  QString HttpNowPlayingObject::getDeviceId() const
-  {
-    return deviceId;
-  }
-
   QString HttpNowPlayingObject::getSource() const
   {
     return source;
   }
 
-  ContentItem HttpNowPlayingObject::getContentItem() const
+  std::shared_ptr< ContentItem > HttpNowPlayingObject::getContentItem() const
   {
-    return contentItem;
+    return ( contentItem );
   }
 
   QString HttpNowPlayingObject::getTrack() const
@@ -536,6 +420,11 @@ namespace radio
   DeviceConnectionStatusInfo HttpNowPlayingObject::getNowPlayingConnectStatusInfo() const
   {
     return nowPlayingConnectStatusInfo;
+  }
+
+  QString HttpNowPlayingObject::getSourceAccount() const
+  {
+    return sourceAccount;
   }
 
 }  // namespace radio

@@ -43,7 +43,6 @@ DEFINES                                += QT_DEPRECATED_WARNINGS
 DEFINES                                += $$DEBUG
 
 SOURCES += \
-    libsrc/logging/Logger.cpp \
     libsrc/bsoundtouchdevice.cpp \
     libsrc/xmlparser/xmlresultparser.cpp \
     libsrc/xmlparser/iresponseobject.cpp \
@@ -59,10 +58,31 @@ SOURCES += \
     libsrc/xmlparser/httpsourcesobject.cpp \
     libsrc/xmlparser/httpvolumeobject.cpp \
     libsrc/xmlparser/httpzoneobject.cpp \
-    libsrc/xmlparser/wspresetupdateobject.cpp
+    libsrc/xmlparser/wspresetupdateobject.cpp \
+    libsrc/xmlparser/wssoundtouchsdkinfo.cpp \
+    libsrc/xmlparser/xmlupdateparser.cpp \
+    libsrc/xmlparser/bsoundtouch_global.cpp \
+    libsrc/xmlparser/wsnowplayingupdate.cpp \
+    libsrc/xmlparser/wsnowselectionupdated.cpp \
+    libsrc/xmlparser/wsvolumeupdated.cpp \
+    libsrc/xmlparser/wsbassupdated.cpp \
+    libsrc/xmlparser/wszoneupdated.cpp \
+    libsrc/xmlparser/wsinfoupdated.cpp \
+    libsrc/xmlparser/wsnameupdated.cpp \
+    libsrc/xmlparser/wserrorupdated.cpp \
+    libsrc/xmlparser/wsgroupupdated.cpp \
+    libsrc/xmlparser/wsbrowseupdated.cpp \
+    libsrc/xmlparser/wsrecentsupdated.cpp \
+    libsrc/xmlparser/wssourceupdated.cpp \
+    libsrc/xmlparser/wslanguageupdated.cpp \
+    libsrc/xmlparser/wsuseractivityupdated.cpp \
+    libsrc/xmlparser/wsuserinactivityupdated.cpp \
+    libsrc/xmlparser/wsconnectionstateupdated.cpp \
+    libsrc/xmlparser/wsaudioproducttonecontrols.cpp \
+    libsrc/xmlparser/wsaudioproductlevelcontrols.cpp \
+    libsrc/xmlparser/wsaudiospcontrols.cpp
 
 HEADERS += \
-    libsrc/logging/Logger.hpp \
     libsrc/xmlparser/xmlresultparser.hpp \
     libsrc/xmlparser/iresponseobject.hpp \
     libsrc/xmlparser/bsoundtouch_global.hpp \
@@ -80,5 +100,25 @@ HEADERS += \
     libsrc/xmlparser/httpvolumeobject.hpp \
     libsrc/xmlparser/httpzoneobject.hpp \
     libsrc/xmlparser/wspresetupdateobject.hpp \
-    libsrc/xmlparser/soundtouch_response.hpp
+    libsrc/xmlparser/wssoundtouchsdkinfo.hpp \
+    libsrc/xmlparser/xmlupdateparser.hpp \
+    libsrc/xmlparser/wsnowplayingupdate.hpp \
+    libsrc/xmlparser/wsnowselectionupdated.hpp \
+    libsrc/xmlparser/wsvolumeupdated.hpp \
+    libsrc/xmlparser/wsbassupdated.hpp \
+    libsrc/xmlparser/wszoneupdated.hpp \
+    libsrc/xmlparser/wsinfoupdated.hpp \
+    libsrc/xmlparser/wsnameupdated.hpp \
+    libsrc/xmlparser/wserrorupdated.hpp \
+    libsrc/xmlparser/wsgroupupdated.hpp \
+    libsrc/xmlparser/wsbrowseupdated.hpp \
+    libsrc/xmlparser/wsrecentsupdated.hpp \
+    libsrc/xmlparser/wssourceupdated.hpp \
+    libsrc/xmlparser/wslanguageupdated.hpp \
+    libsrc/xmlparser/wsuseractivityupdated.hpp \
+    libsrc/xmlparser/wsuserinactivityupdated.hpp \
+    libsrc/xmlparser/wsconnectionstateupdated.hpp \
+    libsrc/xmlparser/wsaudioproducttonecontrols.hpp \
+    libsrc/xmlparser/wsaudioproductlevelcontrols.hpp \
+    libsrc/xmlparser/wsaudiospcontrols.hpp
 

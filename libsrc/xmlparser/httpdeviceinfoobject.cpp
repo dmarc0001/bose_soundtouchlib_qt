@@ -1,6 +1,6 @@
 #include "httpdeviceinfoobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpDeviceInfoObject::HttpDeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
@@ -12,16 +12,7 @@ namespace radio
     //
     lg->debug( "DeviceInfoObject::DeviceInfoObject..." );
     lg->debug( "DeviceInfoObject::DeviceInfoObject: check for attribute \"deviceID\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
-    {
-      deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
-      lg->debug( QString( "DeviceInfoObject::DeviceInfoObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
-    }
-    else
-    {
-      lg->warn( "DeviceInfoObject::DeviceInfoObject: there is no attribute \"deviceID\"..." );
-    }
+    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -216,16 +207,7 @@ namespace radio
     //
     lg->debug( "DeviceInfoObject::parseNetworkInfo..." );
     lg->debug( "DeviceInfoObject::parseNetworkInfo: check for attribute in \"networkInfo\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "type" ) ) )
-    {
-      singleDeviceNetworkInfo._type = attr.value( QLatin1String( "type" ) ).toString();
-      lg->debug( QString( "DeviceInfoObject::parseNetworkInfo: attribute \"type\" has value %1" ).arg( deviceId ) );
-    }
-    else
-    {
-      lg->warn( "DeviceInfoObject::DeviceInfoObject: there is no attribute \"type\"..." );
-    }
+    singleDeviceNetworkInfo._type = getAttibute( reader, QLatin1String( "type" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -256,11 +238,6 @@ namespace radio
       }
     }
     deviceNetworkInfos.append( singleDeviceNetworkInfo );
-  }
-
-  QString HttpDeviceInfoObject::getDeviceId() const
-  {
-    return deviceId;
   }
 
   QString HttpDeviceInfoObject::getDeviceName() const

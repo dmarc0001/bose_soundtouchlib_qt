@@ -1,8 +1,9 @@
 #include "bsoundtouchdevice.hpp"
 #include <QThread>
 #include "xmlparser/xmlresultparser.hpp"
+#include "xmlparser/xmlupdateparser.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   //! Strings für /key festlegen
   const char *BSoundTouchDevice::keynames[] = {
@@ -21,14 +22,10 @@ namespace radio
    * @param logger
    * @param parent
    */
-  BSoundTouchDevice::BSoundTouchDevice( QString &stHost,
-                                        qint16 stWSPort,
-                                        qint16 stHttpPort,
-                                        std::shared_ptr< Logger > logger,
-                                        QObject *parent )
-      : QObject( parent ), hostname( stHost ), wsPort( stWSPort ), httpPort( stHttpPort ), lg( logger ), webSocket( nullptr )
+  BSoundTouchDevice::BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent )
+      : QObject( parent ), hostname( stHost ), wsPort( stWSPort ), httpPort( stHttpPort ), webSocket( nullptr )
   {
-    lg->debug( "BSoundTouchDevice::BSoundTouchDevice..." );
+    qDebug() << "...";
     connect( &qnam, &QNetworkAccessManager::authenticationRequired, this, &BSoundTouchDevice::slotAuthenticationRequired );
   }
 
@@ -144,14 +141,13 @@ namespace radio
   //#### SET Funktionen (HTTP POST)                                        ####
   //###########################################################################
 
-  void BSoundTouchDevice::setKey( bose_key whichkey, bose_keystate keystate, QString sender )
+  void BSoundTouchDevice::setKey( bose_key whichkey, bose_keystate keystate, QString )
   {
     QString data;
     //
-    lg->info( QString( "BSoundTouchDevice::setKey: %1 %2 from '%3' in %4" )
+    lg->info( QString( "BSoundTouchDevice::setKey: %1 %2 to %4" )
                   .arg( BSoundTouchDevice::keynames[ static_cast< int >( whichkey ) ] )
                   .arg( BSoundTouchDevice::keystati[ static_cast< int >( keystate ) ] )
-                  .arg( sender )
                   .arg( hostname ) );
     //
     // die URL steht schon einmal fest
@@ -453,6 +449,64 @@ namespace radio
 
   void BSoundTouchDevice::addVolumeListener( void )
   {
-    webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, lg, this ) );
+    connectWs();
   }
-}  // namespace radio
+
+  void BSoundTouchDevice::connectWs( void )
+  {
+    if ( webSocket.get() == nullptr )
+    {
+      webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, lg, this ) );
+      //
+      // signale verbinden
+      //
+      connect( webSocket.get(), &BWebsocket::sigOnWSConnected, this, &BSoundTouchDevice::slotOnWSConnected );
+      connect( webSocket.get(), &BWebsocket::sigOnWSDisConnected, this, &BSoundTouchDevice::slotOnWSDisConnected );
+      connect( webSocket.get(), &BWebsocket::sigOnWSTextMessageReceived, this, &BSoundTouchDevice::slotOnWSTextMessageReceived );
+      // nach open sollte sowas kommen: <SoundTouchSdkInfo serverVersion="4" serverBuild="trunk r42017 v4 epdbuild cepeswbld02" />
+      webSocket->open();
+    }
+  }
+
+  void BSoundTouchDevice::slotOnWSConnected( void )
+  {
+    lg->debug( "BSoundTouchDevice::slotOnWSConnected..." );
+    emit sigOnWSConnected();
+  }
+
+  void BSoundTouchDevice::slotOnWSDisConnected( void )
+  {
+    lg->debug( "BSoundTouchDevice::slotOnWSDisConnected..." );
+    emit sigOnWSDisConnected();
+  }
+
+  void BSoundTouchDevice::slotOnWSTextMessageReceived( QString message )
+  {
+    lg->debug( "BSoundTouchDevice::slotOnWSTextMessageReceived..." );
+    //
+    // die nachricht nach bekannten Obketken parsen
+    //
+
+    XMLUpdateParser xmlParser( lg, message, this );
+    if ( xmlParser.hasError() )
+    {
+      lg->crit( QString( "BSoundTouchDevice::slotOnHttpFinished: %1" ).arg( xmlParser.getErrorString() ) );
+    }
+    else
+    {
+      std::shared_ptr< IResponseObject > response = xmlParser.getResultObject();
+      if ( response.get() == nullptr )
+      {
+        lg->crit( "BSoundTouchDevice::slotOnHttpFinished: no response from parser" );
+      }
+      else
+      {
+        lg->debug( QString( "BSoundTouchDevice::slotOnHttpFinished: result object type %1" ).arg( response->getResultTypeName() ) );
+        // TODO: hier verarbeiten
+      }
+    }
+
+    emit sigOnWSTextMessageReceived( message );
+  }
+
+}  // namespace bose_soundtoch_lib

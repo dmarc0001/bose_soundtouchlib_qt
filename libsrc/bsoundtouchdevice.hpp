@@ -9,10 +9,8 @@
 #include <QPair>
 #include <QVector>
 #include <memory>
-
-#include "logging/Logger.hpp"
 #include "websocket/bwebsocket.hpp"
-#include "xmlparser/soundtouch_response.hpp"
+#include "xmlparser/bsoundtouch_global.hpp"
 
 #if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
 #define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_EXPORT
@@ -23,7 +21,7 @@
 // bose developer dmarc0001
 // pw dd03353e83
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class SOUNDTOUCH_QT_LIBSHARED_EXPORT BSoundTouchDevice : public QObject
   {
@@ -123,14 +121,21 @@ namespace radio
     void startPostRequest( const QString &data );
     void setUrl( const char *path );
     void editZone( const QString &masterId, const SoundTouchMemberList &memberList );  //! je url create,add,remove
+    void connectWs( void );  //! verbinde gerät mit Websocket, falls noch nciht geschehen
 
     signals:
     void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );
+    void sigOnWSConnected( void );
+    void sigOnWSDisConnected( void );
+    void sigOnWSTextMessageReceived( QString message );
 
     private slots:
     void slotAuthenticationRequired( QNetworkReply *, QAuthenticator *authenticator );
     void slotOnHttpFinished( QNetworkReply *reply );
     void slotOnHttpReadyToRead( QNetworkReply *reply );
+    void slotOnWSConnected( void );
+    void slotOnWSDisConnected( void );
+    void slotOnWSTextMessageReceived( QString message );
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // BSOUNDTOUCHDEVICE_HPP

@@ -6,8 +6,9 @@
 #else
 #include <QMainWindow>
 #endif
+#include <QtDebug>
 #include <bsoundtouchdevice.hpp>
-#include <logging/Logger.hpp>
+#include <iostream>
 #include <memory>
 #include "config/programconfig.hpp"
 #include "ui_librarytestwindow.h"
@@ -17,7 +18,7 @@ namespace Ui
   class LibraryTestWindow;
 }
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class LibraryTestWindow : public QMainWindow
   {
@@ -27,8 +28,8 @@ namespace radio
     int wsPort;
     int httpPort;
     bool isDebug;
+    QtMsgType threshold;
     std::unique_ptr< Ui::LibraryTestWindow > ui;
-    std::shared_ptr< Logger > lg;
     std::unique_ptr< BSoundTouchDevice > sDevice;
 
     public:
@@ -36,6 +37,8 @@ namespace radio
     ~LibraryTestWindow();
 
     private:
+    static void myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg );
+
     private slots:
     void slotOnConnectWsButton( void );
     void slotOnDisconnectWsButton( void );
@@ -73,5 +76,5 @@ namespace radio
     // bass
     // zone create,add,remove
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // LIBRARYTESTWINDOW_HPP

@@ -1,15 +1,18 @@
 ﻿#ifndef SRC_LOGGING_LOGGER_HPP_
 #define SRC_LOGGING_LOGGER_HPP_
+#include <stdio.h>
+#include <stdlib.h>
 #include <QDateTime>
 #include <QDebug>
 #include <QFile>
+#include <QMessageLogContext>
 #include <QString>
 #include <QTextStream>
 #include <QtGlobal>
 #include <memory>
 #include <string>
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   enum LgThreshold : quint8
   {
@@ -26,15 +29,16 @@ namespace radio
     LgThreshold threshold;                      //! Logstatus
     std::unique_ptr< QFile > logFile;           //! Zeiger auf das Logdateiobjekt
     std::unique_ptr< QTextStream > textStream;  //! Zeiger auf einen Textstrom
-    QDateTime dateTime;                         //! das lokale Datum/Zeit objekt
-    static const QString dateTimeFormat;        //! Format der Zeitausgabe
-    static const QString DEBUG_STR;             //! String für Debuglevel
-    static const QString INFO_STR;              //! String für Infolevel
-    static const QString WARN_STR;              //! String für Warnlevel
-    static const QString CRIT_STR;              //! String für Kritischen level
+    bool isTextStream;
+    QDateTime dateTime;                   //! das lokale Datum/Zeit objekt
+    static const QString dateTimeFormat;  //! Format der Zeitausgabe
+    static const QString DEBUG_STR;       //! String für Debuglevel
+    static const QString INFO_STR;        //! String für Infolevel
+    static const QString WARN_STR;        //! String für Warnlevel
+    static const QString CRIT_STR;        //! String für Kritischen level
 
     public:
-    Logger();           //! Konstruktor mit Zeiger auf das Konfig-Objekt
+    Logger();           //! Konstruktor
     virtual ~Logger();  //! Destruktor
     int startLogging( LgThreshold th = LG_DEBUG,
                       QString fn = "logging.log" );  //! Loggen beginnen
@@ -61,6 +65,9 @@ namespace radio
 
     private:
     QString getDateString();  //! interne Funktion für den Datumsstring
+    void static myMessageOutput( QtMsgType type,
+                                 const QMessageLogContext &context,
+                                 const QString &msg );  //! message handler für qDebug() etc
   };
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif /* SRC_LOGGING_LOGGER_HPP_ */

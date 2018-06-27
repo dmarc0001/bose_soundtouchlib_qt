@@ -1,6 +1,6 @@
 #include "httpsourcesobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpSourcesObject::HttpSourcesObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
@@ -12,16 +12,7 @@ namespace radio
     //
     lg->debug( "SourcesObject::SourcesObject..." );
     lg->debug( "SourcesObject::SourcesObject: check for attributes in \"sources\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
-    {
-      deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
-      lg->debug( QString( "SourcesObject::SourcesObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
-    }
-    else
-    {
-      lg->warn( "SourcesObject::SourcesObject: there is no attribute \"deviceID\"..." );
-    }
+    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -62,60 +53,20 @@ namespace radio
     //
     lg->debug( "SourcesObject::parseSourceItem..." );
     lg->debug( "SourcesObject::parseSourceItem: check for attribute in \"sourceItem\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    // source
-    if ( attr.hasAttribute( QLatin1String( "source" ) ) )
-    {
-      sourceItem.source = attr.value( QLatin1String( "source" ) ).toString();
-      lg->debug( QString( "SourcesObject::parseSourceItem: attribute \"source\" has value %1" ).arg( sourceItem.source ) );
-    }
-    else
-    {
-      lg->warn( "SourcesObject::parseSourceItem: there is no attribute \"source\"..." );
-    }
+    sourceItem.source = getAttibute( reader, QLatin1String( "source" ) );
     // sourceAccount
-    if ( attr.hasAttribute( QLatin1String( "sourceAccount" ) ) )
-    {
-      sourceItem.sourceAccount = attr.value( QLatin1String( "sourceAccount" ) ).toString();
-      lg->debug(
-          QString( "SourcesObject::parseSourceItem: attribute \"sourceAccount\" has value %1" ).arg( sourceItem.sourceAccount ) );
-    }
-    else
-    {
-      lg->warn( "SourcesObject::parseSourceItem: there is no attribute \"sourceAccount\"..." );
-    }
+    sourceItem.sourceAccount = getAttibute( reader, QLatin1String( "sourceAccount" ) );
     // status
-    if ( attr.hasAttribute( QLatin1String( "status" ) ) )
-    {
-      sourceItem.status = attr.value( QLatin1String( "status" ) ).toString();
-      lg->debug( QString( "SourcesObject::parseSourceItem: attribute \"status\" has value %1" ).arg( sourceItem.status ) );
-    }
-    else
-    {
-      lg->warn( "SourcesObject::parseSourceItem: there is no attribute \"status\"..." );
-    }
+    sourceItem.status = getAttibute( reader, QLatin1String( "status" ) );
     // isLocal
-    if ( attr.hasAttribute( QLatin1String( "isLocal" ) ) )
+    if ( getAttibute( reader, QLatin1String( "isLocal" ) ) == QLatin1String( "true" ) )
     {
-      if ( attr.value( QLatin1String( "isLocal" ) ) == QLatin1String( "true" ) )
-      {
-        sourceItem.isLocal = true;
-      }
-      lg->debug( QString( "SourcesObject::parseSourceItem: attribute \"isLocal\" has value %1" ).arg( sourceItem.isLocal ) );
+      sourceItem.isLocal = true;
     }
     // multiroomallowed
-    if ( attr.hasAttribute( QLatin1String( "multiroomallowed" ) ) )
+    if ( getAttibute( reader, QLatin1String( "multiroomalowed" ) ) == QLatin1String( "true" ) )
     {
-      if ( attr.value( QLatin1String( "multiroomallowed" ) ) == QLatin1String( "true" ) )
-      {
-        sourceItem.multiroomallowed = true;
-      }
-      lg->debug( QString( "SourcesObject::parseSourceItem: attribute \"multiroomallowed\" has value %1" )
-                     .arg( sourceItem.multiroomallowed ) );
-    }
-    else
-    {
-      lg->warn( "SourcesObject::parseSourceItem: there is no attribute \"status\"..." );
+      sourceItem.multiroomallowed = true;
     }
     sourceItem.Content = reader->readElementText();
     lg->debug( QString( "SourcesObject::parseSourceItem: entry \"Content\" has value %1" ).arg( sourceItem.Content ) );
@@ -123,11 +74,6 @@ namespace radio
     // in die Liste aufnehmen
     //
     sourceItems.append( sourceItem );
-  }
-
-  QString HttpSourcesObject::getDeviceId() const
-  {
-    return deviceId;
   }
 
   QVector< SourceItem > HttpSourcesObject::getSourceItems() const

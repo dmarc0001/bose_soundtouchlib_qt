@@ -1,27 +1,42 @@
 #include "httpgroupobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpGroupObject::HttpGroupObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "group" ) );
-    resultType = ResultobjectType::R_GROUPS;
+    //
+    // Objekt für zwei Fälle
+    //
+    Q_ASSERT( reader->isStartElement() &&
+              ( reader->name() == QLatin1String( "group" ) || reader->name() == QLatin1String( "groupUpdated" ) ) );
+    if ( reader->name() == QLatin1String( "group" ) )
+    {
+      // response für getGroup
+      resultType = ResultobjectType::R_GROUPS;
+    }
+    else
+    {
+      if ( reader->readNextStartElement() && !reader->hasError() )
+      {
+        if ( reader->name() == QLatin1String( "groupUpdated" ) )
+        {
+          // callback für updatedGroup
+          resultType = ResultobjectType::U_GROUP;
+        }
+        else
+        {
+          resultType = ResultobjectType::R_UNKNOWN;
+          return;
+        }
+      }
+    }
     //
     // ID finden (Attribute von <group>)
     //
     lg->debug( "GroupObject::GroupObject..." );
     lg->debug( "GroupObject::GroupObject: check for attribute in \"group\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "id" ) ) )
-    {
-      groupId = attr.value( QLatin1String( "id" ) ).toString();
-      lg->debug( QString( "GroupObject::GroupObject: attribute \"id\" has value %1" ).arg( groupId ) );
-    }
-    else
-    {
-      lg->warn( "GroupObject::GroupObject: there is no attribute \"id\"..." );
-    }
+    groupId = getAttibute( reader, QLatin1String( "id" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //

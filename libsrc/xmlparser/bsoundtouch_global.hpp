@@ -1,11 +1,16 @@
 #ifndef BSOUNDTOUCH_GLOBAL_HPP
 #define BSOUNDTOUCH_GLOBAL_HPP
 
+#include <qglobal.h>
+#include <QObject>
 #include <QPair>
 #include <QString>
 #include <QVector>
+#include <QXmlStreamReader>
+#include <memory>
+#include "../logging/Logger.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   //
   // Definitionen um die Benennung der Parameter lesbarer zu machen
@@ -16,8 +21,62 @@ namespace radio
   //! Liste mit Paaren
   using SoundTouchMemberList = QVector< SoundTouchMemberObject >;
 
-  class ContentItem
+  //! typ des Resultobjektes
+  enum class ResultobjectType : quint8
   {
+    R_OK,
+    R_ERROR,
+    R_DEVICE_INFO,
+    R_NOW_PLAYING,
+    R_VOLUME,
+    R_SOURCES,
+    R_ZONES,
+    R_BASS_CAPABILITIES,
+    R_BASS,
+    R_PRESETS,
+    R_GROUPS,
+    U_SDKINFO,
+    U_PRESETS,
+    U_NOWPLAYING,
+    U_SELECTION,
+    U_VOLUME,
+    U_BASS,
+    U_ZONE,
+    U_INFO,
+    U_NAME,
+    U_ERROR,
+    U_GROUP,
+    U_BROWSE_UNSUPPORTED,
+    U_RECENTS_UNSUPPORTED,
+    U_SOURCES_UNSUPPORTED,
+    U_LANGUAGE_UNSUPPORTED,
+    U_USER_ACTIVITY_UPDATED_UNSUPPORTED,
+    U_USER_INACTIVITY_UPDATED_UNSUPPORTED,
+    U_CONNECTION_STATE_UPDATED_UNSUPPORTED,
+    U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED,
+    U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED,
+    U_AUDIO_SP_CONTROLS_UNSUPPORTED,
+    R_UNKNOWN
+  };
+
+  class ContentItem;
+
+  class DeviceRecent
+  {
+    public:
+    QString deviceId;
+    qint64 utcTime;
+    qint64 id;
+    std::shared_ptr< ContentItem > contentItem;
+  };
+
+  class ContentItem : public QObject
+  {
+    Q_OBJECT
+    protected:
+    std::shared_ptr< Logger > lg;
+    QXmlStreamReader *reader;
+
     public:
     QString source;
     QString location;
@@ -25,6 +84,13 @@ namespace radio
     bool isPresetable;
     QString itemName;
     QString containerArt;
+    explicit ContentItem( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
+    ContentItem( const ContentItem &cp ) = default;
+    // ContentItem( const ContentItem *cp );
+    ~ContentItem();
+
+    private:
+    QString getAttibute( QXmlStreamReader *reader, QLatin1String name ) const;
   };
 
   class PlayingArt
@@ -70,7 +136,9 @@ namespace radio
     QString id;
     quint64 createdOn;
     quint64 updatedOn;
-    ContentItem contentItem;
+    std::shared_ptr< ContentItem > contentItem;
+    DevicePreset( void ){};
+    DevicePreset( const DevicePreset &cp ) = default;
   };
 
   class SourceItem
@@ -101,5 +169,5 @@ namespace radio
     QString text;
   };
 
-}  // namespace radio
+}  // namespace bose_soundtoch_lib
 #endif  // BSOUNDTOUCH_GLOBAL_HPP

@@ -5,24 +5,21 @@
 #include <QObject>
 #include <QVector>
 #include "../logging/Logger.hpp"
+#include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
-#include "soundtouch_response.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class HttpPresetsObject : public IResponseObject
   {
     private:
-    QVector< radio::DevicePreset > presets;
+    QVector< bose_soundtoch_lib::DevicePreset > presets;
 
     public:
     explicit HttpPresetsObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpPresetsObject() override;
     // Getter Funktionen
-    QVector< radio::DevicePreset > getPresets() const;
-
-    private:
-    void parseContentItem( radio::DevicePreset &preset );
+    QVector< bose_soundtoch_lib::DevicePreset > getPresets() const;
   };
 }  // namespace radio
 #endif  // PRESETSOBJECT_HPP

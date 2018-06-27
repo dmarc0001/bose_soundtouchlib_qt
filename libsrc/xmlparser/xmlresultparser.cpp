@@ -1,6 +1,6 @@
 #include "xmlresultparser.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   XmlResultParser::XmlResultParser( std::shared_ptr< Logger > logger, QString &xmlString, QObject *parent )
       : QObject( parent )
@@ -136,6 +136,14 @@ namespace radio
         //
         responseObject = std::shared_ptr< IResponseObject >( new HttpPresetsObject( lg, reader.get(), this ) );
       }
+      else if ( rootelemName == QLatin1String( "group" ) )
+      {
+        //
+        // Gruppeneinstellungen (nur SoundTouch10)
+        // erzeuge das Objekt und Parse es
+        //
+        responseObject = std::shared_ptr< IResponseObject >( new HttpGroupObject( lg, reader.get(), this ) );
+      }
       else if ( rootelemName == QLatin1String( "status" ) )
       {
         //
@@ -159,10 +167,14 @@ namespace radio
         //
         lg->warn( QString( "XmlResultParser::parseFile: unsupported TAG in response XML struct found: %1" )
                       .arg( reader->name().toString() ) );
+        while ( reader->readNextStartElement() && !reader->hasError() && !reader->atEnd() )
+          ;
+        /*
         while ( !reader->atEnd() && !reader->hasError() )
         {
           reader->readNext();
         }
+        */
       }
     }
     //
@@ -176,4 +188,4 @@ namespace radio
     reader->clear();
     return ( false );
   }
-}  // namespace radio
+}  // namespace bose_soundtoch_lib

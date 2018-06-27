@@ -4,15 +4,14 @@
 #include <qglobal.h>
 #include <QXmlStreamReader>
 #include "../logging/Logger.hpp"
+#include "bsoundtouch_global.hpp"
 #include "iresponseobject.hpp"
-#include "soundtouch_response.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   class HttpDeviceInfoObject : public IResponseObject
   {
     private:
-    QString deviceId;
     QString deviceName;
     QString deviceType;
     QString _margeAccountUUID;  //! unsupported
@@ -29,7 +28,6 @@ namespace radio
     HttpDeviceInfoObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent = nullptr );
     ~HttpDeviceInfoObject() override;
     // Getter Funktionen
-    QString getDeviceId() const;
     QString getDeviceName() const;
     QString getDeviceType() const;
     QString getMargeAccountUUID() const;

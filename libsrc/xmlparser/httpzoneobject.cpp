@@ -1,6 +1,6 @@
 #include "httpzoneobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpZoneObject::HttpZoneObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
@@ -12,16 +12,7 @@ namespace radio
     //
     lg->debug( "ZoneObject::ZoneObject..." );
     lg->debug( "ZoneObject::ZoneObject: check for attribute in \"zone\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "master" ) ) )
-    {
-      master = attr.value( QLatin1String( "master" ) ).toString();
-      lg->debug( QString( "ZoneObject::ZoneObject: attribute \"master\" has value %1" ).arg( master ) );
-    }
-    else
-    {
-      lg->warn( "ZoneObject::ZoneObject: there is no attribute \"master\"..." );
-    }
+    master = getAttibute( reader, QLatin1String( "master" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -36,17 +27,7 @@ namespace radio
         // ein Mitglied in der Zone
         //
         SoundTouchMemberObject member;
-        QXmlStreamAttributes attr = reader->attributes();
-        if ( attr.hasAttribute( QLatin1String( "ipaddress" ) ) )
-        {
-          // lese IP Adresse des Member
-          member.first = attr.value( QLatin1String( "ipaddress" ) ).toString();
-          lg->debug( QString( "ZoneObject::ZoneObject: attribute \"ipaddress\" has value %1" ).arg( member.first ) );
-        }
-        else
-        {
-          lg->warn( "ZoneObject::ZoneObject: there is no attribute \"ipaddress\"..." );
-        }
+        member.first = getAttibute( reader, QLatin1String( "ipaddress" ) );
         // lese MAC/ID des Slave/Master
         member.second = reader->readElementText();
         lg->debug( QString( "ZoneObject::ZoneObject: member ID/MAC %1" ).arg( member.second ) );

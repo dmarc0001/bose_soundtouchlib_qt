@@ -1,6 +1,6 @@
 #include "httpvolumeobject.hpp"
 
-namespace radio
+namespace bose_soundtoch_lib
 {
   HttpVolumeObject::HttpVolumeObject( std::shared_ptr< Logger > logger, QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( logger, xmlreader, parent )
@@ -12,16 +12,7 @@ namespace radio
     //
     lg->debug( "VolumeObject::VolumeObject..." );
     lg->debug( "VolumeObject::VolumeObject: check for attribute \"deviceID\"..." );
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( QLatin1String( "deviceID" ) ) )
-    {
-      deviceId = attr.value( QLatin1String( "deviceID" ) ).toString();
-      lg->debug( QString( "VolumeObject::VolumeObject: attribute \"deviceID\" has value %1" ).arg( deviceId ) );
-    }
-    else
-    {
-      lg->warn( "VolumeObject::VolumeObject: there is no attribute \"deviceID\"..." );
-    }
+    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -71,10 +62,6 @@ namespace radio
   HttpVolumeObject::~HttpVolumeObject()
   {
     lg->debug( "VolumeObject::~VolumeObject..." );
-  }
-  QString HttpVolumeObject::getDeviceId() const
-  {
-    return deviceId;
   }
 
   int HttpVolumeObject::getVolume() const
