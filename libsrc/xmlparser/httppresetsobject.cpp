@@ -1,7 +1,13 @@
 #include "httppresetsobject.hpp"
+#include <QDateTime>
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpPresetsObject::HttpPresetsObject
+   * @param xmlreader
+   * @param parent
+   */
   HttpPresetsObject::HttpPresetsObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "presets" ) );
@@ -21,9 +27,15 @@ namespace bose_soundtoch_lib
         //
         // Ein Eintrag über ein preset
         //
-        preset.id = getAttibute( reader, QLatin1String( "id" ) );
-        preset.createdOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
-        preset.updatedOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
+        qDebug() << "...";
+        preset.id = IResponseObject::getAttibute( reader, QLatin1String( "id" ) );
+        qDebug() << "preset id: " << preset.id;
+        preset.createdOn = static_cast< qint64 >( IResponseObject::getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
+        qDebug() << "preset created: " << preset.createdOn << " ("
+                 << QDateTime::fromSecsSinceEpoch( preset.createdOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
+        preset.updatedOn = static_cast< qint64 >( IResponseObject::getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
+        qDebug() << "preset updated: " << preset.updatedOn << " ("
+                 << QDateTime::fromSecsSinceEpoch( preset.updatedOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
         //
         // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein
         //
@@ -52,10 +64,17 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpPresetsObject::~HttpPresetsObject
+   */
   HttpPresetsObject::~HttpPresetsObject()
   {
     qDebug() << "...";
   }
+
+  //
+  // GETTER
+  //
 
   QVector< bose_soundtoch_lib::DevicePreset > HttpPresetsObject::getPresets() const
   {

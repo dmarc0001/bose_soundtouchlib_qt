@@ -13,12 +13,14 @@ namespace bose_soundtoch_lib
   class HttpPresetsObject : public IResponseObject
   {
     private:
-    QVector< bose_soundtoch_lib::DevicePreset > presets;
+    QVector< bose_soundtoch_lib::DevicePreset > presets;  //! Liste von Presets (aktell max 6)
 
     public:
     explicit HttpPresetsObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpPresetsObject() override;
-    // Getter Funktionen
+    //
+    // GETTER
+    //
     QVector< bose_soundtoch_lib::DevicePreset > getPresets() const;
   };
 }  // namespace bose_soundtoch_lib
