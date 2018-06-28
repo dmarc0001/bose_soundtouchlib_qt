@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief WsAudioProductLevelControls::WsAudioProductLevelControls
+   * @param xmlreader
+   * @param parent
+   */
   WsAudioProductLevelControls::WsAudioProductLevelControls( QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( xmlreader, parent )
   {
@@ -9,15 +14,27 @@ namespace bose_soundtoch_lib
     resultType = ResultobjectType::U_RECENTS_UNSUPPORTED;
     qDebug() << "(unsupported)...";
     controls = reader->readElementText();
+    qDebug() << "controls: " << controls;
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
       // elemente zuende lesen und ignorieren
     }
   }
 
+  /**
+   * @brief WsAudioProductLevelControls::~WsAudioProductLevelControls
+   */
   WsAudioProductLevelControls::~WsAudioProductLevelControls()
   {
     qDebug() << "...";
+  }
+
+  //
+  // GETTER
+  //
+  QString WsAudioProductLevelControls::getControls() const
+  {
+    return controls;
   }
 
 }  // namespace bose_soundtoch_lib
