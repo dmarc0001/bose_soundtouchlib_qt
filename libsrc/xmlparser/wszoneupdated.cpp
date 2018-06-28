@@ -2,12 +2,17 @@
 
 namespace bose_soundtoch_lib
 {
-  WsZoneUpdated::WsZoneUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent ), updatet( false )
+  /**
+   * @brief WsZoneUpdated::WsZoneUpdated
+   * @param xmlreader
+   * @param parent
+   */
+  WsZoneUpdated::WsZoneUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent ), updated( false )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bassUpdated" ) );
     resultType = ResultobjectType::U_ZONE;
-    qDebug() << "...";
-    updatet = true;
+    qDebug() << "(updated)...";
+    updated = true;
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
       // elemente zuende lesen und ignorieren

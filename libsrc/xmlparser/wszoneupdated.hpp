@@ -14,7 +14,7 @@ namespace bose_soundtoch_lib
   class WsZoneUpdated : public IResponseObject
   {
     private:
-    bool updatet;
+    bool updated;
 
     public:
     explicit WsZoneUpdated( QXmlStreamReader *xmlreader, QObject *parent );
