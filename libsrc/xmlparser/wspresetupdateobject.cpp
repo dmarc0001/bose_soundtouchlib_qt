@@ -1,7 +1,13 @@
 #include "wspresetupdateobject.hpp"
+#include <QDateTime>
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief WsPresetUpdateObject::WsPresetUpdateObject
+   * @param xmlreader
+   * @param parent
+   */
   WsPresetUpdateObject::WsPresetUpdateObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "presetUpdated" ) );
@@ -14,6 +20,7 @@ namespace bose_soundtoch_lib
       //
       if ( reader->name() == QLatin1String( "presets" ) )
       {
+        qDebug() << "tag presets found, now should follow any <preset> tags...";
         //
         // jetzt die einzelnen presets
         //
@@ -59,8 +66,13 @@ namespace bose_soundtoch_lib
     DevicePreset preset;
     qDebug() << "...";
     preset.id = getAttibute( reader, QLatin1String( "id" ) );
+    qDebug() << "preset id: " << preset.id;
     preset.createdOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
+    qDebug() << "preset created: " << preset.createdOn << " ("
+             << QDateTime::fromSecsSinceEpoch( preset.createdOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
     preset.updatedOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
+    qDebug() << "preset updated: " << preset.updatedOn << " ("
+             << QDateTime::fromSecsSinceEpoch( preset.updatedOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
     //
     // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein
     //
@@ -81,6 +93,9 @@ namespace bose_soundtoch_lib
     devicePresets.append( preset );
   }
 
+  //
+  // GETTER
+  //
   QVector< DevicePreset > WsPresetUpdateObject::getDevicePresets( void ) const
   {
     return ( devicePresets );
