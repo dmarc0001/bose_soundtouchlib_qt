@@ -11,13 +11,15 @@ namespace bose_soundtoch_lib
   class HttpBassObject : public IResponseObject
   {
     private:
-    int targetbass;
-    int actualbass;
+    int targetbass;  //! gewünschte Einstellung
+    int actualbass;  //! aktuelle Einstellung
 
     public:
     HttpBassObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpBassObject() override;
-    // getter Funktionen
+    //
+    // GETTER
+    //
     int getTargetBass() const;
     int getActualBass() const;
   };

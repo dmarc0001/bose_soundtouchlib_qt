@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpBassObject::HttpBassObject
+   * @param xmlreader
+   * @param parent
+   */
   HttpBassObject::HttpBassObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bass" ) );
@@ -10,7 +15,7 @@ namespace bose_soundtoch_lib
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -49,6 +54,10 @@ namespace bose_soundtoch_lib
   {
     qDebug() << "...";
   }
+
+  //
+  // GETTER
+  //
 
   int HttpBassObject::getTargetBass() const
   {
