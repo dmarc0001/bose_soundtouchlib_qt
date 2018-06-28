@@ -15,11 +15,14 @@ namespace bose_soundtoch_lib
   class WsNowSelectionUpdated : public IResponseObject
   {
     private:
-    DevicePreset preset;
+    DevicePreset preset;  //! ein Preset wurde verändert
 
     public:
     explicit WsNowSelectionUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsNowSelectionUpdated() override;
+    //
+    // GETTER
+    //
     DevicePreset getDevicePresets() const;
   };
 }  // namespace bose_soundtoch_lib

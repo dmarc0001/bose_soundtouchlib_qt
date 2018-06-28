@@ -1,4 +1,5 @@
 #include "wsnowselectionupdated.hpp"
+#include <QDateTime>
 
 namespace bose_soundtoch_lib
 {
@@ -15,9 +16,15 @@ namespace bose_soundtoch_lib
       //
       if ( reader->name() == QLatin1String( "preset" ) )
       {
-        preset.id = getAttibute( reader, QLatin1String( "id" ) );
-        preset.createdOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
-        preset.updatedOn = static_cast< qint64 >( getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
+        qDebug() << "found tag preset...";
+        preset.id = IResponseObject::getAttibute( reader, QLatin1String( "id" ) );
+        qDebug() << "preset id: " << preset.id;
+        preset.createdOn = static_cast< qint64 >( IResponseObject::getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
+        qDebug() << "preset created: " << preset.createdOn << " ("
+                 << QDateTime::fromSecsSinceEpoch( preset.createdOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
+        preset.updatedOn = static_cast< qint64 >( IResponseObject::getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
+        qDebug() << "preset updated: " << preset.updatedOn << " ("
+                 << QDateTime::fromSecsSinceEpoch( preset.updatedOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
         //
         // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein
         //
