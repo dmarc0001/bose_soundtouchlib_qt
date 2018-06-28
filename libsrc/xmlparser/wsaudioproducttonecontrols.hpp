@@ -14,11 +14,15 @@ namespace bose_soundtoch_lib
   class WsAudioProductToneControls : public IResponseObject
   {
     private:
-    QString controls;
+    QString controls;  //! Controls?
 
     public:
     explicit WsAudioProductToneControls( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsAudioProductToneControls() override;
+    //
+    // GETTER
+    //
+    QString getControls() const;
   };
 }  // namespace bose_soundtoch_lib
 
