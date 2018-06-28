@@ -3,7 +3,7 @@
 namespace bose_soundtoch_lib
 {
   //
-  // enum class ResultobjectType : quint8 aus "bsoundtouch_global.hpp"
+  //! für enum class ResultobjectType : quint8 aus "bsoundtouch_global.hpp" => value to String
   //
   const QMap< ResultobjectType, QString > IResponseObject::typeNames = {
       {ResultobjectType::R_OK, "OK"},
@@ -39,34 +39,58 @@ namespace bose_soundtoch_lib
       {ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED, "UPDATE AUDIOPRODUCT LEVEL CONTROLS (unsupported)"},
       {ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED, "UPDATE AUDIO SP CONTROLS (unsupported)"},
       {ResultobjectType::R_UNKNOWN, "UNKNOWN"}};
-
+  /**
+   * @brief IResponseObject::IResponseObject
+   * @param xmlreader
+   * @param parent
+   */
   IResponseObject::IResponseObject( QXmlStreamReader *xmlreader, QObject *parent )
       : QObject( parent ), reader( xmlreader ), resultType( ResultobjectType::R_UNKNOWN )
   {
     deviceId.clear();
   }
 
+  /**
+   * @brief IResponseObject::~IResponseObject
+   */
   IResponseObject::~IResponseObject()
   {
     //
     // hier ist erst einmal nichts aufzuräumen
     //
   }
+
+  /**
+   * @brief IResponseObject::setDeviceId
+   * @param devId
+   */
   void IResponseObject::setDeviceId( QString &devId )
   {
     deviceId = QString( devId );
   }
 
+  /**
+   * @brief IResponseObject::getDeviceId
+   * @return
+   */
   QString IResponseObject::getDeviceId() const
   {
     return deviceId;
   }
 
+  /**
+   * @brief IResponseObject::getResultType
+   * @return
+   */
   ResultobjectType IResponseObject::getResultType( void )
   {
     return ( resultType );
   }
 
+  /**
+   * @brief IResponseObject::getResultTypeName
+   * @return
+   */
   QString IResponseObject::getResultTypeName( void ) const
   {
     return ( typeNames[ resultType ] );

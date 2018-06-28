@@ -15,20 +15,24 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     private:
-    static const QMap< ResultobjectType, QString > typeNames;
+    static const QMap< ResultobjectType, QString > typeNames;  //! convertiert type zu string
 
     protected:
-    QXmlStreamReader *reader;
-    ResultobjectType resultType;
-    QString deviceId;
+    QXmlStreamReader *reader;     //! für vererbte Objekte der xml parser
+    ResultobjectType resultType;  //! für vererbte Objekte dar Typ dieses Objektes
+    QString deviceId;             //! die Device id, bei (fast) jedem objekt
 
     public:
     explicit IResponseObject( QXmlStreamReader *xmlreader, QObject *parent );
     virtual ~IResponseObject();
+    //! Hilfsfunktion zum Lesen der Attribute eines TAG
+    static QString getAttibute( QXmlStreamReader *reader, QLatin1String name );
+    //
+    // GETTER
+    //
     ResultobjectType getResultType( void );
     void setDeviceId( QString &devId );
     QString getResultTypeName( void ) const;
-    static QString getAttibute( QXmlStreamReader *reader, QLatin1String name );
     QString getDeviceId() const;
   };
 }  // namespace bose_soundtoch_lib
