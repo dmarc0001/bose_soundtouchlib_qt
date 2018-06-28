@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpDeviceInfoObject::HttpDeviceInfoObject
+   * @param xmlreader
+   * @param parent
+   */
   HttpDeviceInfoObject::HttpDeviceInfoObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "info" ) );
@@ -10,7 +15,8 @@ namespace bose_soundtoch_lib
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
+    qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -119,11 +125,17 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpDeviceInfoObject::~HttpDeviceInfoObject
+   */
   HttpDeviceInfoObject::~HttpDeviceInfoObject()
   {
     qDebug() << "...";
   }
 
+  /**
+   * @brief HttpDeviceInfoObject::parseComponents
+   */
   void HttpDeviceInfoObject::parseComponents( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "components" ) );
@@ -185,6 +197,9 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpDeviceInfoObject::parseNetworkInfo
+   */
   void HttpDeviceInfoObject::parseNetworkInfo( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "networkInfo" ) );
@@ -223,6 +238,10 @@ namespace bose_soundtoch_lib
     }
     deviceNetworkInfos.append( singleDeviceNetworkInfo );
   }
+
+  //
+  // GETTER
+  //
 
   QString HttpDeviceInfoObject::getDeviceName() const
   {

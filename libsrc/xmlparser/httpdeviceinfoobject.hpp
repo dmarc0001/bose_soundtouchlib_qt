@@ -12,8 +12,8 @@ namespace bose_soundtoch_lib
   class HttpDeviceInfoObject : public IResponseObject
   {
     private:
-    QString deviceName;
-    QString deviceType;
+    QString deviceName;         //! Gerätename
+    QString deviceType;         //! gerätetyp (von Bose Soundtouch)
     QString _margeAccountUUID;  //! unsupported
     QString _margeURL;          //! unsupported
     QString _moduleType;        //! unsupported
@@ -27,7 +27,9 @@ namespace bose_soundtoch_lib
     public:
     HttpDeviceInfoObject( QXmlStreamReader *xmlreader, QObject *parent = nullptr );
     ~HttpDeviceInfoObject() override;
-    // Getter Funktionen
+    //
+    // GETTER
+    //
     QString getDeviceName() const;
     QString getDeviceType() const;
     QString getMargeAccountUUID() const;
@@ -41,9 +43,9 @@ namespace bose_soundtoch_lib
     QVector< DeviceNetworkInfo > getDeviceNetworkInfos() const;
 
     private:
-    void parseComponents( void );
-    void parseSingleComponent( void );
-    void parseNetworkInfo( void );
+    void parseComponents( void );       //! Kmponentenliste parsen
+    void parseSingleComponent( void );  //! Einzelne Kompnente parsen
+    void parseNetworkInfo( void );      //! Network info lesen
   };
 }  // namespace bose_soundtoch_lib
 #endif  // DEVICEINFOOBJECT_HPP
