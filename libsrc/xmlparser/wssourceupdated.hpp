@@ -14,7 +14,7 @@ namespace bose_soundtoch_lib
   class WsSourceUpdated : public IResponseObject
   {
     private:
-    bool updated;
+    bool updated;  //! Kennzeichen, dass ein update stattfand
 
     public:
     explicit WsSourceUpdated( QXmlStreamReader *xmlreader, QObject *parent );
