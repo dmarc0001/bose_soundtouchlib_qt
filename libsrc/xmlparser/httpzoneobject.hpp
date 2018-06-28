@@ -13,13 +13,15 @@ namespace bose_soundtoch_lib
   class HttpZoneObject : public IResponseObject
   {
     private:
-    QString master;
-    SoundTouchMemberList members;
+    QString master;                //! Zonenmaster
+    SoundTouchMemberList members;  //! liste von mitgliedern
 
     public:
     explicit HttpZoneObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpZoneObject() override;
+    //
     // Getter Funktionen
+    //
     QString getMaster() const;
     SoundTouchMemberList getMembers() const;
   };

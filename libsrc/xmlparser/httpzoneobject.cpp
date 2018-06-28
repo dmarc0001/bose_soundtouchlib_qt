@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpZoneObject::HttpZoneObject
+   * @param xmlreader
+   * @param parent
+   */
   HttpZoneObject::HttpZoneObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "zone" ) );
@@ -11,6 +16,7 @@ namespace bose_soundtoch_lib
     //
     qDebug() << "...";
     master = getAttibute( reader, QLatin1String( "master" ) );
+    qDebug() << "zone master: " << master;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -41,10 +47,17 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpZoneObject::~HttpZoneObject
+   */
   HttpZoneObject::~HttpZoneObject()
   {
     qDebug() << "...";
   }
+
+  //
+  // GETTER
+  //
 
   QString HttpZoneObject::getMaster() const
   {
