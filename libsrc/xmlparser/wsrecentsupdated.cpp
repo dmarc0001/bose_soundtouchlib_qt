@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief WsRecentsUpdated::WsRecentsUpdated
+   * @param xmlreader
+   * @param parent
+   */
   WsRecentsUpdated::WsRecentsUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recentsUpdated" ) );
@@ -32,10 +37,16 @@ namespace bose_soundtoch_lib
         qWarning() << "unsupported tag:" << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
+    //
+    // eventuelle Reste zuende lesen und ignorieren
+    //
     while ( reader->readNextStartElement() && !reader->hasError() )
       ;
   }
 
+  /**
+   * @brief WsRecentsUpdated::~WsRecentsUpdated
+   */
   WsRecentsUpdated::~WsRecentsUpdated()
   {
     qDebug() << "...";
@@ -53,6 +64,7 @@ namespace bose_soundtoch_lib
     {
       if ( reader->name() == QLatin1String( "contentItem" ) )
       {
+        qDebug() << "contentItem found.";
         recent.contentItem = std::shared_ptr< ContentItem >( new ContentItem( reader, this ) );
       }
       else
@@ -60,7 +72,9 @@ namespace bose_soundtoch_lib
         qWarning() << "expected item <contentItem> read: " << reader->name().toString();
       }
     }
+    qDebug() << "add recent entry to list...";
     recents.append( recent );
+    qDebug() << "now " << recents.count() << " entry...";
   }
 
 }  // namespace bose_soundtoch_lib

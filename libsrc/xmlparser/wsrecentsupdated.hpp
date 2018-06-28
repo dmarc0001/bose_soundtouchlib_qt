@@ -15,14 +15,14 @@ namespace bose_soundtoch_lib
   class WsRecentsUpdated : public IResponseObject
   {
     private:
-    QVector< DeviceRecent > recents;
+    QVector< DeviceRecent > recents;  //! Liste der zurückliegend gespielten Sender
 
     public:
     explicit WsRecentsUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsRecentsUpdated() override;
 
     private:
-    void readRecent( void );
+    void readRecent( void );  //! einen Eintag lesen und der Liste zufügen
   };
 }  // namespace bose_soundtoch_lib
 
