@@ -280,17 +280,32 @@ namespace bose_soundtoch_lib
     //
     // jetzt den richtigen button senden (release ist "abspielen")
     //
-    qDebug() << "send: " << BSoundTouchDevice::keynames[ static_cast< int >( whichkey ) ];
+    qDebug() << "send: " << sDevice->getKeyName( whichkey );
     sDevice->setKey( whichkey, BSoundTouchDevice::bose_keystate::KEY_RELEASED );
   }
 
   void LibraryTestWindow::myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg )
   {
     QByteArray localMsg = msg.toLocal8Bit();
+    QStringList functParts;
+    QString func;
+    // const char *fname;
     switch ( type )
     {
       case QtDebugMsg:
-        fprintf( stdout, "DEBUG: %s (%s)\n", localMsg.constData(), context.function );
+        //
+        // versuche nur objekt/function
+        //
+        functParts = QString( context.function ).split( "::" );
+        if ( functParts.count() > 2 )
+        {
+          func = QString( functParts.value( functParts.count() - 2 ) )
+                     .append( "::" )
+                     .append( functParts.value( functParts.count() - 1 ) );
+        }
+        else
+          func = context.function;
+        fprintf( stdout, "DEBUG: %s: %s\n", func.toStdString().c_str(), localMsg.constData() );
         // fprintf( stdout, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
         break;
       case QtInfoMsg:
