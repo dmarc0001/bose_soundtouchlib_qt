@@ -2,10 +2,15 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpGroupObject::HttpGroupObject
+   * @param xmlreader
+   * @param parent
+   */
   HttpGroupObject::HttpGroupObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     //
-    // Objekt für zwei Fälle
+    // Objekt für zwei Fälle als httpresponse und ws update
     //
     Q_ASSERT( reader->isStartElement() &&
               ( reader->name() == QLatin1String( "group" ) || reader->name() == QLatin1String( "groupUpdated" ) ) );
@@ -35,6 +40,7 @@ namespace bose_soundtoch_lib
     //
     qDebug() << "...";
     groupId = getAttibute( reader, QLatin1String( "id" ) );
+    qDebug() << "groupid: " << groupId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -169,6 +175,10 @@ namespace bose_soundtoch_lib
     }
     roles.append( role );
   }
+
+  //
+  // GETTER
+  //
 
   QString HttpGroupObject::getGroupId() const
   {

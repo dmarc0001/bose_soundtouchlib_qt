@@ -14,17 +14,19 @@ namespace bose_soundtoch_lib
   class HttpGroupObject : public IResponseObject
   {
     private:
-    QString groupId;
-    QString name;
-    QString masterDeviceId;
-    QVector< GroupRole > roles;
-    QString _senderIpAddress;  //! unsupported
-    QString status;
+    QString groupId;             //! Gruppen id
+    QString name;                //! Name der Gruppe
+    QString masterDeviceId;      //! Master der Gruppe
+    QVector< GroupRole > roles;  //! Liste mit Rollen der Geräte
+    QString _senderIpAddress;    //! unsupported
+    QString status;              //! Status der Gruppe
 
     public:
     explicit HttpGroupObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpGroupObject() override;
-    // Getter Funktionen
+    //
+    // GETTER
+    //
     QString getGroupId() const;
     QString getName() const;
     QString getMasterDeviceId() const;
@@ -32,8 +34,8 @@ namespace bose_soundtoch_lib
     QString getStatus() const;
 
     private:
-    void parseRoles( void );
-    void parseGroupRole( void );
+    void parseRoles( void );      //! Rollen parsen
+    void parseGroupRole( void );  //! Gruppenrolle parsen
   };
 }  // namespace bose_soundtoch_lib
 #endif  // GROUPOBJECT_HPP
