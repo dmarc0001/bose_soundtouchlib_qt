@@ -14,12 +14,17 @@ namespace bose_soundtoch_lib
   class WsBrowseUpdated : public IResponseObject
   {
     private:
-    QString source;
-    QString sourceAccount;
+    QString source;         //! browse source?
+    QString sourceAccount;  //! account für source
 
     public:
     explicit WsBrowseUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsBrowseUpdated() override;
+    //
+    // GETTER
+    //
+    QString getSource() const;
+    QString getSourceAccount() const;
   };
 }  // namespace bose_soundtoch_lib
 
