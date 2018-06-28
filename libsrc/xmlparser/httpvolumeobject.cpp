@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpVolumeObject::HttpVolumeObject
+   * @param xmlreader
+   * @param parent
+   */
   HttpVolumeObject::HttpVolumeObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volume" ) );
@@ -10,7 +15,8 @@ namespace bose_soundtoch_lib
     // Device ID finden (Attribute von <volume>)
     //
     qDebug() << "...";
-    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
+    qDebug() << "device: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -25,7 +31,7 @@ namespace bose_soundtoch_lib
         // zu erreichende Lautstärke (0..100)
         //
         targetvolume = reader->readElementText().toInt();
-        qDebug() << "volume to reach: " << targetvolume;
+        qDebug() << "target volume: " << targetvolume;
       }
       else if ( reader->name() == QLatin1String( "actualvolume" ) )
       {
@@ -56,15 +62,17 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpVolumeObject::~HttpVolumeObject
+   */
   HttpVolumeObject::~HttpVolumeObject()
   {
     qDebug() << "...";
   }
 
-  int HttpVolumeObject::getVolume() const
-  {
-    return volume;
-  }
+  //
+  // GETTER
+  //
 
   int HttpVolumeObject::getTargetVolume() const
   {

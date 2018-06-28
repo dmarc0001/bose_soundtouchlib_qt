@@ -11,15 +11,16 @@ namespace bose_soundtoch_lib
   class HttpVolumeObject : public IResponseObject
   {
     private:
-    int volume;
-    int targetvolume;
-    int actualvolume;
+    int targetvolume;  //! Lautstärke gewünscht
+    int actualvolume;  //! Aktuelle Lautstärke
     bool muteenabled = false;
 
     public:
     explicit HttpVolumeObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpVolumeObject() override;
-    int getVolume() const;
+    //
+    // GETTER
+    //
     int getTargetVolume() const;
     int getActualVolume() const;
     bool getMuteEnabled() const;
