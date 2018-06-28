@@ -8,12 +8,40 @@ namespace bose_soundtoch_lib
   const QString BSoundTouchDevice::version = QString( "%1.%2.%3" ).arg( VMAJOR ).arg( VMINOR ).arg( VPATCH );
 
   //! Strings für /key festlegen
-  const char *BSoundTouchDevice::keynames[] = {
-      "PLAY",       "PAUSE",      "PLAYPAUSE",  "PREV_TRACK",   "NEXT_TRACK",      "MUTE",      "SHUFFLE_ON",  "SHUFFLE_OFF",
-      "REPEAT_ONE", "REPEAT_ALL", "REPEAT_OFF", "ADD_FAVORITE", "REMOVE_FAVORITE", "THUMBS_UP", "THUMBS_DOWN", "BOOKMARK",
-      "PRESET_1",   "PRESET_2",   "PRESET_3",   "PRESET_4",     "PRESET_5",        "PRESET_6",  "POWER",       "UNKNOWN"};
+  const QMap< BSoundTouchDevice::bose_key, QString > BSoundTouchDevice::keynames = {
+      {bose_key::KEY_PLAY, "PLAY"},
+      {bose_key::KEY_PAUSE, "PAUSE"},
+      {bose_key::KEY_PLAYPAUSE, "PLAYPAUSE"},
+      {bose_key::KEY_PREV_TRACK, "PREV_TRACK"},
+      {bose_key::KEY_NEXT_TRACK, "NEXT_TRACK"},
+      {bose_key::KEY_MUTE, "MUTE"},
+      {bose_key::KEY_SHUFFLE_ON, "SHUFFLE_ON"},
+      {bose_key::KEY_SHUFFLE_OFF, "SHUFFLE_OFF"},
+      {bose_key::KEY_REPEAT_ONE, "REPEAT_ONE"},
+      {bose_key::KEY_REPEAT_ALL, "REPEAT_ALL"},
+      {bose_key::KEY_REPEAT_OFF, "REPEAT_OFF"},
+      {bose_key::KEY_ADD_FAVORITE, "ADD_FAVORITE"},
+      {bose_key::KEY_REMOVE_FAVORITE, "REMOVE_FAVORITE"},
+      {bose_key::KEY_THUMBS_UP, "THUMBS_UP"},
+      {bose_key::KEY_THUMBS_DOWN, "THUMBS_DOWN"},
+      {bose_key::KEY_BOOKMARK, "BOOKMARK"},
+      {bose_key::KEY_PRESET_1, "PRESET_1"},
+      {bose_key::KEY_PRESET_2, "PRESET_2"},
+      {bose_key::KEY_PRESET_3, "PRESET_3"},
+      {bose_key::KEY_PRESET_4, "PRESET_4"},
+      {bose_key::KEY_PRESET_5, "PRESET_5"},
+      {bose_key::KEY_PRESET_6, "PRESET_6"},
+      {bose_key::KEY_POWER, "POWER"},
+      {bose_key::KEY_UNKNOWN, "UNKNOWN"},
+  };
+
   //! Strings für /key keystati
-  const char *BSoundTouchDevice::keystati[] = {"press", "release", "toggle"};
+  const QMap< BSoundTouchDevice::bose_keystate, QString > BSoundTouchDevice::keystati = {
+      {bose_keystate::KEY_PRESSED, "press"},
+      {bose_keystate::KEY_RELEASED, "release"},
+      {bose_keystate::KEY_TOGGLE, "toggle"},
+      {bose_keystate::KEY_UNKNOWN, "unknown state"}};
+
   //! Subprotokoll für soundtouch, ist imer Gabbo
   const char *BSoundTouchDevice::subproto = "Gabbo";
   /**
@@ -24,6 +52,11 @@ namespace bose_soundtoch_lib
    * @param logger
    * @param parent
    */
+  QString BSoundTouchDevice::getVersion() const
+  {
+    return ( BSoundTouchDevice::version );
+  }
+
   BSoundTouchDevice::BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent )
       : QObject( parent )
       , hostname( stHost )
@@ -152,8 +185,7 @@ namespace bose_soundtoch_lib
   {
     QString data;
     //
-    qDebug() << BSoundTouchDevice::keynames[ static_cast< int >( whichkey ) ] << " "
-             << BSoundTouchDevice::keystati[ static_cast< int >( keystate ) ] << " to " << hostname;
+    qDebug() << getKeyName( whichkey ) << " " << getKeyStateName( keystate ) << " to " << hostname;
     //
     // die URL steht schon einmal fest
     //
@@ -168,25 +200,25 @@ namespace bose_soundtoch_lib
       {
         qInfo() << "power switch (toggle)...";
         data = QString( "<key state=\"%1\" sender=\"%2\">%3</key>" )
-                   .arg( keystati[ static_cast< int >( bose_keystate::KEY_PRESSED ) ] )
+                   .arg( getKeyStateName( bose_keystate::KEY_PRESSED ) )
                    .arg( BSoundTouchDevice::subproto )
-                   .arg( keynames[ static_cast< int >( bose_key::KEY_POWER ) ] );
+                   .arg( getKeyName( bose_key::KEY_POWER ) );
         startPostRequest( data );
         QThread::msleep( 60 );
         data = QString( "<key state=\"%1\" sender=\"%2\">%3</key>" )
-                   .arg( keystati[ static_cast< int >( bose_keystate::KEY_RELEASED ) ] )
+                   .arg( getKeyStateName( bose_keystate::KEY_RELEASED ) )
                    .arg( BSoundTouchDevice::subproto )
-                   .arg( keynames[ static_cast< int >( bose_key::KEY_POWER ) ] );
+                   .arg( getKeyName( bose_key::KEY_POWER ) );
         startPostRequest( data );
         return;
       }
       else
       {
-        qInfo() << "power switch (" << keystati[ static_cast< int >( keystate ) ] << ")...";
+        qInfo() << "power switch (" << getKeyStateName( keystate ) << ")...";
         data = QString( "<key state=\"%1\" sender=\"%2\">%3</key>" )
-                   .arg( keystati[ static_cast< int >( keystate ) ] )
+                   .arg( getKeyStateName( keystate ) )
                    .arg( BSoundTouchDevice::subproto )
-                   .arg( keynames[ static_cast< int >( bose_key::KEY_POWER ) ] );
+                   .arg( getKeyName( bose_key::KEY_POWER ) );
         startPostRequest( data );
         return;
       }
@@ -197,23 +229,23 @@ namespace bose_soundtoch_lib
     if ( keystate == bose_keystate::KEY_TOGGLE )
     {
       data = QString( "<key state =\"%1\" sender=\"%2\">%3</key>" )
-                 .arg( keystati[ static_cast< int >( bose_keystate::KEY_PRESSED ) ] )
+                 .arg( getKeyStateName( bose_keystate::KEY_PRESSED ) )
                  .arg( BSoundTouchDevice::subproto )
-                 .arg( keynames[ static_cast< int >( whichkey ) ] );
+                 .arg( getKeyName( whichkey ) );
       startPostRequest( data );
       QThread::msleep( 60 );
       data = QString( "<key state =\"%1\" sender=\"%2\">%3</key>" )
-                 .arg( keystati[ static_cast< int >( bose_keystate::KEY_RELEASED ) ] )
+                 .arg( getKeyStateName( bose_keystate::KEY_RELEASED ) )
                  .arg( BSoundTouchDevice::subproto )
-                 .arg( keynames[ static_cast< int >( whichkey ) ] );
+                 .arg( getKeyName( whichkey ) );
       startPostRequest( data );
     }
     else
     {
       data = QString( "<key state =\"%1\" sender=\"%2\">%3</key>" )
-                 .arg( keystati[ static_cast< int >( keystate ) ] )
+                 .arg( getKeyStateName( keystate ) )
                  .arg( BSoundTouchDevice::subproto )
-                 .arg( keynames[ static_cast< int >( whichkey ) ] );
+                 .arg( getKeyName( whichkey ) );
       startPostRequest( data );
     }
   }
@@ -299,6 +331,20 @@ namespace bose_soundtoch_lib
   //###########################################################################
   // Hilfsfuntionen                                                        ####
   //###########################################################################
+
+  QString BSoundTouchDevice::getKeyName( bose_key key ) const
+  {
+    if ( keynames.contains( key ) )
+      return ( keynames.value( key ) );
+    return ( keynames.value( bose_key::KEY_UNKNOWN ) );
+  }
+
+  QString BSoundTouchDevice::getKeyStateName( bose_keystate state ) const
+  {
+    if ( keystati.contains( state ) )
+      return ( keystati.value( state ) );
+    return ( keystati.value( bose_keystate::KEY_UNKNOWN ) );
+  }
 
   void BSoundTouchDevice::editZone( const QString &masterId, const SoundTouchMemberList &memberList )
   {

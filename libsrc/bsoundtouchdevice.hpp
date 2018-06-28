@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <QAuthenticator>
+#include <QMap>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -30,12 +31,15 @@ namespace bose_soundtoch_lib
     Q_OBJECT
 
     public:
+    //! private interne Klasse möglichkeiten der keys
     enum class bose_keystate : int
     {
       KEY_PRESSED,
       KEY_RELEASED,
-      KEY_TOGGLE
+      KEY_TOGGLE,
+      KEY_UNKNOWN
     };
+    //! Aufzählung der (virtuellen) Tasten
     enum class bose_key : int
     {
       KEY_PLAY,
@@ -63,7 +67,6 @@ namespace bose_soundtoch_lib
       KEY_POWER,
       KEY_UNKNOWN
     };
-    static const char *keynames[];
 
     private:
     QString hostname;
@@ -74,8 +77,8 @@ namespace bose_soundtoch_lib
     QUrl url;
     QNetworkAccessManager qnam;
     // QNetworkReply *reply;
-    static const char *keystati[];
-    // static const char *keynames[];
+    static const QMap< bose_keystate, QString > keystati;
+    static const QMap< bose_key, QString > keynames;  //! Namen der Tasten
     static const char *subproto;
     constexpr static int timeoutMillis = 80;
     static const QString version;
@@ -95,7 +98,9 @@ namespace bose_soundtoch_lib
     void getVolume( void );
     void getPresets( void );
     void getDeviceInfo( void );
-    void getGroup( void );                                                                    //! Soundtouch 10 only
+    void getGroup( void );  //! Soundtouch 10 only
+    QString getKeyName( bose_key key ) const;
+    QString getKeyStateName( bose_keystate state ) const;
     void setKey( bose_key whichkey, bose_keystate keystate, QString sender = "Gabbo" );       // POST
     void selectSource( const QString &source, const QString &account );                       //! AUX/AMAZON/INTERNET etc...
     void setBass( int bass );                                                                 // POST
@@ -106,6 +111,7 @@ namespace bose_soundtoch_lib
     void setDeviceName( QString &name );                                                      // POST
     // websocket überwachung
     void addVolumeListener( void );
+    QString getVersion() const;
 
     private:
     void startGetRequest( const QUrl &requested );
