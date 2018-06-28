@@ -89,9 +89,6 @@ namespace bose_soundtoch_lib
     ContentItem( const ContentItem &cp ) = default;
     // ContentItem( const ContentItem *cp );
     ~ContentItem();
-
-    private:
-    QString getAttibute( QXmlStreamReader *reader, QLatin1String name ) const;
   };
 
   //! Beschreibung des Logos der Quelle
