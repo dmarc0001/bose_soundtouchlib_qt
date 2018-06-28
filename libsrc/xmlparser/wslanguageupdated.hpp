@@ -14,11 +14,15 @@ namespace bose_soundtoch_lib
   class WsLanguageUpdated : public IResponseObject
   {
     private:
-    QString language;
+    QString language;  //! zu welcher sprache gewechselt?
 
     public:
     explicit WsLanguageUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsLanguageUpdated() override;
+    //
+    // GETTER
+    //
+    QString getLanguage() const;
   };
 }  // namespace bose_soundtoch_lib
 
