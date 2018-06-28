@@ -14,11 +14,15 @@ namespace bose_soundtoch_lib
   class WsErrorUpdated : public IResponseObject
   {
     private:
-    ResponseError error;
+    ResponseError error;  //! enthält die Fehlermeldungen
 
     public:
     explicit WsErrorUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsErrorUpdated() override;
+    //
+    // GETTER
+    //
+    ResponseError getError() const;
   };
 }  // namespace bose_soundtoch_lib
 

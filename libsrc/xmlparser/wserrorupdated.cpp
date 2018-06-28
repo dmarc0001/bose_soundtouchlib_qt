@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief WsErrorUpdated::WsErrorUpdated
+   * @param xmlreader
+   * @param parent
+   */
   WsErrorUpdated::WsErrorUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "errorUpdate" ) );
@@ -14,11 +19,12 @@ namespace bose_soundtoch_lib
       //
       if ( reader->name() == QLatin1String( "error" ) )
       {
-        error.value = getAttibute( reader, QLatin1String( "value" ) ).toInt();
-        error.name = getAttibute( reader, QLatin1String( "name" ) );
-        ;
-        error.severity = getAttibute( reader, QLatin1String( "severity" ) );
-        ;
+        error.value = IResponseObject::getAttibute( reader, QLatin1String( "value" ) ).toInt();
+        qDebug() << "error value: " << error.value;
+        error.name = IResponseObject::getAttibute( reader, QLatin1String( "name" ) );
+        qDebug() << "error name: " << error.name;
+        error.severity = IResponseObject::getAttibute( reader, QLatin1String( "severity" ) );
+        qDebug() << "error severity: " << error.severity;
         error.text = reader->readElementText();
       }
       else
@@ -31,9 +37,21 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief WsErrorUpdated::~WsErrorUpdated
+   */
   WsErrorUpdated::~WsErrorUpdated()
   {
     qDebug() << "...";
+  }
+
+  //
+  // GETTER
+  //
+
+  ResponseError WsErrorUpdated::getError() const
+  {
+    return error;
   }
 
 }  // namespace bose_soundtoch_lib
