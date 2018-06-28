@@ -13,16 +13,18 @@ namespace bose_soundtoch_lib
   class HttpResultErrorObject : public IResponseObject
   {
     private:
-    QVector< ResponseError > errors;
+    QVector< ResponseError > errors;  //! Liste von Fehlermeldungen
 
     public:
     explicit HttpResultErrorObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpResultErrorObject() override;
-    // Getter Funktionen
+    //
+    // GETTER
+    //
     QVector< ResponseError > getErrors() const;
 
     private:
-    void parseError( void );
+    void parseError( void );  //! Parse Fehlermeldungen
   };
 }  // namespace bose_soundtoch_lib
 #endif  // RESULTERROROBJECT_HPP
