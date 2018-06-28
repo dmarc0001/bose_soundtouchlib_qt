@@ -14,13 +14,19 @@ namespace bose_soundtoch_lib
   class WsConnectionStateUpdated : public IResponseObject
   {
     private:
-    bool isUp;
-    QString state;
-    QString signal;
+    bool isUp;       //! is connection up?
+    QString state;   //! verbuindungsstatus
+    QString signal;  //! signalqualität
 
     public:
     explicit WsConnectionStateUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsConnectionStateUpdated() override;
+    //
+    // GETTER
+    //
+    bool getIsUp() const;
+    QString getState() const;
+    QString getSignal() const;
   };
 }  // namespace bose_soundtoch_lib
 
