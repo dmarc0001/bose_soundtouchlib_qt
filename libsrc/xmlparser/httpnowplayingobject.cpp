@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpNowPlayingObject::HttpNowPlayingObject
+   * @param xmlreader
+   * @param parent
+   */
   HttpNowPlayingObject::HttpNowPlayingObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() &&
@@ -29,9 +34,13 @@ namespace bose_soundtoch_lib
     // DeviceID/source finden (Attribute von <nowPlaying>)
     //
     qDebug() << "...";
-    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
-    source = getAttibute( reader, QLatin1String( "source" ) );
-    sourceAccount = getAttibute( reader, QLatin1String( "sourceAccount" ) );
+    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
+    qDebug() << "device id: " << deviceId;
+    source = IResponseObject::getAttibute( reader, QLatin1String( "source" ) );
+    qDebug() << "playing source: " << source;
+    sourceAccount = IResponseObject::getAttibute( reader, QLatin1String( "sourceAccount" ) );
+    if ( !sourceAccount.isEmpty() )
+      qDebug() << "source Account: " << sourceAccount;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -43,7 +52,6 @@ namespace bose_soundtoch_lib
         // Objet mit Attributen (kannman bei /select nutzen)
         //
         contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
-        // parseContentItem();
       }
       else if ( reader->name() == QLatin1String( "track" ) )
       {
@@ -120,7 +128,7 @@ namespace bose_soundtoch_lib
         //
         // zurück springen unterstützt?
         //
-        if ( getAttibute( reader, QLatin1String( "value" ) ) == QLatin1String( "true" ) )
+        if ( IResponseObject::getAttibute( reader, QLatin1String( "value" ) ) == QLatin1String( "true" ) )
         {
           skipPreviousSupported = true;
         }
@@ -220,11 +228,17 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpNowPlayingObject::~HttpNowPlayingObject
+   */
   HttpNowPlayingObject::~HttpNowPlayingObject()
   {
     qDebug() << "...";
   }
 
+  /**
+   * @brief HttpNowPlayingObject::parseConnectionStatusInfo
+   */
   void HttpNowPlayingObject::parseConnectionStatusInfo( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "time" ) );
@@ -254,6 +268,9 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpNowPlayingObject::parseTime
+   */
   void HttpNowPlayingObject::parseTime( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "time" ) );
@@ -264,7 +281,7 @@ namespace bose_soundtoch_lib
     //
     // Attribut "total"
     //
-    nowPlayingTime.total_sec = getAttibute( reader, QLatin1String( "total" ) ).toInt();
+    nowPlayingTime.total_sec = IResponseObject::getAttibute( reader, QLatin1String( "total" ) ).toInt();
     //
     // jetzt den Inhalt
     //
@@ -272,6 +289,9 @@ namespace bose_soundtoch_lib
     qDebug() << "current play time: " << nowPlayingTime.current_sec;
   }
 
+  /**
+   * @brief HttpNowPlayingObject::parseArt
+   */
   void HttpNowPlayingObject::parseArt( void )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "art" ) );
@@ -282,13 +302,17 @@ namespace bose_soundtoch_lib
     //
     // Attribut "artImageStatus"
     //
-    nowPlayingArt.artImageStatus = getAttibute( reader, QLatin1String( "artImageStatus" ) ).toInt();
+    nowPlayingArt.artImageStatus = IResponseObject::getAttibute( reader, QLatin1String( "artImageStatus" ) ).toInt();
     //
     // jetzt den Inhalt
     //
     nowPlayingArt.artUrl = reader->readElementText();
     qDebug() << "artUrl: " << nowPlayingArt.artUrl;
   }
+
+  //
+  // GETTER
+  //
 
   QString HttpNowPlayingObject::getSource() const
   {
