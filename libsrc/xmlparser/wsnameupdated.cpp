@@ -2,11 +2,16 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief WsNameUpdated::WsNameUpdated
+   * @param xmlreader
+   * @param parent
+   */
   WsNameUpdated::WsNameUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent ), updatet( false )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "nameUpdated" ) );
     resultType = ResultobjectType::U_NAME;
-    qDebug() << "...";
+    qDebug() << "updated...";
     updatet = true;
     while ( reader->readNextStartElement() && !reader->hasError() )
     {
@@ -14,6 +19,9 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief WsNameUpdated::~WsNameUpdated
+   */
   WsNameUpdated::~WsNameUpdated()
   {
     qDebug() << "...";

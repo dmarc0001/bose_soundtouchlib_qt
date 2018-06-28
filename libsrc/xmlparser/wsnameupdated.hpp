@@ -14,7 +14,7 @@ namespace bose_soundtoch_lib
   class WsNameUpdated : public IResponseObject
   {
     private:
-    bool updatet;
+    bool updatet;  //! update marker
 
     public:
     explicit WsNameUpdated( QXmlStreamReader *xmlreader, QObject *parent );
