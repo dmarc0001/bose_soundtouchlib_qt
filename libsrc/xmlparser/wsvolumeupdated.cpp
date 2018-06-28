@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief WsVolumeUpdated::WsVolumeUpdated
+   * @param xmlreader
+   * @param parent
+   */
   WsVolumeUpdated::WsVolumeUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
   {
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volumeUpdated" ) );
@@ -11,10 +16,11 @@ namespace bose_soundtoch_lib
     if ( reader->readNextStartElement() && !reader->hasError() )
     {
       //
-      // das nächste element bearbeiten, welches ist es? Eigentlich nur presets
+      // das nächste element bearbeiten, welches ist es? Eigentlich nur volume
       //
       if ( reader->name() == QLatin1String( "volume" ) )
       {
+        qDebug() << "tag <volume> found...";
         //
         // alles unterhalb "volume" lesen
         //
@@ -62,14 +68,16 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief WsVolumeUpdated::~WsVolumeUpdated
+   */
   WsVolumeUpdated::~WsVolumeUpdated()
   {
   }
 
-  int WsVolumeUpdated::getVolume() const
-  {
-    return volume;
-  }
+  //
+  // GETTER
+  //
 
   int WsVolumeUpdated::getTargetVolume() const
   {

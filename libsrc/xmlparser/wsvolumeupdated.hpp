@@ -14,15 +14,16 @@ namespace bose_soundtoch_lib
   class WsVolumeUpdated : public IResponseObject
   {
     private:
-    int volume;
-    int targetvolume;
-    int actualvolume;
-    bool muteenabled = false;
+    int targetvolume;          //! Ziel lautstärke
+    int actualvolume;          //! aktuelle Lautstärke
+    bool muteenabled = false;  //! mute möglich/erlaubt
 
     public:
     explicit WsVolumeUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsVolumeUpdated() override;
-    int getVolume() const;
+    //
+    // GETTER
+    //
     int getTargetVolume() const;
     int getActualVolume() const;
     bool getMuteEnabled() const;
