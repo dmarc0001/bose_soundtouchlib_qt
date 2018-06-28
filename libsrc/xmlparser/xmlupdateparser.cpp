@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief XMLUpdateParser::XMLUpdateParser
+   * @param xmlString
+   * @param parent
+   */
   XMLUpdateParser::XMLUpdateParser( QString &xmlString, QObject *parent )
       : QObject( parent )
       , reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
@@ -25,16 +30,27 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief XMLUpdateParser::~XMLUpdateParser
+   */
   XMLUpdateParser::~XMLUpdateParser()
   {
     qDebug() << "...";
   }
 
+  /**
+   * @brief XMLUpdateParser::hasError Trat ein Fehler beim parsen auf?
+   * @return
+   */
   bool XMLUpdateParser::hasError( void )
   {
     return ( reader->hasError() );
   }
 
+  /**
+   * @brief XMLUpdateParser::getErrorString Fehlernachricht zurückgeben, falls Fehler auftrat
+   * @return
+   */
   QString XMLUpdateParser::getErrorString( void )
   {
     if ( reader->hasError() )
@@ -45,11 +61,19 @@ namespace bose_soundtoch_lib
     return ( QLatin1String( "no error" ) );
   }
 
+  /**
+   * @brief XMLUpdateParser::getResultObject DAs Eregebnisobjekt zurückgeben
+   * @return
+   */
   std::shared_ptr< IResponseObject > XMLUpdateParser::getResultObject( void )
   {
     return ( responseObject );
   }
 
+  /**
+   * @brief XMLUpdateParser::parseFile das XML parsen und typisieren
+   * @return
+   */
   bool XMLUpdateParser::parseFile( void )
   {
     QStringRef rootelemName;
@@ -93,7 +117,7 @@ namespace bose_soundtoch_lib
 
       else if ( rootelemName == QLatin1String( "updates" ) )
       {
-        QString deviceId = getAttibute( reader.get(), QLatin1String( "deviceId" ) );
+        QString deviceId = IResponseObject::getAttibute( reader.get(), QLatin1String( "deviceId" ) );
         //
         // eine UPDATE Meldung, sollte alles sein ausser SoundTouchSdkInfo
         //
@@ -117,7 +141,7 @@ namespace bose_soundtoch_lib
             responseObject = std::shared_ptr< IResponseObject >( new WsNowPlayingUpdate( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
-          // nowSelection
+          // nowSelectionUpdated
           else if ( updateElementName == QLatin1String( "nowSelectionUpdated" ) )
           {
             //
@@ -189,9 +213,9 @@ namespace bose_soundtoch_lib
             responseObject = std::shared_ptr< IResponseObject >( new WsGroupUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
-          //
-          // UNSUPPORTED Featuree
-          //
+          //###################################################################
+          // UNSUPPORTED Features
+          //###################################################################
           // browse
           else if ( updateElementName == QLatin1String( "browseUpdated" ) )
           {
@@ -205,7 +229,7 @@ namespace bose_soundtoch_lib
           else if ( updateElementName == QLatin1String( "recentsUpdated" ) )
           {
             //
-            // neuigkeiten update
+            // letzte Medien update
             //
             responseObject = std::shared_ptr< IResponseObject >( new WsRecentsUpdated( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
@@ -230,6 +254,7 @@ namespace bose_soundtoch_lib
           }
           // user activity update
           // ist aktuell 2018-07 direkt root tag!
+          // OBSOLETE!
           else if ( updateElementName == QLatin1String( "userActivityUpdate" ) )
           {
             //
@@ -283,6 +308,9 @@ namespace bose_soundtoch_lib
             responseObject = std::shared_ptr< IResponseObject >( new WsAudioSpControls( reader.get(), this ) );
             responseObject->setDeviceId( deviceId );
           }
+          //###################################################################
+          // UNSUPPORTED Features END
+          //###################################################################
           else
           {
             //
@@ -317,24 +345,6 @@ namespace bose_soundtoch_lib
     //
     reader->clear();
     return ( false );
-  }
-
-  QString XMLUpdateParser::getAttibute( QXmlStreamReader *reader, QLatin1String name ) const
-  {
-    //
-    // attribute finden
-    //
-    QString result;
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( name ) )
-    {
-      result = attr.value( name ).toString();
-    }
-    else
-    {
-      result.clear();
-    }
-    return ( result );
   }
 
 }  // namespace bose_soundtoch_lib

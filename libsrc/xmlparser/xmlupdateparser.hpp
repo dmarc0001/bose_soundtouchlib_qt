@@ -35,19 +35,18 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     private:
-    std::unique_ptr< QXmlStreamReader > reader;
+    std::unique_ptr< QXmlStreamReader > reader;         //! XML Parser, durch unique_ptr speichermanagement
     std::shared_ptr< IResponseObject > responseObject;  //! polymorphes Objekt, enthält Ergebnise
 
     public:
     explicit XMLUpdateParser( QString &xmlString, QObject *parent = nullptr );
     ~XMLUpdateParser() override;
-    bool hasError( void );
-    QString getErrorString( void );
-    std::shared_ptr< IResponseObject > getResultObject( void );
+    bool hasError( void );                                       //! gab es Fehler beim parsen?
+    QString getErrorString( void );                              //! wenn Fehler, den Fehlerstring zurück geben
+    std::shared_ptr< IResponseObject > getResultObject( void );  //! lese das Ergebnis des parsers
 
     private:
-    bool parseFile( void );
-    QString getAttibute( QXmlStreamReader *reader, QLatin1String name ) const;
+    bool parseFile( void );  //! die xml-Daten parsen, typ feststellen
   };
 
 }  // namespace bose_soundtoch_lib
