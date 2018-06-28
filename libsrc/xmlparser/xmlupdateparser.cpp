@@ -117,7 +117,7 @@ namespace bose_soundtoch_lib
 
       else if ( rootelemName == QLatin1String( "updates" ) )
       {
-        QString deviceId = IResponseObject::getAttibute( reader.get(), QLatin1String( "deviceId" ) );
+        QString deviceId = IResponseObject::getAttribute( reader.get(), QLatin1String( "deviceId" ) );
         //
         // eine UPDATE Meldung, sollte alles sein ausser SoundTouchSdkInfo
         //

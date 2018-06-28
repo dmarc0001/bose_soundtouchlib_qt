@@ -15,7 +15,7 @@ namespace bose_soundtoch_lib
     // ID finden (Attribute von <group>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
     qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -61,11 +61,11 @@ namespace bose_soundtoch_lib
     //
     ResponseError error;
     qDebug() << "...";
-    error.value = IResponseObject::getAttibute( reader, QLatin1String( "value" ) ).toInt();
+    error.value = IResponseObject::getAttribute( reader, QLatin1String( "value" ) ).toInt();
     qDebug() << "error value: " << error.value;
-    error.name = IResponseObject::getAttibute( reader, QLatin1String( "name" ) );
+    error.name = IResponseObject::getAttribute( reader, QLatin1String( "name" ) );
     qDebug() << "error name: " << error.name;
-    error.severity = IResponseObject::getAttibute( reader, QLatin1String( "severity" ) );
+    error.severity = IResponseObject::getAttribute( reader, QLatin1String( "severity" ) );
     qDebug() << " error severity: " << error.severity;
     //
     // den Fehlertext lesen

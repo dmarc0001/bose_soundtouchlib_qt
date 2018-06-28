@@ -12,9 +12,9 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "browseUpdated" ) );
     resultType = ResultobjectType::U_BROWSE_UNSUPPORTED;
     qDebug() << "(unsupported)...";
-    source = getAttibute( reader, QLatin1String( "source" ) );
+    source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
     qDebug() << "source: " << source;
-    sourceAccount = getAttibute( reader, QLatin1String( "sourceAccount" ) );
+    sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
     qDebug() << "source account: " << sourceAccount;
     //
     while ( reader->readNextStartElement() && !reader->hasError() )

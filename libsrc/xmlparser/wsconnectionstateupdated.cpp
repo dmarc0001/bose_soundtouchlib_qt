@@ -13,11 +13,11 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "connectionStateUpdated" ) );
     resultType = ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED;
     qDebug() << "(unsupported)...";
-    isUp = ( IResponseObject::getAttibute( reader, QLatin1String( "up" ) ) == QLatin1String( "true" ) );
+    isUp = ( IResponseObject::getAttribute( reader, QLatin1String( "up" ) ) == QLatin1String( "true" ) );
     qDebug() << "connection is up: " << isUp;
-    state = IResponseObject::getAttibute( reader, QLatin1String( "state" ) );
+    state = IResponseObject::getAttribute( reader, QLatin1String( "state" ) );
     qDebug() << "connection state: " << state;
-    signal = IResponseObject::getAttibute( reader, QLatin1String( "signal" ) );
+    signal = IResponseObject::getAttribute( reader, QLatin1String( "signal" ) );
     qDebug() << "connection signal quality: " << signal;
     //
     while ( reader->readNextStartElement() && !reader->hasError() )

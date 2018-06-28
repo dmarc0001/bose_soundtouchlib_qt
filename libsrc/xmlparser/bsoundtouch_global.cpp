@@ -20,19 +20,19 @@ namespace bose_soundtoch_lib
     //
     // Attribut "source"
     //
-    source = IResponseObject::getAttibute( reader, QLatin1String( "source" ) );
+    source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
     //
     // Attribut "location"
     //
-    location = IResponseObject::getAttibute( reader, QLatin1String( "location" ) );
+    location = IResponseObject::getAttribute( reader, QLatin1String( "location" ) );
     //
     // Attribut "sourceAccount"
     //
-    sourceAccount = IResponseObject::getAttibute( reader, QLatin1String( "sourceAccount" ) );
+    sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
     //
     // Attribut "isPresetable"
     //
-    if ( IResponseObject::getAttibute( reader, QLatin1String( "isPresetable" ) ) == QLatin1String( "true" ) )
+    if ( IResponseObject::getAttribute( reader, QLatin1String( "isPresetable" ) ) == QLatin1String( "true" ) )
     {
       isPresetable = true;
     }

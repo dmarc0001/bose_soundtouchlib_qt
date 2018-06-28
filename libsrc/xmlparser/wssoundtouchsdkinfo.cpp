@@ -9,8 +9,8 @@ namespace bose_soundtoch_lib
     //
     // Device ID finden (Attribute von <updates>)
     //
-    serverVersion = getAttibute( reader, QLatin1String( "serverVersion" ) );
-    serverBuild = getAttibute( reader, QLatin1String( "serverBuild" ) );
+    serverVersion = IResponseObject::getAttribute( reader, QLatin1String( "serverVersion" ) );
+    serverBuild = IResponseObject::getAttribute( reader, QLatin1String( "serverBuild" ) );
     qDebug() << "sdk server version: " << serverVersion << ", server build:" << serverBuild;
   }
 

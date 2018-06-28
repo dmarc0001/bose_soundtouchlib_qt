@@ -15,7 +15,7 @@ namespace bose_soundtoch_lib
     // Device ID finden (Attribute von <volume>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
     qDebug() << "device: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende

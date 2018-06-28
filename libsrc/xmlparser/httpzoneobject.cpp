@@ -15,7 +15,7 @@ namespace bose_soundtoch_lib
     // master finden (Attribute von <zone>)
     //
     qDebug() << "...";
-    master = getAttibute( reader, QLatin1String( "master" ) );
+    master = IResponseObject::getAttribute( reader, QLatin1String( "master" ) );
     qDebug() << "zone master: " << master;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -31,7 +31,7 @@ namespace bose_soundtoch_lib
         // ein Mitglied in der Zone
         //
         SoundTouchMemberObject member;
-        member.first = getAttibute( reader, QLatin1String( "ipaddress" ) );
+        member.first = IResponseObject::getAttribute( reader, QLatin1String( "ipaddress" ) );
         // lese MAC/ID des Slave/Master
         member.second = reader->readElementText();
         qDebug() << "member ID/MAC %1" << member.second;

@@ -15,7 +15,7 @@ namespace bose_soundtoch_lib
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
     qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
@@ -208,7 +208,7 @@ namespace bose_soundtoch_lib
     //
     // Network type finden (Attribute von <networkInfo>)
     //
-    singleDeviceNetworkInfo._type = getAttibute( reader, QLatin1String( "type" ) );
+    singleDeviceNetworkInfo._type = IResponseObject::getAttribute( reader, QLatin1String( "type" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //

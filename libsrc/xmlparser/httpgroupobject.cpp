@@ -39,7 +39,7 @@ namespace bose_soundtoch_lib
     // ID finden (Attribute von <group>)
     //
     qDebug() << "...";
-    groupId = getAttibute( reader, QLatin1String( "id" ) );
+    groupId = IResponseObject::getAttribute( reader, QLatin1String( "id" ) );
     qDebug() << "groupid: " << groupId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende

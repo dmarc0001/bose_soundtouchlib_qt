@@ -10,7 +10,8 @@ namespace bose_soundtoch_lib
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -49,20 +50,25 @@ namespace bose_soundtoch_lib
     // source infos finden (Attribute von <sourceItem>)
     //
     qDebug() << "...";
-    sourceItem.source = getAttibute( reader, QLatin1String( "source" ) );
+    sourceItem.source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
+    qDebug() << "source: " << sourceItem.source;
     // sourceAccount
-    sourceItem.sourceAccount = getAttibute( reader, QLatin1String( "sourceAccount" ) );
+    sourceItem.sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
+    qDebug() << "source account: " << sourceItem.sourceAccount;
     // status
-    sourceItem.status = getAttibute( reader, QLatin1String( "status" ) );
+    sourceItem.status = IResponseObject::getAttribute( reader, QLatin1String( "status" ) );
+    qDebug() << "source status: " << sourceItem.status;
     // isLocal
-    if ( getAttibute( reader, QLatin1String( "isLocal" ) ) == QLatin1String( "true" ) )
+    if ( IResponseObject::getAttribute( reader, QLatin1String( "isLocal" ) ) == QLatin1String( "true" ) )
     {
       sourceItem.isLocal = true;
+      qDebug() << "is local: " << sourceItem.isLocal;
     }
     // multiroomallowed
-    if ( getAttibute( reader, QLatin1String( "multiroomalowed" ) ) == QLatin1String( "true" ) )
+    if ( IResponseObject::getAttribute( reader, QLatin1String( "multiroomalowed" ) ) == QLatin1String( "true" ) )
     {
       sourceItem.multiroomallowed = true;
+      qDebug() << "multi roo alowed: " << sourceItem.multiroomallowed;
     }
     sourceItem.Content = reader->readElementText();
     qDebug() << "entry \"Content\" has value " << sourceItem.Content;

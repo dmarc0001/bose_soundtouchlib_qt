@@ -34,11 +34,11 @@ namespace bose_soundtoch_lib
     // DeviceID/source finden (Attribute von <nowPlaying>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
     qDebug() << "device id: " << deviceId;
-    source = IResponseObject::getAttibute( reader, QLatin1String( "source" ) );
+    source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
     qDebug() << "playing source: " << source;
-    sourceAccount = IResponseObject::getAttibute( reader, QLatin1String( "sourceAccount" ) );
+    sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
     if ( !sourceAccount.isEmpty() )
       qDebug() << "source Account: " << sourceAccount;
     //
@@ -128,7 +128,7 @@ namespace bose_soundtoch_lib
         //
         // zurück springen unterstützt?
         //
-        if ( IResponseObject::getAttibute( reader, QLatin1String( "value" ) ) == QLatin1String( "true" ) )
+        if ( IResponseObject::getAttribute( reader, QLatin1String( "value" ) ) == QLatin1String( "true" ) )
         {
           skipPreviousSupported = true;
         }
@@ -281,7 +281,7 @@ namespace bose_soundtoch_lib
     //
     // Attribut "total"
     //
-    nowPlayingTime.total_sec = IResponseObject::getAttibute( reader, QLatin1String( "total" ) ).toInt();
+    nowPlayingTime.total_sec = IResponseObject::getAttribute( reader, QLatin1String( "total" ) ).toInt();
     //
     // jetzt den Inhalt
     //
@@ -302,7 +302,7 @@ namespace bose_soundtoch_lib
     //
     // Attribut "artImageStatus"
     //
-    nowPlayingArt.artImageStatus = IResponseObject::getAttibute( reader, QLatin1String( "artImageStatus" ) ).toInt();
+    nowPlayingArt.artImageStatus = IResponseObject::getAttribute( reader, QLatin1String( "artImageStatus" ) ).toInt();
     //
     // jetzt den Inhalt
     //

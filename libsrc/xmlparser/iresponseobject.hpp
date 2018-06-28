@@ -26,7 +26,7 @@ namespace bose_soundtoch_lib
     explicit IResponseObject( QXmlStreamReader *xmlreader, QObject *parent );
     virtual ~IResponseObject();
     //! Hilfsfunktion zum Lesen der Attribute eines TAG
-    static QString getAttibute( QXmlStreamReader *reader, QLatin1String name );
+    static QString getAttribute( QXmlStreamReader *reader, QLatin1String name );
     //
     // GETTER
     //

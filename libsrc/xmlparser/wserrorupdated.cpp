@@ -19,11 +19,11 @@ namespace bose_soundtoch_lib
       //
       if ( reader->name() == QLatin1String( "error" ) )
       {
-        error.value = IResponseObject::getAttibute( reader, QLatin1String( "value" ) ).toInt();
+        error.value = IResponseObject::getAttribute( reader, QLatin1String( "value" ) ).toInt();
         qDebug() << "error value: " << error.value;
-        error.name = IResponseObject::getAttibute( reader, QLatin1String( "name" ) );
+        error.name = IResponseObject::getAttribute( reader, QLatin1String( "name" ) );
         qDebug() << "error name: " << error.name;
-        error.severity = IResponseObject::getAttibute( reader, QLatin1String( "severity" ) );
+        error.severity = IResponseObject::getAttribute( reader, QLatin1String( "severity" ) );
         qDebug() << "error severity: " << error.severity;
         error.text = reader->readElementText();
       }

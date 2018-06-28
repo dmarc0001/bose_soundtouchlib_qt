@@ -13,7 +13,8 @@ namespace bose_soundtoch_lib
     qDebug() << "updated (unsupported)...";
     resultType = ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED;
     // als root tag...
-    deviceId = getAttibute( reader, QLatin1String( "deviceId" ) );
+    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceId" ) );
+    qDebug() << "device id: " << deviceId;
   }
 
   /**

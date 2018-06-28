@@ -1,4 +1,5 @@
 #include "wsrecentsupdated.hpp"
+#include <QDateTime>
 
 namespace bose_soundtoch_lib
 {
@@ -57,9 +58,13 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recent" ) );
     qDebug() << "...";
     DeviceRecent recent;
-    recent.deviceId = getAttibute( reader, QLatin1String( "deviceId" ) );
-    recent.utcTime = static_cast< qint64 >( getAttibute( reader, QLatin1String( "utcTime" ) ).toLong() );
-    recent.id = static_cast< qint64 >( getAttibute( reader, QLatin1String( "id" ) ).toLong() );
+    recent.deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceId" ) );
+    qDebug() << "recent device id: " << recent.deviceId;
+    recent.utcTime = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "utcTime" ) ).toLong() );
+    qDebug() << "recent time: " << recent.utcTime << " ("
+             << QDateTime::fromSecsSinceEpoch( recent.utcTime ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
+    recent.id = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "id" ) ).toLong() );
+    qDebug() << "recent id: " << recent.id;
     if ( reader->readNextStartElement() && !reader->hasError() )
     {
       if ( reader->name() == QLatin1String( "contentItem" ) )

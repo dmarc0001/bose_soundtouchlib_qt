@@ -65,12 +65,12 @@ namespace bose_soundtoch_lib
   {
     DevicePreset preset;
     qDebug() << "...";
-    preset.id = IResponseObject::getAttibute( reader, QLatin1String( "id" ) );
+    preset.id = IResponseObject::getAttribute( reader, QLatin1String( "id" ) );
     qDebug() << "preset id: " << preset.id;
-    preset.createdOn = static_cast< qint64 >( IResponseObject::getAttibute( reader, QLatin1String( "createdOn" ) ).toLong() );
+    preset.createdOn = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "createdOn" ) ).toLong() );
     qDebug() << "preset created: " << preset.createdOn << " ("
              << QDateTime::fromSecsSinceEpoch( preset.createdOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
-    preset.updatedOn = static_cast< qint64 >( IResponseObject::getAttibute( reader, QLatin1String( "updatedOn" ) ).toLong() );
+    preset.updatedOn = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "updatedOn" ) ).toLong() );
     qDebug() << "preset updated: " << preset.updatedOn << " ("
              << QDateTime::fromSecsSinceEpoch( preset.updatedOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
     //
