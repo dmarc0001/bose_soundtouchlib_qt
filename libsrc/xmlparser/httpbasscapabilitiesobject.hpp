@@ -11,19 +11,20 @@ namespace bose_soundtoch_lib
   class HttpBassCapabilitiesObject : public IResponseObject
   {
     private:
-    bool bassAvailable = false;
-    int bassMin;
-    int bassMax;
-    int bassDefault;
+    bool bassAvailable = false;  //! Bassfunktion verfügbar?
+    int bassMin;                 //! Minimale Bass einstellung
+    int bassMax;                 //! Maximale Bass einstellung
+    int bassDefault;             //! Default wert
 
     public:
     HttpBassCapabilitiesObject( QXmlStreamReader *xmlreader, QObject *parent );
     ~HttpBassCapabilitiesObject();
     // Funktionen um an die Daten zu kommen
-    bool getBassAvailable() const;
-    int getBassMin() const;
-    int getBassMax() const;
-    int getBassDefault() const;
+    // GETTERS:
+    bool getBassAvailable() const;  //! ist Bass Verfügbar?
+    int getBassMin() const;         //! Bass Minimum?
+    int getBassMax() const;         //! Bass Maximum?
+    int getBassDefault() const;     //! Defaultwert Bass
   };
 }  // namespace bose_soundtoch_lib
 #endif  // BASSCAPABILITYS_HPP

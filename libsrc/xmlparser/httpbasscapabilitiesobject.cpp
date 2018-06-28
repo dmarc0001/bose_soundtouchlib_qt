@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief HttpBassCapabilitiesObject::HttpBassCapabilitiesObject Objekt parsen
+   * @param xmlreader
+   * @param parent
+   */
   HttpBassCapabilitiesObject::HttpBassCapabilitiesObject( QXmlStreamReader *xmlreader, QObject *parent )
       : IResponseObject( xmlreader, parent )
   {
@@ -11,7 +16,7 @@ namespace bose_soundtoch_lib
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = getAttibute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttibute( reader, QLatin1String( "deviceID" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
@@ -25,19 +30,23 @@ namespace bose_soundtoch_lib
         if ( reader->readElementText() == QLatin1String( "true" ) )
         {
           bassAvailable = true;
+          qDebug() << "bass availible: " << bassAvailable;
         }
       }
       else if ( reader->name() == QLatin1String( "bassMin" ) )
       {
         bassMin = reader->readElementText().toInt();
+        qDebug() << "bass minimum value: " << bassMin;
       }
       else if ( reader->name() == QLatin1String( "bassMax" ) )
       {
         bassMax = reader->readElementText().toInt();
+        qDebug() << "bass maximum value: " << bassMax;
       }
       else if ( reader->name() == QLatin1String( "bassDefault" ) )
       {
         bassDefault = reader->readElementText().toInt();
+        qDebug() << "bass default value: " << bassDefault;
       }
       else
       {
@@ -49,10 +58,17 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief HttpBassCapabilitiesObject::~HttpBassCapabilitiesObject
+   */
   HttpBassCapabilitiesObject::~HttpBassCapabilitiesObject()
   {
     qDebug() << "...";
   }
+
+  //
+  // GETTER Methoden
+  //
 
   bool HttpBassCapabilitiesObject::getBassAvailable() const
   {
