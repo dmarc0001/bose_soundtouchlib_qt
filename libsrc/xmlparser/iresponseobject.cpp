@@ -102,7 +102,7 @@ namespace bose_soundtoch_lib
    * @param name
    * @return
    */
-  QString IResponseObject::getAttibute( QXmlStreamReader *reader, QLatin1String name )
+  QString IResponseObject::getAttribute( QXmlStreamReader *reader, QLatin1String name )
   {
     //
     // attribute finden
