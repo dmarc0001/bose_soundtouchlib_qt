@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief ContentItem::ContentItem erstellt aus einem ContentItem - TAG ein Objekt
+   * @param xmlreader
+   * @param parent
+   */
   ContentItem::ContentItem( QXmlStreamReader *xmlreader, QObject *parent )
       : QObject( parent ), reader( xmlreader ), isPresetable( false )
   {
