@@ -58,40 +58,40 @@ SOURCES += \
     libsrc/xmlparser/xmlresultparser.cpp \
     libsrc/xmlparser/iresponseobject.cpp \
     libsrc/websocket/bwebsocket.cpp \
-    libsrc/xmlparser/httpbasscapabilitiesobject.cpp \
-    libsrc/xmlparser/httpbassobject.cpp \
-    libsrc/xmlparser/httpdeviceinfoobject.cpp \
-    libsrc/xmlparser/httpgroupobject.cpp \
-    libsrc/xmlparser/httppresetsobject.cpp \
-    libsrc/xmlparser/httpnowplayingobject.cpp \
-    libsrc/xmlparser/httpresulterrorobject.cpp \
-    libsrc/xmlparser/httpresultokobject.cpp \
-    libsrc/xmlparser/httpsourcesobject.cpp \
-    libsrc/xmlparser/httpvolumeobject.cpp \
-    libsrc/xmlparser/httpzoneobject.cpp \
-    libsrc/xmlparser/wspresetupdateobject.cpp \
-    libsrc/xmlparser/wssoundtouchsdkinfo.cpp \
     libsrc/xmlparser/xmlupdateparser.cpp \
     libsrc/xmlparser/bsoundtouch_global.cpp \
-    libsrc/xmlparser/wsnowplayingupdate.cpp \
-    libsrc/xmlparser/wsnowselectionupdated.cpp \
-    libsrc/xmlparser/wsvolumeupdated.cpp \
-    libsrc/xmlparser/wsbassupdated.cpp \
-    libsrc/xmlparser/wszoneupdated.cpp \
-    libsrc/xmlparser/wsinfoupdated.cpp \
-    libsrc/xmlparser/wsnameupdated.cpp \
-    libsrc/xmlparser/wserrorupdated.cpp \
-    libsrc/xmlparser/wsgroupupdated.cpp \
-    libsrc/xmlparser/wsbrowseupdated.cpp \
-    libsrc/xmlparser/wsrecentsupdated.cpp \
-    libsrc/xmlparser/wssourceupdated.cpp \
-    libsrc/xmlparser/wslanguageupdated.cpp \
-    libsrc/xmlparser/wsuseractivityupdated.cpp \
-    libsrc/xmlparser/wsuserinactivityupdated.cpp \
-    libsrc/xmlparser/wsconnectionstateupdated.cpp \
-    libsrc/xmlparser/wsaudioproducttonecontrols.cpp \
-    libsrc/xmlparser/wsaudioproductlevelcontrols.cpp \
-    libsrc/xmlparser/wsaudiospcontrols.cpp
+    libsrc/xmlparser/httpresponse/httppresetsobject.cpp \
+    libsrc/xmlparser/wscallback/wszoneupdated.cpp \
+    libsrc/xmlparser/wscallback/wsvolumeupdated.cpp \
+    libsrc/xmlparser/wscallback/wsuserinactivityupdated.cpp \
+    libsrc/xmlparser/wscallback/wsuseractivityupdated.cpp \
+    libsrc/xmlparser/wscallback/wssourceupdated.cpp \
+    libsrc/xmlparser/wscallback/wssoundtouchsdkinfo.cpp \
+    libsrc/xmlparser/wscallback/wsrecentsupdated.cpp \
+    libsrc/xmlparser/wscallback/wspresetupdateobject.cpp \
+    libsrc/xmlparser/wscallback/wsnowselectionupdated.cpp \
+    libsrc/xmlparser/wscallback/wsnowplayingupdate.cpp \
+    libsrc/xmlparser/wscallback/wsnameupdated.cpp \
+    libsrc/xmlparser/wscallback/wslanguageupdated.cpp \
+    libsrc/xmlparser/wscallback/wsinfoupdated.cpp \
+    libsrc/xmlparser/wscallback/wsgroupupdated.cpp \
+    libsrc/xmlparser/wscallback/wserrorupdated.cpp \
+    libsrc/xmlparser/wscallback/wsconnectionstateupdated.cpp \
+    libsrc/xmlparser/wscallback/wsbrowseupdated.cpp \
+    libsrc/xmlparser/wscallback/wsbassupdated.cpp \
+    libsrc/xmlparser/wscallback/wsaudiospcontrols.cpp \
+    libsrc/xmlparser/wscallback/wsaudioproducttonecontrols.cpp \
+    libsrc/xmlparser/wscallback/wsaudioproductlevelcontrols.cpp \
+    libsrc/xmlparser/httpresponse/httpzoneobject.cpp \
+    libsrc/xmlparser/httpresponse/httpvolumeobject.cpp \
+    libsrc/xmlparser/httpresponse/httpsourcesobject.cpp \
+    libsrc/xmlparser/httpresponse/httpresultokobject.cpp \
+    libsrc/xmlparser/httpresponse/httpresulterrorobject.cpp \
+    libsrc/xmlparser/httpresponse/httpnowplayingobject.cpp \
+    libsrc/xmlparser/httpresponse/httpgroupobject.cpp \
+    libsrc/xmlparser/httpresponse/httpdeviceinfoobject.cpp \
+    libsrc/xmlparser/httpresponse/httpbassobject.cpp \
+    libsrc/xmlparser/httpresponse/httpbasscapabilitiesobject.cpp
 
 HEADERS += \
     libsrc/xmlparser/xmlresultparser.hpp \
@@ -99,37 +99,38 @@ HEADERS += \
     libsrc/xmlparser/bsoundtouch_global.hpp \
     libsrc/bsoundtouchdevice.hpp \
     libsrc/websocket/bwebsocket.hpp \
-    libsrc/xmlparser/httpbasscapabilitiesobject.hpp \
-    libsrc/xmlparser/httpbassobject.hpp \
-    libsrc/xmlparser/httpdeviceinfoobject.hpp \
-    libsrc/xmlparser/httpgroupobject.hpp \
-    libsrc/xmlparser/httppresetsobject.hpp \
-    libsrc/xmlparser/httpnowplayingobject.hpp \
-    libsrc/xmlparser/httpresulterrorobject.hpp \
-    libsrc/xmlparser/httpresultokobject.hpp \
-    libsrc/xmlparser/httpsourcesobject.hpp \
-    libsrc/xmlparser/httpvolumeobject.hpp \
-    libsrc/xmlparser/httpzoneobject.hpp \
-    libsrc/xmlparser/wspresetupdateobject.hpp \
-    libsrc/xmlparser/wssoundtouchsdkinfo.hpp \
     libsrc/xmlparser/xmlupdateparser.hpp \
-    libsrc/xmlparser/wsnowplayingupdate.hpp \
-    libsrc/xmlparser/wsnowselectionupdated.hpp \
-    libsrc/xmlparser/wsvolumeupdated.hpp \
-    libsrc/xmlparser/wsbassupdated.hpp \
-    libsrc/xmlparser/wszoneupdated.hpp \
-    libsrc/xmlparser/wsinfoupdated.hpp \
-    libsrc/xmlparser/wsnameupdated.hpp \
-    libsrc/xmlparser/wserrorupdated.hpp \
-    libsrc/xmlparser/wsgroupupdated.hpp \
-    libsrc/xmlparser/wsbrowseupdated.hpp \
-    libsrc/xmlparser/wsrecentsupdated.hpp \
-    libsrc/xmlparser/wssourceupdated.hpp \
-    libsrc/xmlparser/wslanguageupdated.hpp \
-    libsrc/xmlparser/wsuseractivityupdated.hpp \
-    libsrc/xmlparser/wsuserinactivityupdated.hpp \
-    libsrc/xmlparser/wsconnectionstateupdated.hpp \
-    libsrc/xmlparser/wsaudioproducttonecontrols.hpp \
-    libsrc/xmlparser/wsaudioproductlevelcontrols.hpp \
-    libsrc/xmlparser/wsaudiospcontrols.hpp
+    libsrc/xmlparser/wscallback/wssourceupdated.hpp \
+    libsrc/xmlparser/httpresponse/httppresetsobject.hpp \
+    libsrc/xmlparser/wscallback/wszoneupdated.hpp \
+    libsrc/xmlparser/wscallback/wsvolumeupdated.hpp \
+    libsrc/xmlparser/wscallback/wsuserinactivityupdated.hpp \
+    libsrc/xmlparser/wscallback/wsuseractivityupdated.hpp \
+    libsrc/xmlparser/wscallback/wssourceupdated.hpp \
+    libsrc/xmlparser/wscallback/wssoundtouchsdkinfo.hpp \
+    libsrc/xmlparser/wscallback/wsrecentsupdated.hpp \
+    libsrc/xmlparser/wscallback/wspresetupdateobject.hpp \
+    libsrc/xmlparser/wscallback/wsnowselectionupdated.hpp \
+    libsrc/xmlparser/wscallback/wsnowplayingupdate.hpp \
+    libsrc/xmlparser/wscallback/wsnameupdated.hpp \
+    libsrc/xmlparser/wscallback/wslanguageupdated.hpp \
+    libsrc/xmlparser/wscallback/wsinfoupdated.hpp \
+    libsrc/xmlparser/wscallback/wsgroupupdated.hpp \
+    libsrc/xmlparser/wscallback/wserrorupdated.hpp \
+    libsrc/xmlparser/wscallback/wsconnectionstateupdated.hpp \
+    libsrc/xmlparser/wscallback/wsbrowseupdated.hpp \
+    libsrc/xmlparser/wscallback/wsbassupdated.hpp \
+    libsrc/xmlparser/wscallback/wsaudiospcontrols.hpp \
+    libsrc/xmlparser/wscallback/wsaudioproducttonecontrols.hpp \
+    libsrc/xmlparser/wscallback/wsaudioproductlevelcontrols.hpp \
+    libsrc/xmlparser/httpresponse/httpzoneobject.hpp \
+    libsrc/xmlparser/httpresponse/httpvolumeobject.hpp \
+    libsrc/xmlparser/httpresponse/httpsourcesobject.hpp \
+    libsrc/xmlparser/httpresponse/httpresultokobject.hpp \
+    libsrc/xmlparser/httpresponse/httpresulterrorobject.hpp \
+    libsrc/xmlparser/httpresponse/httpnowplayingobject.hpp \
+    libsrc/xmlparser/httpresponse/httpgroupobject.hpp \
+    libsrc/xmlparser/httpresponse/httpdeviceinfoobject.hpp \
+    libsrc/xmlparser/httpresponse/httpbassobject.hpp \
+    libsrc/xmlparser/httpresponse/httpbasscapabilitiesobject.hpp
 
