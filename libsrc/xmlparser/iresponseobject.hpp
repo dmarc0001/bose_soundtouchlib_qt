@@ -28,7 +28,7 @@ namespace bose_soundtoch_lib
     ResultobjectType getResultType( void );
     void setDeviceId( QString &devId );
     QString getResultTypeName( void ) const;
-    QString getAttibute( QXmlStreamReader *reader, QLatin1String name ) const;
+    static QString getAttibute( QXmlStreamReader *reader, QLatin1String name );
     QString getDeviceId() const;
   };
 }  // namespace bose_soundtoch_lib

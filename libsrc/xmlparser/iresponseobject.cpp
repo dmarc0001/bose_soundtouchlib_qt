@@ -72,7 +72,13 @@ namespace bose_soundtoch_lib
     return ( typeNames[ resultType ] );
   }
 
-  QString IResponseObject::getAttibute( QXmlStreamReader *reader, QLatin1String name ) const
+  /**
+   * @brief IResponseObject::getAttibute (static) Attribute aus einem TAG lesen
+   * @param reader
+   * @param name
+   * @return
+   */
+  QString IResponseObject::getAttibute( QXmlStreamReader *reader, QLatin1String name )
   {
     //
     // attribute finden
