@@ -78,6 +78,7 @@ namespace bose_soundtoch_lib
     // static const char *keynames[];
     static const char *subproto;
     constexpr static int timeoutMillis = 80;
+    static const QString version;
 
     public:
     explicit BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent = nullptr );

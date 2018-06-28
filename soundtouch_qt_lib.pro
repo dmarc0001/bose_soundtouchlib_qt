@@ -3,6 +3,21 @@
 #### Versuch zu BOSE websocket API                                         ####
 ####                                                                       ####
 ###############################################################################
+MAJOR                                  = 1 # major version number
+MINOR                                  = 0 # minor version number
+PATCH                                  = 2 # patch number
+BUILD                                  = 0 # win32: build number
+
+$$MAJOR.$$MINOR.$$PATCH
+win32:VERSION                          = $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD} # major.minor.patch.build
+else:VERSION                           = $${MAJOR}.$${MINOR}.$${PATCH}    # major.minor.patch
+
+DEFINES                                += SOUNDTOUCH_QT_LIB_LIBRARY
+DEFINES                                += QT_DEPRECATED_WARNINGS
+DEFINES                                += $$DEBUG
+DEFINES                                += VMAJOR=$$MAJOR
+DEFINES                                += VMINOR=$$MINOR
+DEFINES                                += VPATCH=$$PATCH
 
 TARGET                                 = libsoundtouch_qt
 TEMPLATE                               = lib
@@ -36,11 +51,7 @@ unix {
     INSTALLS                           += target
 }
 
-
-DEFINES                                += SOUNDTOUCH_QT_LIB_LIBRARY
-DEFINES                                += QT_DEPRECATED_WARNINGS
-
-DEFINES                                += $$DEBUG
+message( library version $$VERSION )
 
 SOURCES += \
     libsrc/bsoundtouchdevice.cpp \

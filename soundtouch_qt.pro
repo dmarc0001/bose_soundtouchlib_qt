@@ -3,6 +3,17 @@
 #### Versuch zu BOSE websocket API                                         ####
 ####                                                                       ####
 ###############################################################################
+MAJOR                                  = 1
+MINOR                                  = 0
+PATCH                                  = 0
+BUILD                                  = 0
+
+$$MAJOR.$$MINOR.$$PATCH
+win32:VERSION                          = $$MAJOR.$$MINOR.$$PATCH.$$BUILD # major.minor.patch.build
+else:VERSION                           = $$MAJOR.$$MINOR.$$PATCH    # major.minor.patch
+
+DEFINES                                += QT_DEPRECATED_WARNINGS
+DEFINES                                += $$DEBUG
 
 TARGET                                 = soundtouch_qt
 TEMPLATE                               = app
@@ -36,10 +47,6 @@ UI_DIR                                 = ui
 #
 target.path                            = /home/pi/qt5pi/soundtouch_qt
 INSTALLS                               += target
-
-
-DEFINES                                += QT_DEPRECATED_WARNINGS
-DEFINES                                += $$DEBUG
 
 SOURCES += \
     src/main.cpp \

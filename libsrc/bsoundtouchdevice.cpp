@@ -5,6 +5,8 @@
 
 namespace bose_soundtoch_lib
 {
+  const QString BSoundTouchDevice::version = QString( "%1.%2.%3" ).arg( VMAJOR ).arg( VMINOR ).arg( VPATCH );
+
   //! Strings für /key festlegen
   const char *BSoundTouchDevice::keynames[] = {
       "PLAY",       "PAUSE",      "PLAYPAUSE",  "PREV_TRACK",   "NEXT_TRACK",      "MUTE",      "SHUFFLE_ON",  "SHUFFLE_OFF",
