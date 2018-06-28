@@ -61,15 +61,17 @@ namespace bose_soundtoch_lib
 
   class ContentItem;
 
+  //! Klasse speichert zurückliegende gewählte Sourcen des Gerätes
   class DeviceRecent
   {
     public:
-    QString deviceId;
-    qint64 utcTime;
+    QString deviceId;  //! welches Gerät
+    qint64 utcTime;    //! zu welcher zeit
     qint64 id;
-    std::shared_ptr< ContentItem > contentItem;
+    std::shared_ptr< ContentItem > contentItem;  //! genaue Beschreibung der Source
   };
 
+  //! Genaue Beschreibung einer Medienquelle
   class ContentItem : public QObject
   {
     Q_OBJECT
@@ -92,6 +94,7 @@ namespace bose_soundtoch_lib
     QString getAttibute( QXmlStreamReader *reader, QLatin1String name ) const;
   };
 
+  //! Beschreibung des Logos der Quelle
   class PlayingArt
   {
     public:
@@ -99,6 +102,7 @@ namespace bose_soundtoch_lib
     QString artUrl;
   };
 
+  //! Soeilzeit der Quelle (total/aktuell)
   class PlayingTime
   {
     public:
@@ -106,6 +110,7 @@ namespace bose_soundtoch_lib
     int current_sec;
   };
 
+  //! Verbindungsstatus des Gerätes
   class DeviceConnectionStatusInfo
   {
     public:
@@ -113,6 +118,7 @@ namespace bose_soundtoch_lib
     QString deviceName;
   };
 
+  //! Teil der Geräteinfo, beschreibt Teile der Harware
   class DeviceComponent
   {
     public:
@@ -121,6 +127,7 @@ namespace bose_soundtoch_lib
     QString serialNumber;
   };
 
+  //! Netzwerk des Gerätes (auch mnehrfach, z.B WLAN/Ethernet)
   class DeviceNetworkInfo
   {
     public:
@@ -129,6 +136,7 @@ namespace bose_soundtoch_lib
     QString ipAddress;
   };
 
+  //! Die Belegung der sechs Stationstasten/Presets
   class DevicePreset
   {
     public:
@@ -140,6 +148,7 @@ namespace bose_soundtoch_lib
     DevicePreset( const DevicePreset &cp ) = default;
   };
 
+  //! Beschreibung einer Quelle (Intennet, BLuethooth etc)
   class SourceItem
   {
     public:
@@ -151,6 +160,7 @@ namespace bose_soundtoch_lib
     QString Content;
   };
 
+  //! SoundTouch 10 - Rolle eines Gerätes in der Gruppe
   class GroupRole
   {
     public:
@@ -159,6 +169,7 @@ namespace bose_soundtoch_lib
     QString ipAddress;
   };
 
+  //! Inhalt einer Fehlermeldung bei http response
   class ResponseError
   {
     public:
