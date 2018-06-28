@@ -14,11 +14,15 @@ namespace bose_soundtoch_lib
   class WsBassUpdated : public IResponseObject
   {
     private:
-    bool updatet;
+    bool updatet;  //! updated?
 
     public:
     explicit WsBassUpdated( QXmlStreamReader *xmlreader, QObject *parent );
     ~WsBassUpdated() override;
+    //
+    // GETTER
+    //
+    bool getUpdatet() const;
   };
 }  // namespace bose_soundtoch_lib
 
