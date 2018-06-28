@@ -2,6 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief XmlResultParser::XmlResultParser
+   * @param xmlString
+   * @param parent
+   */
   XmlResultParser::XmlResultParser( QString &xmlString, QObject *parent )
       : QObject( parent )
       , reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
@@ -25,31 +30,18 @@ namespace bose_soundtoch_lib
     }
   }
 
+  /**
+   * @brief XmlResultParser::~XmlResultParser
+   */
   XmlResultParser::~XmlResultParser()
   {
     qDebug() << "...";
   }
 
-  bool XmlResultParser::hasError( void )
-  {
-    return ( reader->hasError() );
-  }
-
-  QString XmlResultParser::getErrorString( void )
-  {
-    if ( reader->hasError() )
-    {
-      QString errStr( QString( "%1 at line %2" ).arg( reader->errorString() ).arg( reader->lineNumber() ) );
-      return ( errStr );
-    }
-    return ( QLatin1String( "no error" ) );
-  }
-
-  std::shared_ptr< IResponseObject > XmlResultParser::getResultObject( void )
-  {
-    return ( responseObject );
-  }
-
+  /**
+   * @brief XmlResultParser::parseFile
+   * @return
+   */
   bool XmlResultParser::parseFile( void )
   {
     QStringRef rootelemName;
@@ -188,4 +180,29 @@ namespace bose_soundtoch_lib
     reader->clear();
     return ( false );
   }
+
+  //
+  // GETTER
+  //
+
+  bool XmlResultParser::hasError( void )
+  {
+    return ( reader->hasError() );
+  }
+
+  QString XmlResultParser::getErrorString( void )
+  {
+    if ( reader->hasError() )
+    {
+      QString errStr( QString( "%1 at line %2" ).arg( reader->errorString() ).arg( reader->lineNumber() ) );
+      return ( errStr );
+    }
+    return ( QLatin1String( "no error" ) );
+  }
+
+  std::shared_ptr< IResponseObject > XmlResultParser::getResultObject( void )
+  {
+    return ( responseObject );
+  }
+
 }  // namespace bose_soundtoch_lib
