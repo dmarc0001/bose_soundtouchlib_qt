@@ -4,6 +4,7 @@
 #include <qglobal.h>
 #include <QMap>
 #include <QObject>
+#include <QRegExp>
 #include <QXmlStreamReader>
 #include <QtDebug>
 #include <memory>
@@ -16,6 +17,7 @@ namespace bose_soundtoch_lib
     Q_OBJECT
     private:
     static const QMap< ResultobjectType, QString > typeNames;  //! convertiert type zu string
+    static const QRegExp shortTags;                            //! erkennt verkürzte tags als Starttag
 
     protected:
     QXmlStreamReader *reader;     //! für vererbte Objekte der xml parser
@@ -27,11 +29,12 @@ namespace bose_soundtoch_lib
     virtual ~IResponseObject();
     //! Hilfsfunktion zum Lesen der Attribute eines TAG
     static QString getAttribute( QXmlStreamReader *reader, QLatin1String name );
+    static bool getNextStartTag( QXmlStreamReader *reader );
     //
     // GETTER
     //
     ResultobjectType getResultType( void );
-    void setDeviceId( QString &devId );
+    void setDeviceId( const QString &devId );
     QString getResultTypeName( void ) const;
     QString getDeviceId() const;
   };

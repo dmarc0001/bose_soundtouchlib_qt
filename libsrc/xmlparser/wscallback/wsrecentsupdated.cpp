@@ -13,12 +13,12 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recentsUpdated" ) );
     resultType = ResultobjectType::U_RECENTS_UNSUPPORTED;
     qDebug() << "(unsupported)...";
-    if ( reader->readNextStartElement() && !reader->hasError() )
+    if ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
       if ( reader->name() == QLatin1String( "recents" ) )
       {
-        while ( reader->readNextStartElement() && !reader->hasError() )
+        while ( IResponseObject::getNextStartTag( reader ) )
         {
           if ( reader->name() == QLatin1String( "recent" ) )
           {
@@ -41,7 +41,7 @@ namespace bose_soundtoch_lib
     //
     // eventuelle Reste zuende lesen und ignorieren
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
       ;
   }
 
@@ -58,14 +58,14 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recent" ) );
     qDebug() << "...";
     DeviceRecent recent;
-    recent.deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceId" ) );
+    recent.deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
     qDebug() << "recent device id: " << recent.deviceId;
     recent.utcTime = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "utcTime" ) ).toLong() );
     qDebug() << "recent time: " << recent.utcTime << " ("
              << QDateTime::fromSecsSinceEpoch( recent.utcTime ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
     recent.id = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "id" ) ).toLong() );
     qDebug() << "recent id: " << recent.id;
-    if ( reader->readNextStartElement() && !reader->hasError() )
+    if ( IResponseObject::getNextStartTag( reader ) )
     {
       if ( reader->name() == QLatin1String( "contentItem" ) )
       {

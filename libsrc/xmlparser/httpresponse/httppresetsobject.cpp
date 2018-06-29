@@ -16,7 +16,7 @@ namespace bose_soundtoch_lib
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       bose_soundtoch_lib::DevicePreset preset;
       //
@@ -39,7 +39,7 @@ namespace bose_soundtoch_lib
         //
         // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein
         //
-        while ( reader->readNextStartElement() && !reader->hasError() )
+        while ( IResponseObject::getNextStartTag( reader ) )
         {
           if ( reader->name() == QLatin1String( "ContentItem" ) )
           {

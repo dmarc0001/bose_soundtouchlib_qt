@@ -13,7 +13,7 @@ namespace bose_soundtoch_lib
     resultType = ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED;
     qDebug() << "updated (unsupported)...";
     controls = reader->readElementText();
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

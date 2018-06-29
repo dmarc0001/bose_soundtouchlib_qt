@@ -17,7 +17,7 @@ namespace bose_soundtoch_lib
     {
       updated = true;
     }
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

@@ -33,6 +33,7 @@ CONFIG                                 += c++11
 #DESTDIR                                = ../out
 CONFIG(release, debug|release) {
   DESTDIR                              = ../rout
+  DEFINES                              += QT_NO_DEBUG_OUTPUT
 }
 CONFIG(debug, debug|release) {
   DESTDIR                              = ../dout

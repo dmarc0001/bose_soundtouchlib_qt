@@ -14,7 +14,7 @@ namespace bose_soundtoch_lib
     qDebug() << "...";
     language = reader->readElementText();
     qDebug() << "new language: " << language;
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

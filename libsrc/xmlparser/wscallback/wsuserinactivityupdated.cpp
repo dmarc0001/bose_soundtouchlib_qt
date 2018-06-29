@@ -13,7 +13,7 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "userInctivityUpdate" ) );
     resultType = ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED;
     qDebug() << "updated (unsupported)...";
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

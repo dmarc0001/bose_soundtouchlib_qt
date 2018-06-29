@@ -20,7 +20,7 @@ namespace bose_soundtoch_lib
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // das nächste element bearbeiten, welches ist es?

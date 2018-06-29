@@ -17,7 +17,7 @@ namespace bose_soundtoch_lib
     sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
     qDebug() << "source account: " << sourceAccount;
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

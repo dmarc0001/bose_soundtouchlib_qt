@@ -20,7 +20,7 @@ namespace bose_soundtoch_lib
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // das nächste element bearbeiten, welches ist es?
@@ -143,7 +143,7 @@ namespace bose_soundtoch_lib
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( reader->readNextStartElement() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       if ( reader->name() == QLatin1String( "component" ) )
       {
@@ -162,7 +162,7 @@ namespace bose_soundtoch_lib
     //
     // lese die Komponente aus und trage sie in die Liste der Komponenten ein
     //
-    while ( reader->readNextStartElement() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // neues lokales Element
       DeviceComponent currComponent;
@@ -213,7 +213,7 @@ namespace bose_soundtoch_lib
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
     //
-    while ( reader->readNextStartElement() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       if ( reader->name() == QLatin1String( "macAddress" ) )
       {

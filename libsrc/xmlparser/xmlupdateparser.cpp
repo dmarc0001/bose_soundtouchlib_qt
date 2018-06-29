@@ -8,9 +8,8 @@ namespace bose_soundtoch_lib
    * @param parent
    */
   XMLUpdateParser::XMLUpdateParser( QString &xmlString, QObject *parent )
-      : QObject( parent )
-      , reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
-      , responseObject( nullptr )
+      : QObject( parent ), reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
+
   {
     qDebug() << "start update parsing xml string...";
     parseFile();
@@ -77,7 +76,7 @@ namespace bose_soundtoch_lib
   bool XMLUpdateParser::parseFile( void )
   {
     QStringRef rootelemName;
-    // while ( !reader->atEnd() && !reader->hasError() )
+    //
     if ( !reader->atEnd() && !reader->hasError() )
     {
       // lese nächstes Element
@@ -117,11 +116,11 @@ namespace bose_soundtoch_lib
 
       else if ( rootelemName == QLatin1String( "updates" ) )
       {
-        QString deviceId = IResponseObject::getAttribute( reader.get(), QLatin1String( "deviceId" ) );
+        QString deviceId = IResponseObject::getAttribute( reader.get(), QLatin1String( "deviceID" ) );
         //
         // eine UPDATE Meldung, sollte alles sein ausser SoundTouchSdkInfo
         //
-        if ( reader->readNextStartElement() && !reader->hasError() )
+        if ( IResponseObject::getNextStartTag( reader.get() ) )
         {
           QStringRef updateElementName = reader->name();
           //
@@ -318,9 +317,6 @@ namespace bose_soundtoch_lib
             //
             qWarning() << "unsupported TAG behind <updates> in response XML struct found: " << reader->name().toString();
           }
-          // den Rest weg lesen
-          while ( reader->readNextStartElement() && !reader->hasError() && !reader->atEnd() )
-            ;
         }
       }
       else
@@ -329,10 +325,12 @@ namespace bose_soundtoch_lib
         // hier weiss ich auch nicht weiter, der TAG ist unbekannt
         //
         qWarning() << "unsupported TAG in update response XML struct found: " << reader->name().toString();
+        /*
         while ( !reader->atEnd() && !reader->hasError() )
         {
           reader->readNext();
         }
+        */
       }
     }
     //

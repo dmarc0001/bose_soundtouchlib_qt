@@ -80,6 +80,7 @@ namespace bose_soundtoch_lib
 
     public:
     QString source;
+    QString type;
     QString location;
     QString sourceAccount;
     bool isPresetable;

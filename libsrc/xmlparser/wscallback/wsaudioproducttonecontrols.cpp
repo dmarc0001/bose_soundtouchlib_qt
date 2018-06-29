@@ -16,7 +16,7 @@ namespace bose_soundtoch_lib
     controls = reader->readElementText();
     qDebug() << "controls: " << controls;
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

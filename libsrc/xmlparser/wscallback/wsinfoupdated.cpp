@@ -13,7 +13,7 @@ namespace bose_soundtoch_lib
     resultType = ResultobjectType::U_INFO;
     qDebug() << "updated...";
     updatet = true;
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

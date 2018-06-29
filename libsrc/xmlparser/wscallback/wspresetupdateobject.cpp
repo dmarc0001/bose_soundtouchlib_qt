@@ -13,7 +13,7 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "presetUpdated" ) );
     resultType = ResultobjectType::U_PRESETS;
     qDebug() << "...";
-    if ( reader->readNextStartElement() && !reader->hasError() )
+    if ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // das nächste element bearbeiten, welches ist es? Eigentlich nur presets
@@ -24,7 +24,7 @@ namespace bose_soundtoch_lib
         //
         // jetzt die einzelnen presets
         //
-        while ( reader->readNextStartElement() && !reader->hasError() )
+        while ( IResponseObject::getNextStartTag( reader ) )
         {
           //
           // es slollten nur "preset" tags folgen
@@ -50,10 +50,8 @@ namespace bose_soundtoch_lib
         qWarning() << "unsupported " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
-    while ( reader->readNextStartElement() && !reader->hasError() )
-    {
-      // elemente zuende lesen und ignorieren
-    }
+    while ( IResponseObject::getNextStartTag( reader ) )
+      ;
   }
 
   WsPresetUpdateObject::~WsPresetUpdateObject()
@@ -76,7 +74,7 @@ namespace bose_soundtoch_lib
     //
     // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       if ( reader->name() == QLatin1String( "ContentItem" ) )
       {

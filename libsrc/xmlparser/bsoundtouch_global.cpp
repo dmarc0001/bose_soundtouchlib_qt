@@ -22,6 +22,10 @@ namespace bose_soundtoch_lib
     //
     source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
     //
+    // Attribute "type"
+    //
+    type = IResponseObject::getAttribute( reader, QLatin1String( "type" ) );
+    //
     // Attribut "location"
     //
     location = IResponseObject::getAttribute( reader, QLatin1String( "location" ) );
@@ -39,7 +43,7 @@ namespace bose_soundtoch_lib
     //
     // jetzt die Elemente (childknoten) lesen
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // welchen Eintrag hab ich gefunden?

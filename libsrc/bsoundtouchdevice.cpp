@@ -57,14 +57,23 @@ namespace bose_soundtoch_lib
     return ( BSoundTouchDevice::version );
   }
 
-  BSoundTouchDevice::BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent )
-      : QObject( parent )
-      , hostname( stHost )
-      , wsPort( stWSPort )
-      , httpPort( stHttpPort )
-      , webSocket( nullptr )
-      , threshold( QtMsgType::QtFatalMsg )
+  /**
+   * @brief BSoundTouchDevice::BSoundTouchDevice
+   * @param stHost
+   * @param stWSPort
+   * @param stHttpPort
+   * @param parent
+   */
+  BSoundTouchDevice::BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent, QtMsgType sth )
+      : QObject( parent ), hostname( stHost ), wsPort( stWSPort ), httpPort( stHttpPort ), webSocket( nullptr ), threshold( sth )
   {
+    //
+    // Logging, eigenes logging nur wenn mehr als kritische meldungen ausgegeben werden sollen
+    //
+    if ( threshold < QtMsgType::QtFatalMsg )
+    {
+      qInstallMessageHandler( &BSoundTouchDevice::myMessageOutput );
+    }
     qDebug() << "...";
     connect( &qnam, &QNetworkAccessManager::authenticationRequired, this, &BSoundTouchDevice::slotAuthenticationRequired );
   }
@@ -452,7 +461,7 @@ namespace bose_soundtoch_lib
     // hier lese ich alles am Ende der Übertagung (die Datenmenge ist klein)
     //
     QString relpyString( reply->readAll() );
-    qDebug() << relpyString;
+    // qDebug() << relpyString;
     XmlResultParser xmlParser( relpyString, this );
     if ( xmlParser.hasError() )
     {
@@ -507,18 +516,31 @@ namespace bose_soundtoch_lib
 
   void BSoundTouchDevice::connectWs( void )
   {
-    if ( webSocket.get() == nullptr )
+    qDebug() << "...";
+    if ( webSocket.get() == nullptr || !webSocket->isValid() )
     {
-      webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, this ) );
-      //
-      // signale verbinden
-      //
-      connect( webSocket.get(), &BWebsocket::sigOnWSConnected, this, &BSoundTouchDevice::slotOnWSConnected );
-      connect( webSocket.get(), &BWebsocket::sigOnWSDisConnected, this, &BSoundTouchDevice::slotOnWSDisConnected );
-      connect( webSocket.get(), &BWebsocket::sigOnWSTextMessageReceived, this, &BSoundTouchDevice::slotOnWSTextMessageReceived );
+      if ( webSocket.get() == nullptr )
+      {
+        qDebug() << "create new BWebSocklet object...";
+        webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, this ) );
+        //
+        // signale verbinden
+        //
+        qDebug() << "connect signals...";
+        connect( webSocket.get(), &BWebsocket::sigOnWSConnected, this, &BSoundTouchDevice::slotOnWSConnected );
+        connect( webSocket.get(), &BWebsocket::sigOnWSDisConnected, this, &BSoundTouchDevice::slotOnWSDisConnected );
+        connect( webSocket.get(), &BWebsocket::sigOnWSTextMessageReceived, this, &BSoundTouchDevice::slotOnWSTextMessageReceived );
+      }
       // nach open sollte sowas kommen: <SoundTouchSdkInfo serverVersion="4" serverBuild="trunk r42017 v4 epdbuild cepeswbld02" />
+      qDebug() << "open an websocket to device...";
       webSocket->open();
     }
+  }
+
+  void BSoundTouchDevice::disconnectWs( void )
+  {
+    qDebug() << "...";
+    webSocket->close();
   }
 
   void BSoundTouchDevice::slotOnWSConnected( void )
@@ -558,6 +580,65 @@ namespace bose_soundtoch_lib
         //
         // TODO: hier verarbeiten
         //
+        switch ( static_cast< qint8 >( response->getResultType() ) )
+        {
+          case ( qint8 ) ResultobjectType::U_PRESETS:
+            emit sigOnPresetsUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_NOWPLAYING:
+            emit sigOnNowPlayingUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_SELECTION:
+            emit sigOnPresetSelectionUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_VOLUME:
+            emit sigOnVolumeUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_BASS:
+            emit sigOnBassUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_ZONE:
+            emit sigOnZoneUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_INFO:
+            emit sigOnInfoUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_NAME:
+            emit sigOnNameUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_ERROR:
+            emit sigOnErrorUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_GROUP:
+            emit sigOnGroupUpdated( response );
+            break;
+
+          case ( qint8 ) ResultobjectType::U_SDKINFO:
+          case ( qint8 ) ResultobjectType::U_BROWSE_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_RECENTS_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_SOURCES_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_LANGUAGE_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED:
+          case ( qint8 ) ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED:
+            qDebug() << "unsupported events. ignore...";
+            break;
+
+          default:
+            qWarning() << "unknown object type. ignore.";
+        }
       }
     }
     emit sigOnWSTextMessageReceived( message );
@@ -566,28 +647,44 @@ namespace bose_soundtoch_lib
   void BSoundTouchDevice::myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg )
   {
     QByteArray localMsg = msg.toLocal8Bit();
+    QStringList functParts;
+    QString func;
+    //
     switch ( type )
     {
       case QtDebugMsg:
-        fprintf( stdout, "DEBUG: %s (%s)\n", localMsg.constData(), context.function );
+        //
+        // versuche nur objekt/function
+        //
+        functParts = QString( context.function ).split( "::" );
+        if ( functParts.count() > 2 )
+        {
+          func = QString( functParts.value( functParts.count() - 2 ) )
+                     .append( "::" )
+                     .append( functParts.value( functParts.count() - 1 ) );
+        }
+        else
+          func = context.function;
+
+        fprintf( stdout, "DEBUG %s: %s\n", func.toStdString().c_str(), localMsg.constData() );
         fflush( stdout );
         // fprintf( stdout, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
         break;
       case QtInfoMsg:
-        fprintf( stdout, "INFO: %s\n", localMsg.constData() );
+        fprintf( stdout, "INFO %s\n", localMsg.constData() );
         // fprintf( stdout, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
         break;
       case QtWarningMsg:
-        fprintf( stdout, "WARNING: %s\n", localMsg.constData() );
+        fprintf( stdout, "WARNING %s\n", localMsg.constData() );
         // fprintf( stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
         break;
       case QtCriticalMsg:
-        fprintf( stderr, "CRITICAL: %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
+        fprintf( stderr, "CRITICAL %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
         fflush( stderr );
         // fprintf( stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
         break;
       case QtFatalMsg:
-        fprintf( stderr, "FATAL: %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
+        fprintf( stderr, "FATAL %s (%s:%u)\n", localMsg.constData(), context.file, context.line );
         fflush( stderr );
         // fprintf( stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function );
         break;

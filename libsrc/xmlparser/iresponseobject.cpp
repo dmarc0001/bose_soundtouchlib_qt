@@ -2,6 +2,8 @@
 
 namespace bose_soundtoch_lib
 {
+  // const QRegExp IResponseObject::shortTags( "<\\w+.*\\s+/>", Qt::CaseSensitive, QRegExp::RegExp );
+  const QRegExp IResponseObject::shortTags( "<\\w+\\s+/>", Qt::CaseSensitive, QRegExp::RegExp );
   //
   //! für enum class ResultobjectType : quint8 aus "bsoundtouch_global.hpp" => value to String
   //
@@ -64,7 +66,7 @@ namespace bose_soundtoch_lib
    * @brief IResponseObject::setDeviceId
    * @param devId
    */
-  void IResponseObject::setDeviceId( QString &devId )
+  void IResponseObject::setDeviceId( const QString &devId )
   {
     deviceId = QString( devId );
   }
@@ -115,8 +117,31 @@ namespace bose_soundtoch_lib
     }
     else
     {
-      result.clear();
+      result = QLatin1String( "UNKNOWN" );
+      // result.clear();
     }
     return ( result );
   }
+
+  /**
+   * @brief IResponseObject::getNextStartTag nächster start tag oder nächster verkürzte tag
+   * @param reader
+   * @return
+   */
+  bool IResponseObject::getNextStartTag( QXmlStreamReader *reader )
+  {
+    //
+    // workarround um verkürzte Tags erkennen zu können
+    // reader->readNextStartElement findet nach verkürzten tags keine neuen Tags mehr
+    //
+    while ( reader->readNext() && !reader->hasError() && !reader->atEnd() )
+    {
+      if ( reader->isStartElement() || ( IResponseObject::shortTags.indexIn( reader->tokenString() ) != -1 ) )
+      {
+        return ( true );
+      }
+    }
+    return ( false );
+  }
+
 }  // namespace bose_soundtoch_lib

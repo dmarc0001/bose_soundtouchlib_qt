@@ -32,6 +32,7 @@ CONFIG                                 += c++11
 CONFIG(release, debug|release) {
   DESTDIR                              = ../rout
   LIBS                                 += -L$$OUT_PWD/../rout -llibsoundtouch_qt
+  DEFINES                              += QT_NO_DEBUG_OUTPUT
 }
 CONFIG(debug, debug|release) {
   DESTDIR                              = ../dout

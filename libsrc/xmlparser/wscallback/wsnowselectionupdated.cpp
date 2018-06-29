@@ -9,7 +9,7 @@ namespace bose_soundtoch_lib
     resultType = ResultobjectType::U_SELECTION;
     qDebug() << "...";
     //
-    if ( reader->readNextStartElement() && !reader->hasError() )
+    if ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // das nächste element bearbeiten, welches ist es? Eigentlich nur presets
@@ -28,7 +28,7 @@ namespace bose_soundtoch_lib
         //
         // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein
         //
-        while ( reader->readNextStartElement() && !reader->hasError() )
+        while ( IResponseObject::getNextStartTag( reader ) )
         {
           if ( reader->name() == QLatin1String( "ContentItem" ) )
           {
@@ -51,7 +51,7 @@ namespace bose_soundtoch_lib
         qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

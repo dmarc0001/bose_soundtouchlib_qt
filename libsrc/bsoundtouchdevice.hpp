@@ -14,6 +14,7 @@
 #include <memory>
 #include "websocket/bwebsocket.hpp"
 #include "xmlparser/bsoundtouch_global.hpp"
+#include "xmlparser/iresponseobject.hpp"
 
 #if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
 #define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_EXPORT
@@ -84,7 +85,11 @@ namespace bose_soundtoch_lib
     static const QString version;
 
     public:
-    explicit BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent = nullptr );
+    explicit BSoundTouchDevice( QString &stHost,
+                                qint16 stWSPort,
+                                qint16 stHttpPort,
+                                QObject *parent = nullptr,
+                                QtMsgType sth = QtMsgType::QtFatalMsg );
     ~BSoundTouchDevice();
     void setHostname( const QString &stHost );
     void setWSPort( qint16 stWSPort );
@@ -112,6 +117,8 @@ namespace bose_soundtoch_lib
     // websocket überwachung
     void addVolumeListener( void );
     QString getVersion() const;
+    void connectWs( void );     //! verbinde gerät mit Websocket, falls noch nciht geschehen
+    void disconnectWs( void );  //! trenne WS
 
     private:
     void startGetRequest( const QUrl &requested );
@@ -123,7 +130,6 @@ namespace bose_soundtoch_lib
     void startPostRequest( const QString &data );
     void setUrl( const char *path );
     void editZone( const QString &masterId, const SoundTouchMemberList &memberList );  //! je url create,add,remove
-    void connectWs( void );  //! verbinde gerät mit Websocket, falls noch nciht geschehen
     static void myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg );
 
     signals:
@@ -131,6 +137,17 @@ namespace bose_soundtoch_lib
     void sigOnWSConnected( void );
     void sigOnWSDisConnected( void );
     void sigOnWSTextMessageReceived( QString message );
+    //
+    void sigOnPresetsUpdated( std::shared_ptr< IResponseObject > );          //! sig on preset Update
+    void sigOnNowPlayingUpdated( std::shared_ptr< IResponseObject > );       //! sig on now playing Update
+    void sigOnPresetSelectionUpdated( std::shared_ptr< IResponseObject > );  //! sig on selction an Update
+    void sigOnVolumeUpdated( std::shared_ptr< IResponseObject > );           //! sig on volume changed/updated
+    void sigOnBassUpdated( std::shared_ptr< IResponseObject > );             //! sig on bass property updated
+    void sigOnZoneUpdated( std::shared_ptr< IResponseObject > );             //! sig on zone updated
+    void sigOnInfoUpdated( std::shared_ptr< IResponseObject > );             //! sig on device info updated
+    void sigOnNameUpdated( std::shared_ptr< IResponseObject > );             //! sig on device name updated
+    void sigOnErrorUpdated( std::shared_ptr< IResponseObject > );            //! sig on error message changed/updated
+    void sigOnGroupUpdated( std::shared_ptr< IResponseObject > );            //! sig on group updated (SoundTouch 10 only)
 
     private slots:
     void slotAuthenticationRequired( QNetworkReply *, QAuthenticator *authenticator );

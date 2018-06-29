@@ -12,7 +12,7 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "errorUpdate" ) );
     resultType = ResultobjectType::U_ERROR;
     qDebug() << "...";
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // das nächste element bearbeiten, welches ist es?

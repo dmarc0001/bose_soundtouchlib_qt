@@ -23,6 +23,8 @@ namespace bose_soundtoch_lib
     explicit BWebsocket( QString &stHost, qint16 stWSPort, QObject *parent );
     ~BWebsocket();
     void open( void );
+    bool isValid( void );
+    void close( void );
 
     signals:
     void sigOnWSConnected( void );

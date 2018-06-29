@@ -20,7 +20,7 @@ namespace bose_soundtoch_lib
     signal = IResponseObject::getAttribute( reader, QLatin1String( "signal" ) );
     qDebug() << "connection signal quality: " << signal;
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       // elemente zuende lesen und ignorieren
     }

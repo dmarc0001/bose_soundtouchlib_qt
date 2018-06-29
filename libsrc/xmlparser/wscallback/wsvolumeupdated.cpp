@@ -13,7 +13,7 @@ namespace bose_soundtoch_lib
     resultType = ResultobjectType::U_VOLUME;
     qDebug() << "...";
     //
-    if ( reader->readNextStartElement() && !reader->hasError() )
+    if ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // das nächste element bearbeiten, welches ist es? Eigentlich nur volume
@@ -24,7 +24,7 @@ namespace bose_soundtoch_lib
         //
         // alles unterhalb "volume" lesen
         //
-        while ( reader->readNextStartElement() && !reader->hasError() )
+        while ( IResponseObject::getNextStartTag( reader ) )
         {
           //
           // das nächste element bearbeiten, welches ist es?

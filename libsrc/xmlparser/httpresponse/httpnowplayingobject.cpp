@@ -11,13 +11,15 @@ namespace bose_soundtoch_lib
   {
     Q_ASSERT( reader->isStartElement() &&
               ( reader->name() == QLatin1String( "nowPlaying" ) || reader->name() == QLatin1String( "nowPlayingUpdated" ) ) );
+    //
     if ( reader->name() == QLatin1String( "nowPlaying" ) )
     {
       resultType = ResultobjectType::R_NOW_PLAYING;
     }
     else
     {
-      if ( reader->readNextStartElement() && !reader->hasError() )
+      // if ( reader -> readNextStartElement() && !reader->hasError() )
+      while ( IResponseObject::getNextStartTag( reader ) )
       {
         if ( reader->name() == QLatin1String( "nowPlaying" ) )
         {
@@ -44,7 +46,7 @@ namespace bose_soundtoch_lib
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       if ( reader->name() == QLatin1String( "ContentItem" ) )
       {
@@ -52,6 +54,12 @@ namespace bose_soundtoch_lib
         // Objet mit Attributen (kannman bei /select nutzen)
         //
         contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
+        qDebug() << "ContentItem.source:" << contentItem->source;
+        qDebug() << "ContentItem.type:" << contentItem->type;
+        qDebug() << "ContentItem.location:" << contentItem->location;
+        qDebug() << "ContentItem.sourceAccount:" << contentItem->sourceAccount;
+        qDebug() << "ContentItem.itemName:" << contentItem->itemName;
+        qDebug() << "ContentItem.containerArt:" << contentItem->containerArt;
       }
       else if ( reader->name() == QLatin1String( "track" ) )
       {
@@ -246,7 +254,7 @@ namespace bose_soundtoch_lib
     // Spielzeit
     //
     qDebug() << "...";
-    while ( reader->readNextStartElement() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // welchen Eintrag hab ich gefunden?

@@ -159,8 +159,7 @@ namespace bose_soundtoch_lib
         // hier weiss ich auch nicht weiter, der TAG ist unbekannt
         //
         qWarning() << "unsupported tag in response XML struct found: " << reader->name().toString();
-        while ( reader->readNextStartElement() && !reader->hasError() && !reader->atEnd() )
-          ;
+        // while ( reader->readNextStartElement() && !reader->hasError() && !reader->atEnd() );
         /*
         while ( !reader->atEnd() && !reader->hasError() )
         {

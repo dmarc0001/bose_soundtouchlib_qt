@@ -21,7 +21,8 @@ namespace bose_soundtoch_lib
     }
     else
     {
-      if ( reader->readNextStartElement() && !reader->hasError() )
+      // if ( reader -> readNextStartElement() && !reader->hasError() )
+      while ( IResponseObject::getNextStartTag( reader ) )
       {
         if ( reader->name() == QLatin1String( "groupUpdated" ) )
         {
@@ -44,7 +45,7 @@ namespace bose_soundtoch_lib
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       //
       // das nächste element bearbeiten, welches ist es?
@@ -111,7 +112,7 @@ namespace bose_soundtoch_lib
     //
     qDebug() << "...";
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       if ( reader->name() == QLatin1String( "groupRole" ) )
       {
@@ -139,7 +140,7 @@ namespace bose_soundtoch_lib
     qDebug() << "...";
     GroupRole role;
     //
-    while ( reader->readNextStartElement() && !reader->hasError() )
+    while ( IResponseObject::getNextStartTag( reader ) )
     {
       if ( reader->name() == QLatin1String( "deviceId" ) )
       {

@@ -2,6 +2,12 @@
 
 namespace bose_soundtoch_lib
 {
+  /**
+   * @brief BWebsocket::BWebsocket
+   * @param stHost
+   * @param stWSPort
+   * @param parent
+   */
   BWebsocket::BWebsocket( QString &stHost, qint16 stWSPort, QObject *parent )
       : QObject( parent ), hostname( stHost ), wsPort( stWSPort )
   {
@@ -12,13 +18,18 @@ namespace bose_soundtoch_lib
     url = QUrl( QString( "ws://%1:%2" ).arg( hostname ).arg( wsPort ) );
   }
 
+  /**
+   * @brief BWebsocket::~BWebsocket
+   */
   BWebsocket::~BWebsocket()
   {
     qDebug() << "...";
-    webSocket.flush();
-    webSocket.close();
+    close();
   }
 
+  /**
+   * @brief BWebsocket::open
+   */
   void BWebsocket::open( void )
   {
     //
@@ -36,6 +47,31 @@ namespace bose_soundtoch_lib
     webSocket.open( req );
   }
 
+  /**
+   * @brief BWebsocket::isValid
+   * @return
+   */
+  bool BWebsocket::isValid( void )
+  {
+    return ( webSocket.isValid() );
+  }
+  /**
+   * @brief BWebsocket::close
+   */
+  void BWebsocket::close( void )
+  {
+    qDebug() << "...";
+    if ( webSocket.isValid() )
+    {
+      webSocket.flush();
+      webSocket.close();
+      // webSocket.abort();
+    }
+  }
+
+  /**
+   * @brief BWebsocket::slotOnWSConnected
+   */
   void BWebsocket::slotOnWSConnected( void )
   {
     qDebug() << "...";
@@ -43,6 +79,9 @@ namespace bose_soundtoch_lib
     emit sigOnWSConnected();
   }
 
+  /**
+   * @brief BWebsocket::slotOnWSDisConnected
+   */
   void BWebsocket::slotOnWSDisConnected( void )
   {
     if ( webSocket.closeCode() == QWebSocketProtocol::CloseCodeNormal )
@@ -56,9 +95,15 @@ namespace bose_soundtoch_lib
     emit sigOnWSDisConnected();
   }
 
+  /**
+   * @brief BWebsocket::slotOnWSTextMessageReceived
+   * @param message
+   */
   void BWebsocket::slotOnWSTextMessageReceived( QString message )
   {
+    qDebug() << "-------------------------------------------------------------------";
     qDebug() << message;
+    qDebug() << "-------------------------------------------------------------------";
     emit sigOnWSTextMessageReceived( message );
   }
 
