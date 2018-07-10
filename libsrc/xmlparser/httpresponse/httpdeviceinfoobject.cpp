@@ -1,4 +1,4 @@
-#include "httpdeviceinfoobject.hpp"
+﻿#include "xmlparser/httpresponse/httpdeviceinfoobject.hpp"
 
 namespace bose_soundtoch_lib
 {

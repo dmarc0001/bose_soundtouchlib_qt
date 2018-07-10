@@ -1,4 +1,4 @@
-#include "wssoundtouchsdkinfo.hpp"
+﻿#include "xmlparser/wscallback/wssoundtouchsdkinfo.hpp"
 
 namespace bose_soundtoch_lib
 {

@@ -1,4 +1,4 @@
-#include "iresponseobject.hpp"
+﻿#include "xmlparser/iresponseobject.hpp"
 
 namespace bose_soundtoch_lib
 {

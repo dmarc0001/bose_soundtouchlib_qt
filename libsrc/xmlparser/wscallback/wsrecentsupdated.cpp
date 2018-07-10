@@ -1,4 +1,4 @@
-#include "wsrecentsupdated.hpp"
+﻿#include "xmlparser/wscallback/wsrecentsupdated.hpp"
 #include <QDateTime>
 
 namespace bose_soundtoch_lib

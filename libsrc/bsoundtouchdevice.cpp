@@ -1,4 +1,4 @@
-#include "bsoundtouchdevice.hpp"
+﻿#include "bsoundtouchdevice.hpp"
 #include <QThread>
 #include "xmlparser/xmlresultparser.hpp"
 #include "xmlparser/xmlupdateparser.hpp"

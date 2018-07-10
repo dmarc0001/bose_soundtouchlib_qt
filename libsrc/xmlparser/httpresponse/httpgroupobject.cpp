@@ -1,4 +1,4 @@
-#include "httpgroupobject.hpp"
+﻿#include "xmlparser/httpresponse/httpgroupobject.hpp"
 
 namespace bose_soundtoch_lib
 {

@@ -1,4 +1,4 @@
-#include "httpsourcesobject.hpp"
+﻿#include "xmlparser/httpresponse/httpsourcesobject.hpp"
 
 namespace bose_soundtoch_lib
 {

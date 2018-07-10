@@ -1,4 +1,4 @@
-#include "wsnowplayingupdate.hpp"
+﻿#include "xmlparser/wscallback/wsnowplayingupdate.hpp"
 
 namespace bose_soundtoch_lib
 {

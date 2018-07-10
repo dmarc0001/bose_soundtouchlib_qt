@@ -1,4 +1,4 @@
-#include "httpnowplayingobject.hpp"
+﻿#include "xmlparser/httpresponse/httpnowplayingobject.hpp"
 
 namespace bose_soundtoch_lib
 {

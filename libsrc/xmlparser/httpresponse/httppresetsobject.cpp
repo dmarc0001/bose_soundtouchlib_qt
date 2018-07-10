@@ -1,4 +1,4 @@
-#include "httppresetsobject.hpp"
+﻿#include "xmlparser/httpresponse/httppresetsobject.hpp"
 #include <QDateTime>
 
 namespace bose_soundtoch_lib

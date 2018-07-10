@@ -1,4 +1,4 @@
-#include "wssourceupdated.hpp"
+﻿#include "xmlparser/wscallback/wssourceupdated.hpp"
 
 namespace bose_soundtoch_lib
 {

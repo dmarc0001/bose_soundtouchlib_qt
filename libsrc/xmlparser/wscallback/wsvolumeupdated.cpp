@@ -1,4 +1,4 @@
-#include "wsvolumeupdated.hpp"
+﻿#include "xmlparser/wscallback/wsvolumeupdated.hpp"
 
 namespace bose_soundtoch_lib
 {

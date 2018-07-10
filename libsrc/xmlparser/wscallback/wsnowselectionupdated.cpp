@@ -1,4 +1,4 @@
-#include "wsnowselectionupdated.hpp"
+﻿#include "xmlparser/wscallback/wsnowselectionupdated.hpp"
 #include <QDateTime>
 
 namespace bose_soundtoch_lib

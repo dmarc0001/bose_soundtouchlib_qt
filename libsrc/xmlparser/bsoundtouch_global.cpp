@@ -1,5 +1,5 @@
-#include "bsoundtouch_global.hpp"
-#include "iresponseobject.hpp"
+﻿#include "xmlparser/bsoundtouch_global.hpp"
+#include "xmlparser/iresponseobject.hpp"
 
 namespace bose_soundtoch_lib
 {
