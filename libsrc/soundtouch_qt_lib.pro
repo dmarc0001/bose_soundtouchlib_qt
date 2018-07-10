@@ -30,13 +30,13 @@ QT                                     += xml
 
 CONFIG                                 += stl
 CONFIG                                 += c++11
-#DESTDIR                                = ../out
+
 CONFIG(release, debug|release) {
-  DESTDIR                              = ../rout
+  DESTDIR                              = $${PWD}/lib/$${KITNAME}/release
   DEFINES                              += QT_NO_DEBUG_OUTPUT
 }
 CONFIG(debug, debug|release) {
-  DESTDIR                              = ../dout
+  DESTDIR                              = $${PWD}/lib/$${KITNAME}/debug
 }
 
 MOC_DIR                                = moc
