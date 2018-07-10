@@ -33,15 +33,15 @@ CONFIG                                 += c++11
 CONFIG(release, debug|release) {
   DESTDIR                              = ../rout
   LIBS                                 += -L$${LIBRARYPATH}/lib/$${KITNAME}/release
-  win32:LIBS                           += -llibsoundtouch_qt$${MAJOR}
-  else:LIBS                            += -llibsoundtouch_qt
+  win32:LIBS                           += -lsoundtouch_qt$${MAJOR}
+  else:LIBS                            += -lsoundtouch_qt
   DEFINES                              += QT_NO_DEBUG_OUTPUT
 }
 CONFIG(debug, debug|release) {
   DESTDIR                              = ../dout
   LIBS                                 += -L$${LIBRARYPATH}/lib/$${KITNAME}/debug
-  win32:LIBS                           += -llibsoundtouch_qt$${MAJOR}
-  else:LIBS                            += -llibsoundtouch_qt
+  win32:LIBS                           += -lsoundtouch_qt$${MAJOR}
+  else:LIBS                            += -lsoundtouch_qt
 }
 
 MOC_DIR                                = moc
@@ -52,7 +52,7 @@ INCLUDEPATH                            += $${LIBRARYPATH}/include
 INCLUDEPATH                            += $${LIBRARYPATH}/include/websocket
 INCLUDEPATH                            += $${LIBRARYPATH}/include/xmlparser
 
-message( kit filename - $${KITNAME} $${LIBRARYPATH})
+message( kit filename - $${KITNAME} )
 
 #
 # Target auf dem entfernten GERÄT

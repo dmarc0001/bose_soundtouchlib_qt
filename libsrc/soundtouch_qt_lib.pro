@@ -19,7 +19,7 @@ DEFINES                                += VMAJOR=$$MAJOR
 DEFINES                                += VMINOR=$$MINOR
 DEFINES                                += VPATCH=$$PATCH
 
-TARGET                                 = libsoundtouch_qt
+TARGET                                 = soundtouch_qt
 TEMPLATE                               = lib
 #
 QT                                     += core
