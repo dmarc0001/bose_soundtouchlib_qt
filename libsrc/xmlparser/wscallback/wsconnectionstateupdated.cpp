@@ -1,4 +1,4 @@
-﻿#include "xmlparser/wscallback/wsconnectionstateupdated.hpp"
+﻿#include "wscallback/wsconnectionstateupdated.hpp"
 
 namespace bose_soundtoch_lib
 {

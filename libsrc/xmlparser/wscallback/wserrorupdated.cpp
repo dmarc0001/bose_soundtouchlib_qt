@@ -1,4 +1,4 @@
-﻿#include "xmlparser/wscallback/wserrorupdated.hpp"
+﻿#include "wscallback/wserrorupdated.hpp"
 
 namespace bose_soundtoch_lib
 {

@@ -1,4 +1,4 @@
-﻿#include "xmlparser/xmlupdateparser.hpp"
+﻿#include "xmlupdateparser.hpp"
 
 namespace bose_soundtoch_lib
 {

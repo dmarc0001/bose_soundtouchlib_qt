@@ -1,4 +1,4 @@
-﻿#include "xmlparser/wscallback/wsuseractivityupdated.hpp"
+﻿#include "wscallback/wsuseractivityupdated.hpp"
 
 namespace bose_soundtoch_lib
 {

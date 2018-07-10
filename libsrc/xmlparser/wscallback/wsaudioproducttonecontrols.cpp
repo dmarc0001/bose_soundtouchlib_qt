@@ -1,4 +1,4 @@
-﻿#include "xmlparser/wscallback/wsaudioproducttonecontrols.hpp"
+﻿#include "wscallback/wsaudioproducttonecontrols.hpp"
 
 namespace bose_soundtoch_lib
 {

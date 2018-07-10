@@ -1,4 +1,4 @@
-﻿#include "xmlparser/wscallback/wspresetupdateobject.hpp"
+﻿#include "wscallback/wspresetupdateobject.hpp"
 #include <QDateTime>
 
 namespace bose_soundtoch_lib

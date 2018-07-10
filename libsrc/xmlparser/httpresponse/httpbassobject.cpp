@@ -1,4 +1,4 @@
-﻿#include "xmlparser/httpresponse/httpbassobject.hpp"
+﻿#include "httpresponse/httpbassobject.hpp"
 
 namespace bose_soundtoch_lib
 {

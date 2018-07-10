@@ -44,6 +44,9 @@ RCC_DIR                                = rcc
 UI_DIR                                 = ui
 
 INCLUDEPATH                            += $${PWD}/include
+INCLUDEPATH                            += $${PWD}/include/websocket
+INCLUDEPATH                            += $${PWD}/include/xmlparser
+
 
 unix {
     # Target auf dem entfernten GERÄT
