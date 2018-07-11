@@ -143,7 +143,7 @@ namespace bose_soundtoch_lib
     quint64 updatedOn;
     std::shared_ptr< ContentItem > contentItem;
     DevicePreset( void ){};
-    DevicePreset( const DevicePreset &cp ) = default;
+    DevicePreset( const DevicePreset & ) = default;
   };
 
   //! Beschreibung einer Quelle (Intennet, BLuethooth etc)

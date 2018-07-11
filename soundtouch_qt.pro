@@ -8,9 +8,8 @@ MINOR                                  = 0
 PATCH                                  = 0
 BUILD                                  = 0
 
-$$MAJOR.$$MINOR.$$PATCH
-win32:VERSION                          = $$MAJOR.$$MINOR.$$PATCH.$$BUILD # major.minor.patch.build
-else:VERSION                           = $$MAJOR.$$MINOR.$$PATCH    # major.minor.patch
+win32:VERSION                          = $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD} # major.minor.patch.build
+else:VERSION                           = $${MAJOR}.$${MINOR}.$${PATCH}    # major.minor.patch
 
 DEFINES                                += QT_DEPRECATED_WARNINGS
 DEFINES                                += $$DEBUG

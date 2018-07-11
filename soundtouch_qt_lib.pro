@@ -8,7 +8,6 @@ MINOR                                  = 0 # minor version number
 PATCH                                  = 2 # patch number
 BUILD                                  = 0 # win32: build number
 
-$$MAJOR.$$MINOR.$$PATCH
 win32:VERSION                          = $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD} # major.minor.patch.build
 else:VERSION                           = $${MAJOR}.$${MINOR}.$${PATCH}    # major.minor.patch
 
@@ -19,7 +18,7 @@ DEFINES                                += VMAJOR=$$MAJOR
 DEFINES                                += VMINOR=$$MINOR
 DEFINES                                += VPATCH=$$PATCH
 
-TARGET                                 = libsoundtouch_qt
+TARGET                                 = soundtouch_qt
 TEMPLATE                               = lib
 #
 QT                                     += core
