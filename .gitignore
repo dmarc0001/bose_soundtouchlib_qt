@@ -1,10 +1,2 @@
-QT-5*/
+include/
 lib/
-*.qm
-*.pro.user
-<<<<<<< HEAD
-=======
-*.autosave
-
-
->>>>>>> develop/xmlparser
