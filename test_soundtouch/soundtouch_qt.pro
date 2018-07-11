@@ -8,6 +8,10 @@ MINOR                                  = 0
 PATCH                                  = 0
 BUILD                                  = 0
 
+# da sind die Bibiotheksdateien
+EXPORT_INCLUDE                         = $${PWD}/../include
+EXPORT_LIB                             = $${PWD}/../lib
+
 win32:VERSION                          = $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD} # major.minor.patch.build
 else:VERSION                           = $${MAJOR}.$${MINOR}.$${PATCH}    # major.minor.patch
 
@@ -16,6 +20,8 @@ DEFINES                                += $$DEBUG
 
 TARGET                                 = soundtouch_qt
 TEMPLATE                               = app
+DESTDIR                                = ../out
+LIBS                                   += -L$${EXPORT_LIB}/$${KIT}
 #
 QT                                     += core
 QT                                     += gui
@@ -23,19 +29,18 @@ QT                                     += widgets
 QT                                     += websockets
 QT                                     += network
 QT                                     += xml
-
+#
 CONFIG                                 += stl
 CONFIG                                 += c++11
 
-#DESTDIR                                = ../out
 CONFIG(release, debug|release) {
-  DESTDIR                              = ../rout
-  LIBS                                 += -L$$OUT_PWD/../rout -llibsoundtouch_qt
+  TARGET                               = soundtouch_qt
+  LIBS                                 += -lsoundtouch_qt
   DEFINES                              += QT_NO_DEBUG_OUTPUT
 }
 CONFIG(debug, debug|release) {
-  DESTDIR                              = ../dout
-  LIBS                                 += -L$$OUT_PWD/../dout -llibsoundtouch_qt
+  TARGET                               = soundtouch_qt_debug
+  LIBS                                 += -lsoundtouch_debug_qt
 }
 
 MOC_DIR                                = moc
@@ -49,25 +54,19 @@ target.path                            = /home/pi/qt5pi/soundtouch_qt
 INSTALLS                               += target
 
 SOURCES += \
-    src/main.cpp \
-    src/librarytestwindow.cpp \
-    src/config/programconfig.cpp
+    main.cpp \
+    librarytestwindow.cpp \
+    config/programconfig.cpp
 
 HEADERS += \
-    src/librarytestwindow.hpp \
-    src/config/programconfig.hpp \
+    librarytestwindow.hpp \
+    config/programconfig.hpp \
 
 FORMS += \
         ui/librarytestwindow.ui
 
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/./release/ -llibsoundtouch_qt
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/./debug/ -llibsoundtouch_qt
-else:unix: LIBS += -L$$PWD/./lib/debug -llibsoundtouch_qt
 
 
-
-
-INCLUDEPATH += $$PWD/libsrc
-DEPENDPATH += $$PWD/libsrc
+INCLUDEPATH += $${EXPORT_INCLUDE}
 

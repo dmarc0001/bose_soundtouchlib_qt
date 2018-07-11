@@ -50,7 +50,8 @@ namespace bose_soundtoch_lib
             //
             // unsupportet elements
             //
-            qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+            qWarning() << "unsupported tag (expected ContentItem): " << reader->name().toString() << " --> "
+                       << reader->readElementText();
           }
         }
       }
@@ -59,7 +60,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag (expected preset): " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
   }

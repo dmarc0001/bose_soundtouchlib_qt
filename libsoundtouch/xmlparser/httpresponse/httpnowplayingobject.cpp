@@ -55,11 +55,18 @@ namespace bose_soundtoch_lib
         //
         contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
         qDebug() << "ContentItem.source:" << contentItem->source;
-        qDebug() << "ContentItem.type:" << contentItem->type;
-        qDebug() << "ContentItem.location:" << contentItem->location;
-        qDebug() << "ContentItem.sourceAccount:" << contentItem->sourceAccount;
-        qDebug() << "ContentItem.itemName:" << contentItem->itemName;
-        qDebug() << "ContentItem.containerArt:" << contentItem->containerArt;
+        if ( contentItem->source.compare( QLatin1String( "STANDBY" ), Qt::CaseInsensitive ) == 0 )
+        {
+          continue;
+        }
+        else
+        {
+          qDebug() << "ContentItem.type:" << contentItem->type;
+          qDebug() << "ContentItem.location:" << contentItem->location;
+          qDebug() << "ContentItem.sourceAccount:" << contentItem->sourceAccount;
+          qDebug() << "ContentItem.itemName:" << contentItem->itemName;
+          qDebug() << "ContentItem.containerArt:" << contentItem->containerArt;
+        }
       }
       else if ( reader->name() == QLatin1String( "track" ) )
       {
@@ -234,6 +241,10 @@ namespace bose_soundtoch_lib
         qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
       }
     }
+    if ( reader->atEnd() )
+      qDebug() << "NowPlayingObject: end of File...";
+    if ( reader->hasError() )
+      qCritical() << "NowPlayingObject:  error...";
   }
 
   /**

@@ -10,9 +10,9 @@
 #include <bsoundtouchdevice.hpp>
 #include <iostream>
 #include <memory>
-#include "../libsrc/xmlparser/xmlupdateparser.hpp"
 #include "config/programconfig.hpp"
 #include "ui_librarytestwindow.h"
+#include "xmlparser/xmlupdateparser.hpp"
 
 namespace Ui
 {

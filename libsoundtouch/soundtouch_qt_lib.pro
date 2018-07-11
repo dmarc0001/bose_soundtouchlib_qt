@@ -24,6 +24,7 @@ DEFINES                                += VPATCH=$$PATCH
 
 TARGET                                 = soundtouch_qt
 TEMPLATE                               = lib
+DESTDIR                                = $${EXPORT_LIB}/$${KIT}
 #
 QT                                     += core
 QT                                     -= gui
@@ -35,11 +36,11 @@ CONFIG                                 += stl
 CONFIG                                 += c++11
 #DESTDIR                                = ../out
 CONFIG(release, debug|release) {
-  DESTDIR                              = $${EXPORT_LIB}/$${KIT}/release
+  TARGET                               = soundtouch_qt
   DEFINES                              += QT_NO_DEBUG_OUTPUT
 }
 CONFIG(debug, debug|release) {
-  DESTDIR                              = $${EXPORT_LIB}/$${KIT}/debug
+TARGET                                 = soundtouch_debug_qt
 }
 
 MOC_DIR                                = moc
@@ -126,6 +127,9 @@ HEADERS += \
     xmlparser/httpresponse/httpbassobject.hpp \
     xmlparser/httpresponse/httpbasscapabilitiesobject.hpp
 
+#
+# extra targets einfügen (für Makefile)
+#
 headercopy.target                     = headers
 headercopy.commands                   = cd $${PWD} && cp -f --parents $${HEADERS} $${EXPORT_INCLUDE}
 headercopy.depends                    = first
@@ -135,18 +139,6 @@ headerdel.commands                    = cd $${EXPORT_INCLUDE} && rm -rf *
 
 QMAKE_EXTRA_TARGETS += headercopy
 QMAKE_EXTRA_TARGETS += headerdel
-
-
-
-
-# zu installierende header dateien
-#lib_header.files                       = $${HEADERS}
-#lib_header.path                        = $${EXPORT_INCLUDE}
-#INSTALLS                               += lib_header
-
-# library files
-#target.path                            = $${EXPORT_LIB}
-#INSTALLS                               += target
 
 
 message( library version $$VERSION kit $${KIT} )

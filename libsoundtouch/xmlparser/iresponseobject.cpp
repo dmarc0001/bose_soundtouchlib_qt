@@ -3,7 +3,8 @@
 namespace bose_soundtoch_lib
 {
   // const QRegExp IResponseObject::shortTags( "<\\w+.*\\s+/>", Qt::CaseSensitive, QRegExp::RegExp );
-  const QRegExp IResponseObject::shortTags( "<\\w+\\s+/>", Qt::CaseSensitive, QRegExp::RegExp );
+  // const QRegExp IResponseObject::shortTags( "<(\\w+|\")(\\s+)?/>", Qt::CaseSensitive, QRegExp::RegExp );
+  const QRegExp IResponseObject::shortTags( "<.*/>", Qt::CaseSensitive, QRegExp::RegExp );
   //
   //! für enum class ResultobjectType : quint8 aus "bsoundtouch_global.hpp" => value to String
   //
@@ -134,11 +135,18 @@ namespace bose_soundtoch_lib
     // workarround um verkürzte Tags erkennen zu können
     // reader->readNextStartElement findet nach verkürzten tags keine neuen Tags mehr
     //
-    while ( reader->readNext() && !reader->hasError() && !reader->atEnd() )
+    qDebug() << "######## START getNextStartTag";
+    while ( !reader->atEnd() && !reader->hasError() )
     {
-      if ( reader->isStartElement() || ( IResponseObject::shortTags.indexIn( reader->tokenString() ) != -1 ) )
+      qDebug() << "######## current tag: " << reader->name().toString();
+      reader->readNext();
       {
-        return ( true );
+        qDebug() << "######## next, now current tag: " << reader->name().toString() << "is start:" << reader->isStartElement();
+        if ( reader->isStartElement() )
+        {
+          qDebug() << "######## current tag is start tag! return";
+          return ( true );
+        }
       }
     }
     return ( false );

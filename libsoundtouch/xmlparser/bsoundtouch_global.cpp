@@ -4,7 +4,8 @@
 namespace bose_soundtoch_lib
 {
   /**
-   * @brief ContentItem::ContentItem erstellt aus einem ContentItem - TAG ein Objekt
+   * @brief ContentItem::ContentItem erstellt aus einem ContentItem - TAG ein
+   * Objekt
    * @param xmlreader
    * @param parent
    */
@@ -14,9 +15,11 @@ namespace bose_soundtoch_lib
     Q_ASSERT( reader->isStartElement() &&
               ( reader->name() == QLatin1String( "ContentItem" ) || reader->name() == QLatin1String( "contentItem" ) ) );
     //
-    // source/location/sourceAccount/isPresetable finden (Attribute von <ContentItem>)
+    // source/location/sourceAccount/isPresetable finden (Attribute von
+    // <ContentItem>)
     //
-    qDebug() << "...";
+    qDebug() << "ContentItem...";
+
     //
     // Attribut "source"
     //
@@ -45,6 +48,7 @@ namespace bose_soundtoch_lib
     //
     while ( IResponseObject::getNextStartTag( reader ) )
     {
+      qDebug().nospace() << "--------- tag " << reader->name().toString() << " -------------------";
       //
       // welchen Eintrag hab ich gefunden?
       //
