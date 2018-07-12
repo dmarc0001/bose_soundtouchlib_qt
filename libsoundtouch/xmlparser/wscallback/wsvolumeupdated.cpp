@@ -7,62 +7,68 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  WsVolumeUpdated::WsVolumeUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  WsVolumeUpdated::WsVolumeUpdated( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volumeUpdated" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "volumeUpdated" ) );
     resultType = ResultobjectType::U_VOLUME;
     qDebug() << "...";
     //
-    if ( IResponseObject::getNextStartTag( reader ) )
+    // wenn ein Knoten mit dem Namen "volume" vorhanden ist
+    //
+    QDomNode rootNode( domElem->firstChild() );
+    if ( !rootNode.isNull() && rootNode.nodeName() == QLatin1String( "volume" ) )
     {
       //
-      // das nächste element bearbeiten, welches ist es? Eigentlich nur volume
+      // lese soweit neue Elemente vorhanden sind
       //
-      if ( reader->name() == QLatin1String( "volume" ) )
+      QDomNodeList rootChildNodesList( rootNode.childNodes() );
+      for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
       {
-        qDebug() << "tag <volume> found...";
+        QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+        if ( currNode.isNull() )
+          continue;
         //
-        // alles unterhalb "volume" lesen
+        // unterscheide die Knoten
+        // der Name ist hier als QString
         //
-        while ( IResponseObject::getNextStartTag( reader ) )
+        QString currName( currNode.nodeName() );
+        //
+        //
+        // das nächste element bearbeiten, welches ist es?
+        //
+        if ( currName == QLatin1String( "targetvolume" ) )
         {
           //
-          // das nächste element bearbeiten, welches ist es?
+          // zu erreichende Lautstärke (0..100)
           //
-          if ( reader->name() == QLatin1String( "targetvolume" ) )
+          targetvolume = currNode.toElement().text().toInt();
+          qDebug() << "volume to reach: " << targetvolume;
+        }
+        else if ( currName == QLatin1String( "actualvolume" ) )
+        {
+          //
+          // aktuelle Lautstärke (0..100)
+          //
+          actualvolume = currNode.toElement().text().toInt();
+          qDebug() << "current volume: " << actualvolume;
+        }
+        else if ( currName == QLatin1String( "muteenabled" ) )
+        {
+          //
+          // kann gerät stumm gestellt werden?
+          //
+          if ( currNode.toElement().text() == QLatin1String( "true" ) )
           {
-            //
-            // zu erreichende Lautstärke (0..100)
-            //
-            targetvolume = reader->readElementText().toInt();
-            qDebug() << "volume to reach: " << targetvolume;
+            muteenabled = true;
           }
-          else if ( reader->name() == QLatin1String( "actualvolume" ) )
-          {
-            //
-            // aktuelle Lautstärke (0..100)
-            //
-            actualvolume = reader->readElementText().toInt();
-            qDebug() << "current volume: " << actualvolume;
-          }
-          else if ( reader->name() == QLatin1String( "muteenabled" ) )
-          {
-            //
-            // kann gerät stumm gestellt werden?
-            //
-            if ( reader->readElementText() == QLatin1String( "true" ) )
-            {
-              muteenabled = true;
-            }
-            qDebug() << "mute enabled: " << muteenabled;
-          }
-          else
-          {
-            //
-            // unsupportet elements
-            //
-            qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
-          }
+          qDebug() << "mute enabled: " << muteenabled;
+        }
+        else
+        {
+          //
+          // unsupportet elements
+          //
+          qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
         }
       }
     }

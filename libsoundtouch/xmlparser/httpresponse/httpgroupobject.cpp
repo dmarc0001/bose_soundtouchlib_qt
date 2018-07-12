@@ -7,94 +7,101 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpGroupObject::HttpGroupObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpGroupObject::HttpGroupObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
+    QDomNodeList rootChildNodesList;
     //
     // Objekt für zwei Fälle als httpresponse und ws update
     //
-    Q_ASSERT( reader->isStartElement() &&
-              ( reader->name() == QLatin1String( "group" ) || reader->name() == QLatin1String( "groupUpdated" ) ) );
-    if ( reader->name() == QLatin1String( "group" ) )
+    Q_ASSERT( domElem->tagName() == QLatin1String( "group" ) || domElem->tagName() == QLatin1String( "groupUpdated" ) );
+    //
+    // group http oder ws responde groupUpdated
+    //
+    if ( domElem->tagName() == QLatin1String( "groupUpdated" ) )
     {
-      // response für getGroup
-      resultType = ResultobjectType::R_GROUPS;
+      resultType = ResultobjectType::U_GROUP;
+      rootChildNodesList = domElem->firstChild().childNodes();
+      QDomNode rnode( domElem->firstChild() );
+      groupId = IResponseObject::getAttribute( &rnode, QLatin1String( "id" ) );
     }
     else
     {
-      // if ( reader -> readNextStartElement() && !reader->hasError() )
-      while ( IResponseObject::getNextStartTag( reader ) )
+      if ( domElem->tagName() == QLatin1String( "group" ) )
       {
-        if ( reader->name() == QLatin1String( "groupUpdated" ) )
-        {
-          // callback für updatedGroup
-          resultType = ResultobjectType::U_GROUP;
-        }
-        else
-        {
-          resultType = ResultobjectType::R_UNKNOWN;
-          return;
-        }
+        resultType = ResultobjectType::R_GROUPS;
+        rootChildNodesList = domElem->childNodes();
+        groupId = IResponseObject::getAttribute( domElem, QLatin1String( "id" ) );
+      }
+      else
+      {
+        resultType = ResultobjectType::R_UNKNOWN;
+        return;
       }
     }
     //
     // ID finden (Attribute von <group>)
     //
     qDebug() << "...";
-    groupId = IResponseObject::getAttribute( reader, QLatin1String( "id" ) );
     qDebug() << "groupid: " << groupId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       //
-      // das nächste element bearbeiten, welches ist es?
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-      if ( reader->name() == QLatin1String( "name" ) )
+      QString currName( currNode.nodeName() );
+      //
+      if ( currName == QLatin1String( "name" ) )
       {
         //
         // Name der Gruppe
         //
-        name = reader->readElementText();
+        name = currNode.toElement().text();
         qDebug() << "group name is " << name;
       }
-      else if ( reader->name() == QLatin1String( "masterDeviceId" ) )
+      else if ( currName == QLatin1String( "masterDeviceId" ) )
       {
         //
         // ID des Masters in der Gruppe
         //
-        masterDeviceId = reader->readElementText();
+        masterDeviceId = currNode.toElement().text();
         qDebug() << "master device is " << masterDeviceId;
       }
-      else if ( reader->name() == QLatin1String( "senderIpAddress" ) )
+      else if ( currName == QLatin1String( "senderIpAddress" ) )
       {
         //
         // IP des Senders
         //
-        _senderIpAddress = reader->readElementText();
+        _senderIpAddress = currNode.toElement().text();
         qDebug() << "sender ip is " << _senderIpAddress;
       }
-      else if ( reader->name() == QLatin1String( "status" ) )
+      else if ( currName == QLatin1String( "status" ) )
       {
         //
         // Status der Gruppe
         //
-        status = reader->readElementText();
+        status = currNode.toElement().text();
         qDebug() << "group status is " << status;
       }
-      else if ( reader->name() == QLatin1String( "roles" ) )
+      else if ( currName == QLatin1String( "roles" ) )
       {
         //
         // beschreibt Produkt rolle in der Gruppe
         //
-        parseRoles();
+        parseRoles( &currNode );
       }
       else
       {
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }
@@ -104,66 +111,81 @@ namespace bose_soundtoch_lib
     qDebug() << "...";
   }
 
-  void HttpGroupObject::parseRoles( void )
+  void HttpGroupObject::parseRoles( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "roles" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "roles" ) );
     //
     // Rollen des Gerätes in der Gruppe lesen
     //
     qDebug() << "...";
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    // lese soweit neue Elemente vorhanden sind
+    //
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
-      if ( reader->name() == QLatin1String( "groupRole" ) )
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      QString currName( currNode.nodeName() );
+      if ( currName == QLatin1String( "groupRole" ) )
       {
         //
         // beschreibt eine Rolle des Produktes in der Gruppe
         //
-        parseGroupRole();
+        parseGroupRole( &currNode );
       }
       else
       {
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }
 
-  void HttpGroupObject::parseGroupRole( void )
+  void HttpGroupObject::parseGroupRole( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "groupRole" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "groupRole" ) );
     //
     // Rollen des Gerätes in der Gruppe lesen
     //
     qDebug() << "...";
     GroupRole role;
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    //
+    // lese soweit neue Elemente vorhanden sind
+    //
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
-      if ( reader->name() == QLatin1String( "deviceId" ) )
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      QString currName( currNode.nodeName() );
+      if ( currName == QLatin1String( "deviceId" ) )
       {
         //
         // Geräte ID dieser Rolle
         //
-        role.deviceId = reader->readElementText();
+        role.deviceId = currNode.toElement().text();
         qDebug() << "grouprole deviceId is " << role.deviceId;
       }
-      if ( reader->name() == QLatin1String( "role" ) )
+      if ( currName == QLatin1String( "role" ) )
       {
         //
         // Rolle des Gerätes
         //
-        role.role = reader->readElementText();
+        role.role = currNode.toElement().text();
         qDebug() << "grouprole is " << role.role;
       }
-      if ( reader->name() == QLatin1String( "ipAddress" ) )
+      if ( currName == QLatin1String( "ipAddress" ) )
       {
         //
         // Adrese des Gerätes
         //
-        role.ipAddress = reader->readElementText();
+        role.ipAddress = currNode.toElement().text();
         qDebug() << "group device addr is " << role.ipAddress;
       }
       else
@@ -171,7 +193,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
     roles.append( role );

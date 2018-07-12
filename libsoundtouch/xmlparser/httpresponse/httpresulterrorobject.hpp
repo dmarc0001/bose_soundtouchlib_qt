@@ -2,6 +2,8 @@
 #define RESULTERROROBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QVector>
 #include <QtDebug>
@@ -16,7 +18,7 @@ namespace bose_soundtoch_lib
     QVector< ResponseError > errors;  //! Liste von Fehlermeldungen
 
     public:
-    explicit HttpResultErrorObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpResultErrorObject( QDomElement *domElem, QObject *parent );
     ~HttpResultErrorObject() override;
     //
     // GETTER
@@ -24,7 +26,7 @@ namespace bose_soundtoch_lib
     QVector< ResponseError > getErrors() const;
 
     private:
-    void parseError( void );  //! Parse Fehlermeldungen
+    void parseError( QDomNode *node );  //! Parse Fehlermeldungen
   };
 }  // namespace bose_soundtoch_lib
 #endif  // RESULTERROROBJECT_HPP

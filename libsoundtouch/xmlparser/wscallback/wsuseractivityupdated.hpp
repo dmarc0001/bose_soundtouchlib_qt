@@ -2,6 +2,8 @@
 #define WSUSERACTIVITYUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -14,7 +16,7 @@ namespace bose_soundtoch_lib
   class WsUserActivityUpdated : public IResponseObject
   {
     public:
-    explicit WsUserActivityUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsUserActivityUpdated( QDomElement *domElem, QObject *parent );
     ~WsUserActivityUpdated() override;
   };
 }  // namespace bose_soundtoch_lib

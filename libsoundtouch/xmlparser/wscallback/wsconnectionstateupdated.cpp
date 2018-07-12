@@ -7,23 +7,18 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  WsConnectionStateUpdated::WsConnectionStateUpdated( QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( xmlreader, parent ), isUp( false )
+  WsConnectionStateUpdated::WsConnectionStateUpdated( QDomElement *domElem, QObject *parent )
+      : IResponseObject( domElem, parent ), isUp( false )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "connectionStateUpdated" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "connectionStateUpdated" ) );
     resultType = ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED;
     qDebug() << "(unsupported)...";
-    isUp = ( IResponseObject::getAttribute( reader, QLatin1String( "up" ) ) == QLatin1String( "true" ) );
+    isUp = ( IResponseObject::getAttribute( domElem, QLatin1String( "up" ) ) == QLatin1String( "true" ) );
     qDebug() << "connection is up: " << isUp;
-    state = IResponseObject::getAttribute( reader, QLatin1String( "state" ) );
+    state = IResponseObject::getAttribute( domElem, QLatin1String( "state" ) );
     qDebug() << "connection state: " << state;
-    signal = IResponseObject::getAttribute( reader, QLatin1String( "signal" ) );
+    signal = IResponseObject::getAttribute( domElem, QLatin1String( "signal" ) );
     qDebug() << "connection signal quality: " << signal;
-    //
-    while ( IResponseObject::getNextStartTag( reader ) )
-    {
-      // elemente zuende lesen und ignorieren
-    }
   }
 
   /**

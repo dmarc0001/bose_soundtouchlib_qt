@@ -2,8 +2,11 @@
 #define XMLUPDATEPARSER_HPP
 
 #include <qglobal.h>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QObject>
-#include <QXmlStreamReader>
 #include <QtDebug>
 #include <memory>
 #include "iresponseobject.hpp"
@@ -35,7 +38,12 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     private:
-    std::unique_ptr< QXmlStreamReader > reader;         //! XML Parser, durch unique_ptr speichermanagement
+    bool wasError;                                      //! Gab es Fehler
+    QDomDocument document;                              //! der XML Parser
+    QDomElement docElem;                                //! das rootelement des Dokumentes
+    QString errMsg;                                     //! Fehlermeldung, falls es Fehler gab
+    int errLine;                                        //! Fehler in Zeile
+    int errColumn;                                      //! Fehler in Spalte
     std::shared_ptr< IResponseObject > responseObject;  //! polymorphes Objekt, enthält Ergebnise
 
     public:
@@ -46,7 +54,7 @@ namespace bose_soundtoch_lib
     std::shared_ptr< IResponseObject > getResultObject( void );  //! lese das Ergebnis des parsers
 
     private:
-    bool parseFile( void );  //! die xml-Daten parsen, typ feststellen
+    void parseDom( void );  //! die xml-Daten parsen, typ feststellen
   };
 
 }  // namespace bose_soundtoch_lib

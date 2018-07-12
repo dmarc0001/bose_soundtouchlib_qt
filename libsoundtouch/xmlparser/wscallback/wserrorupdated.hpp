@@ -2,6 +2,8 @@
 #define WSERRORUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     ResponseError error;  //! enthält die Fehlermeldungen
 
     public:
-    explicit WsErrorUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsErrorUpdated( QDomElement *domElem, QObject *parent );
     ~WsErrorUpdated() override;
     //
     // GETTER

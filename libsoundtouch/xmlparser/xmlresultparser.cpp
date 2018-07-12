@@ -8,26 +8,22 @@ namespace bose_soundtoch_lib
    * @param parent
    */
   XmlResultParser::XmlResultParser( QString &xmlString, QObject *parent )
-      : QObject( parent )
-      , reader( std::unique_ptr< QXmlStreamReader >( new QXmlStreamReader( xmlString ) ) )
-      , responseObject( nullptr )
+      : QObject( parent ), responseObject( nullptr ), wasError( false ), errMsg( "" ), errLine( 0 ), errColumn( 0 )
   {
     qDebug() << "...";
-    parseFile();
-    //
-    // Errorhandling
-    //
-    if ( reader->hasError() )
+    if ( !document.setContent( xmlString, &errMsg, &errLine, &errColumn ) )
     {
-      qCritical() << "error while parsing xml...";
+      qCritical().noquote() << "error while parsing xml on line" << errLine << "col:" << errColumn << "(" << errMsg << ")";
+      wasError = true;
       //
       // TODO: Errorhandling
       //
     }
-    else
-    {
-      qDebug() << "finished parsing response xml string";
-    }
+    //
+    // das oberste element im Baum suchen
+    //
+    docElem = document.documentElement();
+    parseDom();
   }
 
   /**
@@ -42,142 +38,107 @@ namespace bose_soundtoch_lib
    * @brief XmlResultParser::parseFile
    * @return
    */
-  bool XmlResultParser::parseFile( void )
+  void XmlResultParser::parseDom( void )
   {
-    QStringRef rootelemName;
-    // while ( !reader->atEnd() && !reader->hasError() )
-    if ( !reader->atEnd() && !reader->hasError() )
+    QString rootelemName = docElem.tagName();
+    //
+    // zuordnung machen, IResponseObject ist polymorph, das erleichtert die Handhabung
+    //
+    if ( rootelemName == QLatin1String( "info" ) )
     {
-      // lese nächstes Element
-      QXmlStreamReader::TokenType token = reader->readNext();
       //
-      // Nur Start -> nächstes Element lesen
+      // Device INFO erhalten
+      // erzeuge das Objekt und Parse es
       //
-      if ( token == QXmlStreamReader::StartDocument )
-      {
-        // weiter!
-        reader->readNext();
-      }
-      //
-      // das nächste element bearbeiten
-      //
-      rootelemName = reader->name();
-      //
-      // zuordnung machen, IResponseObject ist polymorph, das erleichtert die Handhabung
-      //
-      if ( rootelemName == QLatin1String( "info" ) )
-      {
-        //
-        // Device INFO erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpDeviceInfoObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "nowPlaying" ) )
-      {
-        //
-        // now playing erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpNowPlayingObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "volume" ) )
-      {
-        //
-        // volume erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpVolumeObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "sources" ) )
-      {
-        //
-        // sources erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpSourcesObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "zone" ) )
-      {
-        //
-        // zoneninfo erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpZoneObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "bassCapabilities" ) )
-      {
-        //
-        // bass möglichkeiten erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpBassCapabilitiesObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "bass" ) )
-      {
-        //
-        // bass einstellungen erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpBassObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "presets" ) )
-      {
-        //
-        // preset einstellungen erhalten
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpPresetsObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "group" ) )
-      {
-        //
-        // Gruppeneinstellungen (nur SoundTouch10)
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpGroupObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "status" ) )
-      {
-        //
-        // alles OK bei "set" Funktion
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpResultOkObject( reader.get(), this ) );
-      }
-      else if ( rootelemName == QLatin1String( "errors" ) )
-      {
-        //
-        // FEHLER bei "set" Funktion
-        // erzeuge das Objekt und Parse es
-        //
-        responseObject = std::shared_ptr< IResponseObject >( new HttpResultErrorObject( reader.get(), this ) );
-      }
-      else
-      {
-        //
-        // hier weiss ich auch nicht weiter, der TAG ist unbekannt
-        //
-        qWarning() << "unsupported tag in response XML struct found: " << reader->name().toString();
-        // while ( reader->readNextStartElement() && !reader->hasError() && !reader->atEnd() );
-        /*
-        while ( !reader->atEnd() && !reader->hasError() )
-        {
-          reader->readNext();
-        }
-        */
-      }
+      responseObject = std::shared_ptr< IResponseObject >( new HttpDeviceInfoObject( &docElem, this ) );
     }
-    //
-    // gab es fehler, nur Fehler melden
-    //
-    if ( reader->hasError() )
-      return ( true );
-    //
-    // Fehlerfrei, datren resetten
-    //
-    reader->clear();
-    return ( false );
+    else if ( rootelemName == QLatin1String( "nowPlaying" ) )
+    {
+      //
+      // now playing erhalten
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpNowPlayingObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "volume" ) )
+    {
+      //
+      // volume erhalten
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpVolumeObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "sources" ) )
+    {
+      //
+      // sources erhalten
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpSourcesObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "zone" ) )
+    {
+      //
+      // zoneninfo erhalten
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpZoneObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "bassCapabilities" ) )
+    {
+      //
+      // bass möglichkeiten erhalten
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpBassCapabilitiesObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "bass" ) )
+    {
+      //
+      // bass einstellungen erhalten
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpBassObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "presets" ) )
+    {
+      //
+      // preset einstellungen erhalten
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpPresetsObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "group" ) )
+    {
+      //
+      // Gruppeneinstellungen (nur SoundTouch10)
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpGroupObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "status" ) )
+    {
+      //
+      // alles OK bei "set" Funktion
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpResultOkObject( &docElem, this ) );
+    }
+    else if ( rootelemName == QLatin1String( "errors" ) )
+    {
+      //
+      // FEHLER bei "set" Funktion
+      // erzeuge das Objekt und Parse es
+      //
+      responseObject = std::shared_ptr< IResponseObject >( new HttpResultErrorObject( &docElem, this ) );
+    }
+    else
+    {
+      //
+      // hier weiss ich auch nicht weiter, der TAG ist unbekannt
+      //
+      qWarning() << "unsupported tag in response XML struct found: " << docElem.tagName();
+    }
   }
 
   //
@@ -186,14 +147,14 @@ namespace bose_soundtoch_lib
 
   bool XmlResultParser::hasError( void )
   {
-    return ( reader->hasError() );
+    return ( wasError );
   }
 
   QString XmlResultParser::getErrorString( void )
   {
-    if ( reader->hasError() )
+    if ( wasError )
     {
-      QString errStr( QString( "%1 at line %2" ).arg( reader->errorString() ).arg( reader->lineNumber() ) );
+      QString errStr( QString( "error %1 at line %2, col %2" ).arg( errMsg ).arg( errLine ).arg( errColumn ) );
       return ( errStr );
     }
     return ( QLatin1String( "no error" ) );

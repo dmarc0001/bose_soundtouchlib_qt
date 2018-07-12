@@ -2,6 +2,8 @@
 #define WSAUDIOPRODUCTLEVELCONTROLS_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     QString controls;  //! controls?
 
     public:
-    explicit WsAudioProductLevelControls( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsAudioProductLevelControls( QDomElement *domElem, QObject *parent );
     ~WsAudioProductLevelControls() override;
     //
     // GETTER

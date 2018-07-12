@@ -2,6 +2,8 @@
 #define WSZONEUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     bool updated;
 
     public:
-    explicit WsZoneUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsZoneUpdated( QDomElement *domElem, QObject *parent );
     ~WsZoneUpdated() override;
   };
 }  // namespace bose_soundtoch_lib

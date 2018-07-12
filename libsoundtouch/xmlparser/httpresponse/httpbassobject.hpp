@@ -2,6 +2,8 @@
 #define BASSOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QtDebug>
 #include "../iresponseobject.hpp"
@@ -15,7 +17,7 @@ namespace bose_soundtoch_lib
     int actualbass;  //! aktuelle Einstellung
 
     public:
-    HttpBassObject( QXmlStreamReader *xmlreader, QObject *parent );
+    HttpBassObject( QDomElement *domElem, QObject *parent );
     ~HttpBassObject() override;
     //
     // GETTER

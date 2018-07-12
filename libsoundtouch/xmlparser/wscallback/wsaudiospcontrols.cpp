@@ -7,16 +7,12 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  WsAudioSpControls::WsAudioSpControls( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  WsAudioSpControls::WsAudioSpControls( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "audiospcontrols" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "audiospcontrols" ) );
     resultType = ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED;
     qDebug() << "updated (unsupported)...";
-    controls = reader->readElementText();
-    while ( IResponseObject::getNextStartTag( reader ) )
-    {
-      // elemente zuende lesen und ignorieren
-    }
+    controls = domElem->text();
   }
 
   /**

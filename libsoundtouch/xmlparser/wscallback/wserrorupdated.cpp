@@ -7,32 +7,34 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  WsErrorUpdated::WsErrorUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  WsErrorUpdated::WsErrorUpdated( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "errorUpdate" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "errorUpdate" ) );
     resultType = ResultobjectType::U_ERROR;
     qDebug() << "...";
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNode rnode( domElem->firstChild() );
+    if ( !rnode.isNull() && rnode.nodeName() == QLatin1String( "error" ) )
     {
-      //
-      // das nächste element bearbeiten, welches ist es?
-      //
-      if ( reader->name() == QLatin1String( "error" ) )
+      error.value = IResponseObject::getAttribute( &rnode, QLatin1String( "value" ) ).toInt();
+      qDebug() << "error value: " << error.value;
+      error.name = IResponseObject::getAttribute( &rnode, QLatin1String( "name" ) );
+      qDebug() << "error name: " << error.name;
+      error.severity = IResponseObject::getAttribute( &rnode, QLatin1String( "severity" ) );
+      qDebug() << "error severity: " << error.severity;
+      error.text = rnode.toElement().text();
+    }
+    else
+    {
+      if ( rnode.isNull() )
       {
-        error.value = IResponseObject::getAttribute( reader, QLatin1String( "value" ) ).toInt();
-        qDebug() << "error value: " << error.value;
-        error.name = IResponseObject::getAttribute( reader, QLatin1String( "name" ) );
-        qDebug() << "error name: " << error.name;
-        error.severity = IResponseObject::getAttribute( reader, QLatin1String( "severity" ) );
-        qDebug() << "error severity: " << error.severity;
-        error.text = reader->readElementText();
+        qWarning() << "no child node found!";
       }
       else
       {
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << rnode.nodeName() << " --> " << rnode.toElement().text();
       }
     }
   }

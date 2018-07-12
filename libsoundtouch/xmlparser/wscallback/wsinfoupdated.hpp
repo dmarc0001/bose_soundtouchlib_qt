@@ -2,6 +2,9 @@
 #define WSINFOUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +20,7 @@ namespace bose_soundtoch_lib
     bool updatet;  //! update?
 
     public:
-    explicit WsInfoUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsInfoUpdated( QDomElement *domElem, QObject *parent );
     ~WsInfoUpdated() override;
     //
     // GETTER

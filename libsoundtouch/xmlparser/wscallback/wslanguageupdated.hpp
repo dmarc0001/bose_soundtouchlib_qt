@@ -2,6 +2,8 @@
 #define WSLANGUAGEUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     QString language;  //! zu welcher sprache gewechselt?
 
     public:
-    explicit WsLanguageUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsLanguageUpdated( QDomElement *domElem, QObject *parent );
     ~WsLanguageUpdated() override;
     //
     // GETTER

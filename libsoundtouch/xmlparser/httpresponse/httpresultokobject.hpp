@@ -2,6 +2,8 @@
 #define RESULTOKOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QtDebug>
 #include "../bsoundtouch_global.hpp"
@@ -15,7 +17,7 @@ namespace bose_soundtoch_lib
     QString status;
 
     public:
-    explicit HttpResultOkObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpResultOkObject( QDomElement *domElem, QObject *parent );
     ~HttpResultOkObject() override;
     // Getter Funktion
     QString getStatus() const;

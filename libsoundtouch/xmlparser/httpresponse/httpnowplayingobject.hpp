@@ -2,6 +2,8 @@
 #define NOWPLAYINGOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNodeList>
 #include <QObject>
 #include <QtDebug>
 #include "../bsoundtouch_global.hpp"
@@ -39,7 +41,7 @@ namespace bose_soundtoch_lib
     DeviceConnectionStatusInfo nowPlayingConnectStatusInfo;  //! Berbindungsstatus als Objekt
 
     public:
-    explicit HttpNowPlayingObject( QXmlStreamReader *xmlreader, QObject *parent = nullptr );
+    explicit HttpNowPlayingObject( QDomElement *domElem, QObject *parent = nullptr );
     ~HttpNowPlayingObject() override;
     //
     // GETTER
@@ -71,9 +73,9 @@ namespace bose_soundtoch_lib
     QString getSourceAccount() const;
 
     private:
-    void parseArt( void );                   //! Parse Logobescheibung
-    void parseTime( void );                  //! Parse die zeiten(aktuell, total)
-    void parseConnectionStatusInfo( void );  //! parse das Objekt für Verbindungsstatus
+    void parseArt( QDomNode *node );                   //! Parse Logobescheibung
+    void parseTime( QDomNode *node );                  //! Parse die zeiten(aktuell, total)
+    void parseConnectionStatusInfo( QDomNode *node );  //! parse das Objekt für Verbindungsstatus
   };
 }  // namespace bose_soundtoch_lib
 #endif  // NOWPLAYINGOBJECT_HPP

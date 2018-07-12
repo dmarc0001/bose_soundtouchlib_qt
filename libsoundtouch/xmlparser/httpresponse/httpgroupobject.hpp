@@ -2,6 +2,8 @@
 #define GROUPOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QVector>
 #include <QtDebug>
@@ -22,7 +24,7 @@ namespace bose_soundtoch_lib
     QString status;              //! Status der Gruppe
 
     public:
-    explicit HttpGroupObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpGroupObject( QDomElement *domElem, QObject *parent );
     ~HttpGroupObject() override;
     //
     // GETTER
@@ -34,8 +36,8 @@ namespace bose_soundtoch_lib
     QString getStatus() const;
 
     private:
-    void parseRoles( void );      //! Rollen parsen
-    void parseGroupRole( void );  //! Gruppenrolle parsen
+    void parseRoles( QDomNode *node );      //! Rollen parsen
+    void parseGroupRole( QDomNode *node );  //! Gruppenrolle parsen
   };
 }  // namespace bose_soundtoch_lib
 #endif  // GROUPOBJECT_HPP

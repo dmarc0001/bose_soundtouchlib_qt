@@ -2,6 +2,8 @@
 #define WSBROWSEUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -18,7 +20,7 @@ namespace bose_soundtoch_lib
     QString sourceAccount;  //! account für source
 
     public:
-    explicit WsBrowseUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsBrowseUpdated( QDomElement *domElem, QObject *parent );
     ~WsBrowseUpdated() override;
     //
     // GETTER

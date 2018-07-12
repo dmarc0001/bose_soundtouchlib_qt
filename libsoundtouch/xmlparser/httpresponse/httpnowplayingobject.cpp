@@ -7,55 +7,66 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpNowPlayingObject::HttpNowPlayingObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpNowPlayingObject::HttpNowPlayingObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() &&
-              ( reader->name() == QLatin1String( "nowPlaying" ) || reader->name() == QLatin1String( "nowPlayingUpdated" ) ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "nowPlaying" ) || domElem->tagName() == QLatin1String( "nowPlayingUpdated" ) );
+    QDomNodeList rootChildNodesList;
     //
-    if ( reader->name() == QLatin1String( "nowPlaying" ) )
+    if ( domElem->tagName() == QLatin1String( "nowPlayingUpdated" ) )
     {
-      resultType = ResultobjectType::R_NOW_PLAYING;
+      resultType = ResultobjectType::U_NOWPLAYING;
+      rootChildNodesList = domElem->firstChild().childNodes();
+      QDomNode rnode( domElem->firstChild() );
+      deviceId = IResponseObject::getAttribute( &rnode, QLatin1String( "deviceID" ) );
+      source = IResponseObject::getAttribute( &rnode, QLatin1String( "source" ) );
+      sourceAccount = IResponseObject::getAttribute( &rnode, QLatin1String( "sourceAccount" ) );
     }
     else
     {
-      // if ( reader -> readNextStartElement() && !reader->hasError() )
-      while ( IResponseObject::getNextStartTag( reader ) )
+      if ( domElem->tagName() == QLatin1String( "nowPlaying" ) )
       {
-        if ( reader->name() == QLatin1String( "nowPlaying" ) )
-        {
-          resultType = ResultobjectType::U_NOWPLAYING;
-        }
-        else
-        {
-          resultType = ResultobjectType::R_UNKNOWN;
-          return;
-        }
+        resultType = ResultobjectType::R_NOW_PLAYING;
+        rootChildNodesList = domElem->childNodes();
+        deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceID" ) );
+        source = IResponseObject::getAttribute( domElem, QLatin1String( "source" ) );
+        sourceAccount = IResponseObject::getAttribute( domElem, QLatin1String( "sourceAccount" ) );
+      }
+      else
+      {
+        resultType = ResultobjectType::R_UNKNOWN;
+        return;
       }
     }
     //
     // DeviceID/source finden (Attribute von <nowPlaying>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
     qDebug() << "device id: " << deviceId;
-    source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
     qDebug() << "playing source: " << source;
-    sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
     if ( !sourceAccount.isEmpty() )
       qDebug() << "source Account: " << sourceAccount;
     //
-    // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
+    // lese soweit neue Elemente vorhanden sind
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
-      if ( reader->name() == QLatin1String( "ContentItem" ) )
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      //
+      // unterscheide die Knoten
+      // der Name ist hier als QString
+      //
+      QString currName( currNode.nodeName() );
+      //
+      if ( currName.compare( QLatin1String( "ContentItem" ), Qt::CaseInsensitive ) == 0 )
       {
         //
         // Objet mit Attributen (kannman bei /select nutzen)
         //
-        contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
+        contentItem = std::unique_ptr< ContentItem >( new ContentItem( &currNode, this ) );
         qDebug() << "ContentItem.source:" << contentItem->source;
-        if ( contentItem->source.compare( QLatin1String( "STANDBY" ), Qt::CaseInsensitive ) == 0 )
+        if ( contentItem->source == QLatin1String( "STANDBY" ) )
         {
           continue;
         }
@@ -68,61 +79,61 @@ namespace bose_soundtoch_lib
           qDebug() << "ContentItem.containerArt:" << contentItem->containerArt;
         }
       }
-      else if ( reader->name() == QLatin1String( "track" ) )
+      else if ( currName == QLatin1String( "track" ) )
       {
         //
         // gespielter track
         //
-        track = reader->readElementText();
+        track = currNode.toElement().text();
         qDebug() << "track: " << track;
       }
-      else if ( reader->name() == QLatin1String( "artist" ) )
+      else if ( currName == QLatin1String( "artist" ) )
       {
         //
         // gespielter künstler
         //
-        artist = reader->readElementText();
+        artist = currNode.toElement().text();
         qDebug() << "artist: " << artist;
       }
-      else if ( reader->name() == QLatin1String( "album" ) )
+      else if ( currName == QLatin1String( "album" ) )
       {
         //
         // gespieltes album
         //
-        album = reader->readElementText();
+        album = currNode.toElement().text();
         qDebug() << "album: " << album;
       }
-      else if ( reader->name() == QLatin1String( "genre" ) )
+      else if ( currName == QLatin1String( "genre" ) )
       {
         //
         // gespieltes genre
         //
-        genre = reader->readElementText();
+        genre = currNode.toElement().text();
         qDebug() << "genre: " << genre;
       }
-      else if ( reader->name() == QLatin1String( "stationName" ) )
+      else if ( currName == QLatin1String( "stationName" ) )
       {
         //
         // gespielte station/playlist
         //
-        stationName = reader->readElementText();
+        stationName = currNode.toElement().text();
         qDebug() << "station or playlist: " << stationName;
       }
-      else if ( reader->name() == QLatin1String( "art" ) )
+      else if ( currName == QLatin1String( "art" ) )
       {
         //
         // Dekoration für Sender/Playlist (Logo etc)
         //
-        parseArt();
+        parseArt( &currNode );
       }
-      else if ( reader->name() == QLatin1String( "time" ) )
+      else if ( currName == QLatin1String( "time" ) )
       {
         //
         // Laufzeit
         //
-        parseTime();
+        parseTime( &currNode );
       }
-      else if ( reader->name() == QLatin1String( "skipEnabled" ) )
+      else if ( currName == QLatin1String( "skipEnabled" ) )
       {
         //
         // weiter springen möglich?
@@ -130,7 +141,7 @@ namespace bose_soundtoch_lib
         skipEnabled = true;
         qDebug() << "skip enabled.";
       }
-      else if ( reader->name() == QLatin1String( "skipPreviousEnabled" ) )
+      else if ( currName == QLatin1String( "skipPreviousEnabled" ) )
       {
         //
         // zurück springen möglich?
@@ -138,18 +149,18 @@ namespace bose_soundtoch_lib
         skipPreviousEnabled = true;
         qDebug() << "skip previous enabled.";
       }
-      else if ( reader->name() == QLatin1String( "skipPreviousSupported" ) )
+      else if ( currName == QLatin1String( "skipPreviousSupported" ) )
       {
         //
         // zurück springen unterstützt?
         //
-        if ( IResponseObject::getAttribute( reader, QLatin1String( "value" ) ) == QLatin1String( "true" ) )
+        if ( IResponseObject::getAttribute( &currNode, QLatin1String( "value" ) ) == QLatin1String( "true" ) )
         {
           skipPreviousSupported = true;
         }
         qDebug() << "skip previous supported: " << skipPreviousSupported;
       }
-      else if ( reader->name() == QLatin1String( "favoriteEnabled" ) )
+      else if ( currName == QLatin1String( "favoriteEnabled" ) )
       {
         //
         // als favorite möglich?
@@ -157,7 +168,7 @@ namespace bose_soundtoch_lib
         favoriteEnabled = true;
         qDebug() << "favoriteEnabled enabled.";
       }
-      else if ( reader->name() == QLatin1String( "isFavorite" ) )
+      else if ( currName == QLatin1String( "isFavorite" ) )
       {
         //
         // als favorite möglich?
@@ -165,7 +176,7 @@ namespace bose_soundtoch_lib
         isFavorite = true;
         qDebug() << "isFavorite enabled.";
       }
-      else if ( reader->name() == QLatin1String( "rateEnabled" ) )
+      else if ( currName == QLatin1String( "rateEnabled" ) )
       {
         //
         // bewertung möglich?
@@ -173,78 +184,75 @@ namespace bose_soundtoch_lib
         rateEnabled = true;
         qDebug() << "rateEnabled enabled.";
       }
-      else if ( reader->name() == QLatin1String( "rating" ) )
+      else if ( currName == QLatin1String( "rating" ) )
       {
         //
         // Bewertng (zweideutig in der Doku)
         //
-        rating = reader->readElementText();
+        rating = currNode.toElement().text();
         qDebug() << "rating: " << rating;
       }
-      else if ( reader->name() == QLatin1String( "playStatus" ) )
+      else if ( currName == QLatin1String( "playStatus" ) )
       {
         //
         // welcher Status beim abspielen
         //
-        playStatus = reader->readElementText();
+        playStatus = currNode.toElement().text();
         qDebug() << "playStatus: " << playStatus;
       }
-      else if ( reader->name() == QLatin1String( "shuffleSettings" ) )
+      else if ( currName == QLatin1String( "shuffleSettings" ) )
       {
         //
         // zufallabspielen einstellungen
         //
-        shuffleSettings = reader->readElementText();
+        shuffleSettings = currNode.toElement().text();
         qDebug() << "shuffleSettings: " << shuffleSettings;
       }
-      else if ( reader->name() == QLatin1String( "repeatSettings" ) )
+      else if ( currName == QLatin1String( "repeatSettings" ) )
       {
         //
         // Wiederholungseinstellungen
         //
-        repeatSettings = reader->readElementText();
+        repeatSettings = currNode.toElement().text();
         qDebug() << "repeatSettings: %1" << repeatSettings;
       }
-      else if ( reader->name() == QLatin1String( "streamType" ) )
+      else if ( currName == QLatin1String( "streamType" ) )
       {
         //
         // Art des Streams
         //
-        streamType = reader->readElementText();
+        streamType = currNode.toElement().text();
         qDebug() << "streamType: " << streamType;
       }
-      else if ( reader->name() == QLatin1String( "description" ) )
+      else if ( currName == QLatin1String( "description" ) )
       {
         //
         // Beschreibung des Streams
         //
-        _description = reader->readElementText();
+        _description = currNode.toElement().text();
         qDebug() << "stream description: " << _description;
       }
-      else if ( reader->name() == QLatin1String( "stationLocation" ) )
+      else if ( currName == QLatin1String( "stationLocation" ) )
       {
         //
         // station standort (internet only)
         //
-        stationLocation = reader->readElementText();
+        stationLocation = currNode.toElement().text();
+        ;
         qDebug() << "station location: " << stationLocation;
       }
-      else if ( reader->name() == QLatin1String( "connectionStatusInfo" ) )
+      else if ( currName == QLatin1String( "connectionStatusInfo" ) )
       {
-        parseConnectionStatusInfo();
+        parseConnectionStatusInfo( &currNode );
       }
       else
       {
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
-    if ( reader->atEnd() )
-      qDebug() << "NowPlayingObject: end of File...";
-    if ( reader->hasError() )
-      qCritical() << "NowPlayingObject:  error...";
   }
 
   /**
@@ -258,31 +266,35 @@ namespace bose_soundtoch_lib
   /**
    * @brief HttpNowPlayingObject::parseConnectionStatusInfo
    */
-  void HttpNowPlayingObject::parseConnectionStatusInfo( void )
+  void HttpNowPlayingObject::parseConnectionStatusInfo( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "time" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "connectionStatusInfo" ) );
     //
     // Spielzeit
     //
     qDebug() << "...";
-    while ( IResponseObject::getNextStartTag( reader ) )
+    //
+    // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
+    //
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
-      //
-      // welchen Eintrag hab ich gefunden?
-      //
-      if ( reader->name() == QLatin1String( "status" ) )
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      if ( currNode.nodeName() == QLatin1String( "status" ) )
       {
-        nowPlayingConnectStatusInfo.status = reader->readElementText();
+        nowPlayingConnectStatusInfo.status = currNode.toElement().text();
         qDebug() << "status: " << nowPlayingConnectStatusInfo.status;
       }
-      else if ( reader->name() == QLatin1String( "deviceName" ) )
+      else if ( currNode.nodeName() == QLatin1String( "deviceName" ) )
       {
-        nowPlayingConnectStatusInfo.deviceName = reader->readElementText();
+        nowPlayingConnectStatusInfo.deviceName = currNode.toElement().text();
         qDebug() << "device name: " << nowPlayingConnectStatusInfo.deviceName;
       }
       else
       {
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currNode.nodeName() << " --> " << currNode.toElement().text();
       }
     }
   }
@@ -290,9 +302,9 @@ namespace bose_soundtoch_lib
   /**
    * @brief HttpNowPlayingObject::parseTime
    */
-  void HttpNowPlayingObject::parseTime( void )
+  void HttpNowPlayingObject::parseTime( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "time" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "time" ) );
     //
     // Spielzeit
     //
@@ -300,20 +312,20 @@ namespace bose_soundtoch_lib
     //
     // Attribut "total"
     //
-    nowPlayingTime.total_sec = IResponseObject::getAttribute( reader, QLatin1String( "total" ) ).toInt();
+    nowPlayingTime.total_sec = IResponseObject::getAttribute( node, QLatin1String( "total" ) ).toInt();
     //
     // jetzt den Inhalt
     //
-    nowPlayingTime.current_sec = reader->readElementText().toInt();
+    nowPlayingTime.current_sec = node->toElement().text().toInt();
     qDebug() << "current play time: " << nowPlayingTime.current_sec;
   }
 
   /**
    * @brief HttpNowPlayingObject::parseArt
    */
-  void HttpNowPlayingObject::parseArt( void )
+  void HttpNowPlayingObject::parseArt( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "art" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "art" ) );
     //
     // Logo(Icon o.A für Sender/Playlist
     //
@@ -321,11 +333,11 @@ namespace bose_soundtoch_lib
     //
     // Attribut "artImageStatus"
     //
-    nowPlayingArt.artImageStatus = IResponseObject::getAttribute( reader, QLatin1String( "artImageStatus" ) ).toInt();
+    nowPlayingArt.artImageStatus = IResponseObject::getAttribute( node, QLatin1String( "artImageStatus" ) ).toInt();
     //
     // jetzt den Inhalt
     //
-    nowPlayingArt.artUrl = reader->readElementText();
+    nowPlayingArt.artUrl = node->toElement().text();
     qDebug() << "artUrl: " << nowPlayingArt.artUrl;
   }
 

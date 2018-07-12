@@ -2,11 +2,11 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpResultOkObject::HttpResultOkObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpResultOkObject::HttpResultOkObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "status" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "status" ) );
     resultType = ResultobjectType::R_OK;
-    status = reader->readElementText();
+    status = domElem->text();
     qDebug() << "positive result status is " << status;
   }
 

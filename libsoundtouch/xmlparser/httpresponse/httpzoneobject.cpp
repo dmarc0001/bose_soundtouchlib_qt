@@ -7,34 +7,41 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpZoneObject::HttpZoneObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpZoneObject::HttpZoneObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "zone" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "zone" ) );
     resultType = ResultobjectType::R_ZONES;
     //
-    // master finden (Attribute von <zone>)
+    // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    master = IResponseObject::getAttribute( reader, QLatin1String( "master" ) );
+    master = IResponseObject::getAttribute( domElem, QLatin1String( "master" ) );
     qDebug() << "zone master: " << master;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList rootChildNodesList( domElem->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       //
-      // das nächste element bearbeiten, welches ist es?
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-      if ( reader->name() == QLatin1String( "member" ) )
+      QString currName( currNode.nodeName() );
+      //
+      if ( currName == QLatin1String( "member" ) )
       {
         //
         // ein Mitglied in der Zone
         //
         SoundTouchMemberObject member;
-        member.first = IResponseObject::getAttribute( reader, QLatin1String( "ipaddress" ) );
+        member.first = IResponseObject::getAttribute( &currNode, QLatin1String( "ipaddress" ) );
         // lese MAC/ID des Slave/Master
-        member.second = reader->readElementText();
-        qDebug() << "member ID/MAC %1" << member.second;
+        member.second = currNode.toElement().text();
+        qDebug() << "member ID/MAC " << member.second;
         members.append( member );
       }
       else
@@ -42,7 +49,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }

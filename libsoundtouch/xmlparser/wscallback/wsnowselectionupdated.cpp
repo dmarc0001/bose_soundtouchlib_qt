@@ -3,59 +3,78 @@
 
 namespace bose_soundtoch_lib
 {
-  WsNowSelectionUpdated::WsNowSelectionUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  WsNowSelectionUpdated::WsNowSelectionUpdated( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "nowSelectionUpdated" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "nowSelectionUpdated" ) );
+    int countContentItem = 0;
     resultType = ResultobjectType::U_SELECTION;
     qDebug() << "...";
     //
-    if ( IResponseObject::getNextStartTag( reader ) )
+    //
+    // lese soweit neue Elemente vorhanden sind
+    //
+    QDomNode currNode( domElem->firstChild() );
+    if ( currNode.isNull() )
+      return;
+    //
+    // unterscheide die Knoten
+    // der Name ist hier als QString
+    //
+    QString currName( currNode.nodeName() );
+    //
+    if ( currName == QLatin1String( "preset" ) )
     {
+      qDebug() << "found tag preset...";
+      preset.id = IResponseObject::getAttribute( &currNode, QLatin1String( "id" ) );
+      qDebug() << "preset id: " << preset.id;
+      preset.createdOn = static_cast< qint64 >( IResponseObject::getAttribute( &currNode, QLatin1String( "createdOn" ) ).toLong() );
+      qDebug() << "preset created: " << preset.createdOn << " ("
+               << QDateTime::fromSecsSinceEpoch( preset.createdOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
+      preset.updatedOn = static_cast< qint64 >( IResponseObject::getAttribute( &currNode, QLatin1String( "updatedOn" ) ).toLong() );
+      qDebug() << "preset updated: " << preset.updatedOn << " ("
+               << QDateTime::fromSecsSinceEpoch( preset.updatedOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
       //
-      // das nächste element bearbeiten, welches ist es? Eigentlich nur presets
+      // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein)
       //
-      if ( reader->name() == QLatin1String( "preset" ) )
+      QDomNodeList childNodesList( currNode.childNodes() );
+      for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
       {
-        qDebug() << "found tag preset...";
-        preset.id = IResponseObject::getAttribute( reader, QLatin1String( "id" ) );
-        qDebug() << "preset id: " << preset.id;
-        preset.createdOn = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "createdOn" ) ).toLong() );
-        qDebug() << "preset created: " << preset.createdOn << " ("
-                 << QDateTime::fromSecsSinceEpoch( preset.createdOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
-        preset.updatedOn = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "updatedOn" ) ).toLong() );
-        qDebug() << "preset updated: " << preset.updatedOn << " ("
-                 << QDateTime::fromSecsSinceEpoch( preset.updatedOn ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
+        QDomNode currNode( childNodesList.item( nodeIdx ) );
+        if ( currNode.isNull() )
+          continue;
         //
-        // jetzt alle childknoten von preset lesen (sollte nur ContentItem sein
+        // unterscheide die Knoten
+        // der Name ist hier als QString
         //
-        while ( IResponseObject::getNextStartTag( reader ) )
+        QString currName( currNode.nodeName() );
+        //
+
+        if ( currName.compare( QLatin1String( "ContentItem" ), Qt::CaseInsensitive ) == 0 )
         {
-          if ( reader->name() == QLatin1String( "ContentItem" ) )
+          countContentItem++;
+          if ( countContentItem > 1 )
           {
-            preset.contentItem = std::unique_ptr< ContentItem >( new ContentItem( reader, this ) );
+            qWarning() << "there is mor than one ContentItem in preset structure. This is an mistake!";
           }
-          else
-          {
-            //
-            // unsupportet elements
-            //
-            qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
-          }
+          preset.contentItem = std::unique_ptr< ContentItem >( new ContentItem( &currNode, this ) );
+        }
+        else
+        {
+          //
+          // unsupportet elements
+          //
+          qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
         }
       }
-      else
-      {
-        //
-        // unsupportet elements
-        //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
-      }
     }
-    while ( IResponseObject::getNextStartTag( reader ) )
+    else
     {
-      // elemente zuende lesen und ignorieren
+      //
+      // unsupportet elements
+      //
+      qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
     }
-  }
+  }  // namespace bose_soundtoch_lib
 
   WsNowSelectionUpdated::~WsNowSelectionUpdated()
   {

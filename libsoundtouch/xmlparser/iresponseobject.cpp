@@ -1,4 +1,5 @@
 #include "iresponseobject.hpp"
+#include <QDomNamedNodeMap>
 
 namespace bose_soundtoch_lib
 {
@@ -47,8 +48,8 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  IResponseObject::IResponseObject( QXmlStreamReader *xmlreader, QObject *parent )
-      : QObject( parent ), reader( xmlreader ), resultType( ResultobjectType::R_UNKNOWN )
+  IResponseObject::IResponseObject( QDomElement *_domElem, QObject *parent )
+      : QObject( parent ), domElem( _domElem ), resultType( ResultobjectType::R_UNKNOWN )
   {
     deviceId.clear();
   }
@@ -105,51 +106,72 @@ namespace bose_soundtoch_lib
    * @param name
    * @return
    */
-  QString IResponseObject::getAttribute( QXmlStreamReader *reader, QLatin1String name )
+  QString IResponseObject::getAttribute( QDomNode *node, QLatin1String name )
   {
     //
     // attribute finden
     //
-    QString result;
-    QXmlStreamAttributes attr = reader->attributes();
-    if ( attr.hasAttribute( name ) )
+    QString result( QLatin1String( "UNKNOWN" ) );
+    if ( !node->hasAttributes() )
     {
-      result = attr.value( name ).toString();
+      //
+      // Keine Attribute vorhanden
+      //
+      return ( result );
     }
     else
     {
-      result = QLatin1String( "UNKNOWN" );
-      // result.clear();
+      //
+      // ist das gewünschte Attribut vorhanden?
+      //
+      QDomNamedNodeMap attribs = node->attributes();
+      QDomNode attr( attribs.namedItem( name ) );
+      if ( !attr.isNull() )
+      {
+        //
+        // Ja, das Attribut ist:
+        //
+        result = attr.nodeValue();
+      }
     }
     return ( result );
   }
 
   /**
-   * @brief IResponseObject::getNextStartTag nächster start tag oder nächster verkürzte tag
-   * @param reader
+   * @brief IResponseObject::getAttribute
+   * @param domElement
+   * @param name
    * @return
    */
-  bool IResponseObject::getNextStartTag( QXmlStreamReader *reader )
+  QString IResponseObject::getAttribute( QDomElement *domElement, QLatin1String name )
   {
     //
-    // workarround um verkürzte Tags erkennen zu können
-    // reader->readNextStartElement findet nach verkürzten tags keine neuen Tags mehr
+    // attribute finden
     //
-    qDebug() << "######## START getNextStartTag";
-    while ( !reader->atEnd() && !reader->hasError() )
+    QString result( QLatin1String( "UNKNOWN" ) );
+    if ( !domElement->hasAttribute( name ) )
     {
-      qDebug() << "######## current tag: " << reader->name().toString();
-      reader->readNext();
+      //
+      // Kein Attribut vorhanden
+      //
+      return ( result );
+    }
+    else
+    {
+      //
+      // ist das gewünschte Attribut vorhanden?
+      //
+      QDomNamedNodeMap attribs = domElement->attributes();
+      QDomNode attr( attribs.namedItem( name ) );
+      if ( !attr.isNull() )
       {
-        qDebug() << "######## next, now current tag: " << reader->name().toString() << "is start:" << reader->isStartElement();
-        if ( reader->isStartElement() )
-        {
-          qDebug() << "######## current tag is start tag! return";
-          return ( true );
-        }
+        //
+        // Ja, das Attribut ist:
+        //
+        result = attr.nodeValue();
       }
     }
-    return ( false );
+    return ( result );
   }
 
 }  // namespace bose_soundtoch_lib

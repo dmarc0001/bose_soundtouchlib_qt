@@ -2,11 +2,13 @@
 #define BSOUNDTOUCH_GLOBAL_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QObject>
 #include <QPair>
 #include <QString>
 #include <QVector>
-#include <QXmlStreamReader>
 #include <QtDebug>
 #include <memory>
 
@@ -76,7 +78,7 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     protected:
-    QXmlStreamReader *reader;
+    QDomNode *node;
 
     public:
     QString source;
@@ -86,7 +88,7 @@ namespace bose_soundtoch_lib
     bool isPresetable;
     QString itemName;
     QString containerArt;
-    explicit ContentItem( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit ContentItem( QDomNode *node, QObject *parent );
     ContentItem( const ContentItem &cp ) = default;
     // ContentItem( const ContentItem *cp );
     ~ContentItem();

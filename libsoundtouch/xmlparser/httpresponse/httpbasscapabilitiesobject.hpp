@@ -2,6 +2,8 @@
 #define BASSCAPABILITYS_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QtDebug>
 #include "../iresponseobject.hpp"
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     int bassDefault;             //! Default wert
 
     public:
-    HttpBassCapabilitiesObject( QXmlStreamReader *xmlreader, QObject *parent );
+    HttpBassCapabilitiesObject( QDomElement *domElem, QObject *parent );
     ~HttpBassCapabilitiesObject();
     // Funktionen um an die Daten zu kommen
     // GETTERS:

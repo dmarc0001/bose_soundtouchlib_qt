@@ -7,37 +7,42 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpResultErrorObject::HttpResultErrorObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpResultErrorObject::HttpResultErrorObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "errors" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "errors" ) );
     resultType = ResultobjectType::R_ERROR;
     //
-    // ID finden (Attribute von <group>)
+    // ID finden
     //
-    qDebug() << "...";
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceID" ) );
     qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList rootChildNodesList( domElem->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       //
-      // das nächste element bearbeiten, welches ist es? Eigentlich nur error
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-      if ( reader->name() == QLatin1String( "error" ) )
+      QString currName( currNode.nodeName() );
+      if ( currName == QLatin1String( "error" ) )
       {
         //
         // einzelnen Fehler Parsen
         //
-        parseError();
+        parseError( &currNode );
       }
       else
       {
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " -> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " -> " << currNode.toElement().text();
       }
     }
   }
@@ -53,24 +58,24 @@ namespace bose_soundtoch_lib
   /**
    * @brief HttpResultErrorObject::parseError
    */
-  void HttpResultErrorObject::parseError( void )
+  void HttpResultErrorObject::parseError( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "error" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "error" ) );
     //
     // einzelnen Fehler parsen und speichern
     //
     ResponseError error;
     qDebug() << "...";
-    error.value = IResponseObject::getAttribute( reader, QLatin1String( "value" ) ).toInt();
+    error.value = IResponseObject::getAttribute( node, QLatin1String( "value" ) ).toInt();
     qDebug() << "error value: " << error.value;
-    error.name = IResponseObject::getAttribute( reader, QLatin1String( "name" ) );
+    error.name = IResponseObject::getAttribute( node, QLatin1String( "name" ) );
     qDebug() << "error name: " << error.name;
-    error.severity = IResponseObject::getAttribute( reader, QLatin1String( "severity" ) );
+    error.severity = IResponseObject::getAttribute( node, QLatin1String( "severity" ) );
     qDebug() << " error severity: " << error.severity;
     //
     // den Fehlertext lesen
     //
-    error.text = reader->readElementText();
+    error.text = node->toElement().text();
   }
 
   QVector< ResponseError > HttpResultErrorObject::getErrors() const

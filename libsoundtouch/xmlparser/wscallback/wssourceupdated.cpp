@@ -7,20 +7,12 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  WsSourceUpdated::WsSourceUpdated( QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( xmlreader, parent ), updated( false )
+  WsSourceUpdated::WsSourceUpdated( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent ), updated( false )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "sourcesUpdated" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "sourcesUpdated" ) );
     resultType = ResultobjectType::U_SOURCES_UNSUPPORTED;
     qDebug() << "updated (unsupported)...";
-    if ( reader->name() == QLatin1String( "sourcesUpdate" ) )
-    {
-      updated = true;
-    }
-    while ( IResponseObject::getNextStartTag( reader ) )
-    {
-      // elemente zuende lesen und ignorieren
-    }
+    updated = true;
   }
 
   /**

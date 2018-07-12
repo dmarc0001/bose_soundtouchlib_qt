@@ -2,6 +2,8 @@
 #define WSAUDIOSPCONTROLS_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     QString controls;  //! Controls...
 
     public:
-    explicit WsAudioSpControls( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsAudioSpControls( QDomElement *domElem, QObject *parent );
     ~WsAudioSpControls() override;
     //
     // GETTER

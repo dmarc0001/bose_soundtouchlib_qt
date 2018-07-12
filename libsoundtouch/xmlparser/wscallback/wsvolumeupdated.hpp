@@ -2,6 +2,9 @@
 #define WSVOLUMEUPDATE_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -19,7 +22,7 @@ namespace bose_soundtoch_lib
     bool muteenabled = false;  //! mute möglich/erlaubt
 
     public:
-    explicit WsVolumeUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsVolumeUpdated( QDomElement *domElem, QObject *parent );
     ~WsVolumeUpdated() override;
     //
     // GETTER

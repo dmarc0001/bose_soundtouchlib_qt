@@ -2,6 +2,8 @@
 #define VOLUMEOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QtDebug>
 #include "../iresponseobject.hpp"
@@ -16,7 +18,7 @@ namespace bose_soundtoch_lib
     bool muteenabled = false;
 
     public:
-    explicit HttpVolumeObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpVolumeObject( QDomElement *domElem, QObject *parent );
     ~HttpVolumeObject() override;
     //
     // GETTER

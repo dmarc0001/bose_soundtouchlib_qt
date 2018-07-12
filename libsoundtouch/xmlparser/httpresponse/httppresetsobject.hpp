@@ -2,6 +2,9 @@
 #define PRESETSOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QObject>
 #include <QVector>
 #include <QtDebug>
@@ -16,8 +19,13 @@ namespace bose_soundtoch_lib
     QVector< bose_soundtoch_lib::DevicePreset > presets;  //! Liste von Presets (aktell max 6)
 
     public:
-    explicit HttpPresetsObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpPresetsObject( QDomElement *domElem, QObject *parent );
     ~HttpPresetsObject() override;
+
+    private:
+    void parseContentItems( QDomNode *parentNode, bose_soundtoch_lib::DevicePreset &preset );
+
+    public:
     //
     // GETTER
     //

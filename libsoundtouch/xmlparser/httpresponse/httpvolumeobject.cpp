@@ -7,46 +7,55 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpVolumeObject::HttpVolumeObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpVolumeObject::HttpVolumeObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "volume" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "volume" ) );
     resultType = ResultobjectType::R_VOLUME;
     //
     // Device ID finden (Attribute von <volume>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceID" ) );
     qDebug() << "device: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    //
+    // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
+    //
+    QDomNodeList rootChildNodesList( domElem->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       //
-      // das nächste element bearbeiten, welches ist es?
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-      if ( reader->name() == QLatin1String( "targetvolume" ) )
+      QString currName( currNode.nodeName() );
+      if ( currName == QLatin1String( "targetvolume" ) )
       {
         //
         // zu erreichende Lautstärke (0..100)
         //
-        targetvolume = reader->readElementText().toInt();
+        targetvolume = currNode.toElement().text().toInt();
         qDebug() << "target volume: " << targetvolume;
       }
-      else if ( reader->name() == QLatin1String( "actualvolume" ) )
+      else if ( currName == QLatin1String( "actualvolume" ) )
       {
         //
         // aktuelle Lautstärke (0..100)
         //
-        actualvolume = reader->readElementText().toInt();
+        actualvolume = currNode.toElement().text().toInt();
         qDebug() << "current volume: " << actualvolume;
       }
-      else if ( reader->name() == QLatin1String( "muteenabled" ) )
+      else if ( currName == QLatin1String( "muteenabled" ) )
       {
         //
         // kann gerät stumm gestellt werden?
         //
-        if ( reader->readElementText() == QLatin1String( "true" ) )
+        if ( currName == QLatin1String( "true" ) )
         {
           muteenabled = true;
         }
@@ -57,7 +66,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }

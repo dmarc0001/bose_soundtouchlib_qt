@@ -55,12 +55,22 @@ SOURCES += \
     xmlparser/xmlupdateparser.cpp \
     xmlparser/bsoundtouch_global.cpp \
     xmlparser/httpresponse/httppresetsobject.cpp \
+    xmlparser/httpresponse/httpzoneobject.cpp \
+    xmlparser/httpresponse/httpvolumeobject.cpp \
+    xmlparser/httpresponse/httpsourcesobject.cpp \
+    xmlparser/httpresponse/httpresultokobject.cpp \
+    xmlparser/httpresponse/httpresulterrorobject.cpp \
+    xmlparser/httpresponse/httpnowplayingobject.cpp \
+    xmlparser/httpresponse/httpgroupobject.cpp \
+    xmlparser/httpresponse/httpdeviceinfoobject.cpp \
+    xmlparser/httpresponse/httpbassobject.cpp \
+    xmlparser/httpresponse/httpbasscapabilitiesobject.cpp \
+    xmlparser/wscallback/wssoundtouchsdkinfo.cpp \
+    xmlparser/wscallback/wsuseractivityupdated.cpp \
     xmlparser/wscallback/wszoneupdated.cpp \
     xmlparser/wscallback/wsvolumeupdated.cpp \
     xmlparser/wscallback/wsuserinactivityupdated.cpp \
-    xmlparser/wscallback/wsuseractivityupdated.cpp \
     xmlparser/wscallback/wssourceupdated.cpp \
-    xmlparser/wscallback/wssoundtouchsdkinfo.cpp \
     xmlparser/wscallback/wsrecentsupdated.cpp \
     xmlparser/wscallback/wspresetupdateobject.cpp \
     xmlparser/wscallback/wsnowselectionupdated.cpp \
@@ -75,17 +85,7 @@ SOURCES += \
     xmlparser/wscallback/wsbassupdated.cpp \
     xmlparser/wscallback/wsaudiospcontrols.cpp \
     xmlparser/wscallback/wsaudioproducttonecontrols.cpp \
-    xmlparser/wscallback/wsaudioproductlevelcontrols.cpp \
-    xmlparser/httpresponse/httpzoneobject.cpp \
-    xmlparser/httpresponse/httpvolumeobject.cpp \
-    xmlparser/httpresponse/httpsourcesobject.cpp \
-    xmlparser/httpresponse/httpresultokobject.cpp \
-    xmlparser/httpresponse/httpresulterrorobject.cpp \
-    xmlparser/httpresponse/httpnowplayingobject.cpp \
-    xmlparser/httpresponse/httpgroupobject.cpp \
-    xmlparser/httpresponse/httpdeviceinfoobject.cpp \
-    xmlparser/httpresponse/httpbassobject.cpp \
-    xmlparser/httpresponse/httpbasscapabilitiesobject.cpp
+    xmlparser/wscallback/wsaudioproductlevelcontrols.cpp
 
 HEADERS += \
     xmlparser/xmlresultparser.hpp \

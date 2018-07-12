@@ -7,45 +7,48 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpBassCapabilitiesObject::HttpBassCapabilitiesObject( QXmlStreamReader *xmlreader, QObject *parent )
-      : IResponseObject( xmlreader, parent )
+  HttpBassCapabilitiesObject::HttpBassCapabilitiesObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bassCapabilities" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "bassCapabilities" ) );
     resultType = ResultobjectType::R_BASS_CAPABILITIES;
     //
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceID" ) );
+    qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList rootChildNodesList( domElem->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      QString currName( currNode.nodeName() );
       //
-      // das nächste element bearbeiten, welches ist es?
-      //
-      if ( reader->name() == QLatin1String( "bassAvailable" ) )
+      if ( currName == QLatin1String( "bassAvailable" ) )
       {
-        if ( reader->readElementText() == QLatin1String( "true" ) )
+        if ( currNode.toElement().text() == QLatin1String( "true" ) )
         {
           bassAvailable = true;
           qDebug() << "bass availible: " << bassAvailable;
         }
       }
-      else if ( reader->name() == QLatin1String( "bassMin" ) )
+      else if ( currName == QLatin1String( "bassMin" ) )
       {
-        bassMin = reader->readElementText().toInt();
+        bassMin = currNode.toElement().text().toInt();
         qDebug() << "bass minimum value: " << bassMin;
       }
-      else if ( reader->name() == QLatin1String( "bassMax" ) )
+      else if ( currName == QLatin1String( "bassMax" ) )
       {
-        bassMax = reader->readElementText().toInt();
+        bassMax = currNode.toElement().text().toInt();
         qDebug() << "bass maximum value: " << bassMax;
       }
-      else if ( reader->name() == QLatin1String( "bassDefault" ) )
+      else if ( currName == QLatin1String( "bassDefault" ) )
       {
-        bassDefault = reader->readElementText().toInt();
+        bassDefault = currNode.toElement().text().toInt();
         qDebug() << "bass default value: " << bassDefault;
       }
       else
@@ -53,7 +56,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }

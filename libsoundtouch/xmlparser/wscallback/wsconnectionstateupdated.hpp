@@ -2,6 +2,8 @@
 #define WSCONNECTIONSTATEUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -19,7 +21,7 @@ namespace bose_soundtoch_lib
     QString signal;  //! signalqualität
 
     public:
-    explicit WsConnectionStateUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsConnectionStateUpdated( QDomElement *domElem, QObject *parent );
     ~WsConnectionStateUpdated() override;
     //
     // GETTER

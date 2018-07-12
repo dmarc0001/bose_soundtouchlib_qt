@@ -2,6 +2,8 @@
 #define WSSOUNDTOUCHSDKINFO_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -18,7 +20,7 @@ namespace bose_soundtoch_lib
     QString serverBuild;
 
     public:
-    explicit WsSoundTouchSdkInfo( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsSoundTouchSdkInfo( QDomElement *domElem, QObject *parent );
     ~WsSoundTouchSdkInfo() override;
     QString getServerVersion() const;
     QString getServerBuild() const;

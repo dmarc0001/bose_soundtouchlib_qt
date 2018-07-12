@@ -2,8 +2,9 @@
 #define XMLRESULTPARSER_HPP
 
 #include <qglobal.h>
+#include <QDomDocument>
+#include <QDomElement>
 #include <QObject>
-#include <QXmlStreamReader>
 #include <memory>
 #include "httpresponse/httpbasscapabilitiesobject.hpp"
 #include "httpresponse/httpbassobject.hpp"
@@ -24,8 +25,13 @@ namespace bose_soundtoch_lib
   {
     Q_OBJECT
     private:
-    std::unique_ptr< QXmlStreamReader > reader;         //! der XML Parser
     std::shared_ptr< IResponseObject > responseObject;  //! polymorphes Objekt, enthält Ergebnise
+    bool wasError;                                      //! Gab es Fehler
+    QDomDocument document;                              //! der XML Parser
+    QDomElement docElem;                                //! das rootelement des Dokumentes
+    QString errMsg;                                     //! Fehlermeldung, falls es Fehler gab
+    int errLine;                                        //! Fehler in Zeile
+    int errColumn;                                      //! Fehler in Spalte
 
     public:
     explicit XmlResultParser( QString &xmlString, QObject *parent = nullptr );
@@ -38,7 +44,7 @@ namespace bose_soundtoch_lib
     std::shared_ptr< IResponseObject > getResultObject( void );
 
     private:
-    bool parseFile( void );  //! parse das XML und typisiere
+    void parseDom( void );  //! parse das XML und typisiere
   };
 }  // namespace bose_soundtoch_lib
 #endif  // XMLRESULTPARSER_HPP

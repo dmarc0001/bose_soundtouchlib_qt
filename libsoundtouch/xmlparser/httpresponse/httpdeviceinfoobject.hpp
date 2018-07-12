@@ -2,7 +2,9 @@
 #define DEVICEINFOOBJECT_HPP
 
 #include <qglobal.h>
-#include <QXmlStreamReader>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QtDebug>
 #include "../bsoundtouch_global.hpp"
 #include "../iresponseobject.hpp"
@@ -25,7 +27,7 @@ namespace bose_soundtoch_lib
     QVector< DeviceNetworkInfo > deviceNetworkInfos;
 
     public:
-    HttpDeviceInfoObject( QXmlStreamReader *xmlreader, QObject *parent = nullptr );
+    HttpDeviceInfoObject( QDomElement *domElem, QObject *parent = nullptr );
     ~HttpDeviceInfoObject() override;
     //
     // GETTER
@@ -43,9 +45,9 @@ namespace bose_soundtoch_lib
     QVector< DeviceNetworkInfo > getDeviceNetworkInfos() const;
 
     private:
-    void parseComponents( void );       //! Kmponentenliste parsen
-    void parseSingleComponent( void );  //! Einzelne Kompnente parsen
-    void parseNetworkInfo( void );      //! Network info lesen
+    void parseComponents( QDomNode *node );       //! Kmponentenliste parsen
+    void parseSingleComponent( QDomNode *node );  //! Einzelne Kompnente parsen
+    void parseNetworkInfo( QDomNode *node );      //! Network info lesen
   };
 }  // namespace bose_soundtoch_lib
 #endif  // DEVICEINFOOBJECT_HPP

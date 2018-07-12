@@ -2,6 +2,8 @@
 #define WSSOURCEUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     bool updated;  //! Kennzeichen, dass ein update stattfand
 
     public:
-    explicit WsSourceUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsSourceUpdated( QDomElement *domElem, QObject *parent );
     ~WsSourceUpdated() override;
   };
 }  // namespace bose_soundtoch_lib

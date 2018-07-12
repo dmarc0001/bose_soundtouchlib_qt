@@ -2,6 +2,8 @@
 #define SOURCESOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QVector>
 #include <QtDebug>
@@ -16,13 +18,13 @@ namespace bose_soundtoch_lib
     QVector< SourceItem > sourceItems;
 
     public:
-    explicit HttpSourcesObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpSourcesObject( QDomElement *domElem, QObject *parent );
     ~HttpSourcesObject() override;
     // Getter Funktionen
     QVector< SourceItem > getSourceItems() const;
 
     private:
-    void parseSourceItem( void );
+    void parseSourceItem( QDomNode *node );
   };
 }  // namespace bose_soundtoch_lib
 #endif  // SOURCESOBJECT_HPP

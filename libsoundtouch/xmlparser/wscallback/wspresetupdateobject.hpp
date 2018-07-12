@@ -2,6 +2,9 @@
 #define WSPRESETUPDATEOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -18,7 +21,7 @@ namespace bose_soundtoch_lib
     QVector< DevicePreset > devicePresets;  //! Liste mit Presets des Gerätes/der Geräte. Aktuell 6 stück möglich
 
     public:
-    explicit WsPresetUpdateObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsPresetUpdateObject( QDomElement *domElem, QObject *parent );
     ~WsPresetUpdateObject() override;
     //
     // GETTER
@@ -26,7 +29,8 @@ namespace bose_soundtoch_lib
     QVector< DevicePreset > getDevicePresets( void ) const;
 
     private:
-    void parseAndAddPreset( void );  //! einien preset der Liste zufügen
+    void parsePresets( QDomNode *parentNode );       //! jedes preset finden
+    void parseAndAddPreset( QDomNode *parentNode );  //! einien preset der Liste zufügen
   };
 }  // namespace bose_soundtoch_lib
 #endif  // WSPRESETUPDATEOBJECT_HPP

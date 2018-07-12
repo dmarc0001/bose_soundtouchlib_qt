@@ -2,6 +2,8 @@
 #define WSBASSUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     bool updatet;  //! updated?
 
     public:
-    explicit WsBassUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsBassUpdated( QDomElement *domElem, QObject *parent );
     ~WsBassUpdated() override;
     //
     // GETTER

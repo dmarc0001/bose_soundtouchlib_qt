@@ -2,6 +2,8 @@
 #define ZONEOBJECT_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QtDebug>
 #include <memory>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     SoundTouchMemberList members;  //! liste von mitgliedern
 
     public:
-    explicit HttpZoneObject( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit HttpZoneObject( QDomElement *domElem, QObject *parent );
     ~HttpZoneObject() override;
     //
     // Getter Funktionen

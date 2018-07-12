@@ -2,6 +2,8 @@
 #define WSRECENTSUPDATE_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -18,11 +20,11 @@ namespace bose_soundtoch_lib
     QVector< DeviceRecent > recents;  //! Liste der zurückliegend gespielten Sender
 
     public:
-    explicit WsRecentsUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsRecentsUpdated( QDomElement *domElem, QObject *parent );
     ~WsRecentsUpdated() override;
 
     private:
-    void readRecent( void );  //! einen Eintag lesen und der Liste zufügen
+    void readRecent( QDomNode *node );  //! einen Eintag lesen und der Liste zufügen
   };
 }  // namespace bose_soundtoch_lib
 

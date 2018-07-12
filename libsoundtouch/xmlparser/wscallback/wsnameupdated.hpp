@@ -2,6 +2,8 @@
 #define WSNAMEUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
 #include <QObject>
 #include <QString>
 #include <QtDebug>
@@ -17,7 +19,7 @@ namespace bose_soundtoch_lib
     bool updatet;  //! update marker
 
     public:
-    explicit WsNameUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsNameUpdated( QDomElement *domElem, QObject *parent );
     ~WsNameUpdated() override;
   };
 }  // namespace bose_soundtoch_lib

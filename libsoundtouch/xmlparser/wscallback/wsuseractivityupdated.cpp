@@ -7,13 +7,13 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  WsUserActivityUpdated::WsUserActivityUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  WsUserActivityUpdated::WsUserActivityUpdated( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "userActivityUpdate" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "userActivityUpdate" ) );
     qDebug() << "updated (unsupported)...";
     resultType = ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED;
     // als root tag...
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceId" ) );
+    deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceId" ) );
     qDebug() << "device id: " << deviceId;
   }
 

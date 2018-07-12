@@ -8,41 +8,43 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  WsRecentsUpdated::WsRecentsUpdated( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  WsRecentsUpdated::WsRecentsUpdated( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recentsUpdated" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "recentsUpdated" ) );
     resultType = ResultobjectType::U_RECENTS_UNSUPPORTED;
     qDebug() << "(unsupported)...";
-    if ( IResponseObject::getNextStartTag( reader ) )
+    QDomNode recentElem( domElem->firstChild() );
+    if ( !recentElem.isNull() && recentElem.nodeName() == QLatin1String( "recents" ) )
     {
-      // elemente zuende lesen und ignorieren
-      if ( reader->name() == QLatin1String( "recents" ) )
+      QDomNodeList childNodesList( recentElem.childNodes() );
+      for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
       {
-        while ( IResponseObject::getNextStartTag( reader ) )
+        QDomNode currNode( childNodesList.item( nodeIdx ) );
+        if ( currNode.isNull() )
+          continue;
+        //
+        // unterscheide die Knoten
+        // der Name ist hier als QString
+        //
+        QString currName( currNode.nodeName() );
+        //
+        if ( currName == QLatin1String( "recent" ) )
         {
-          if ( reader->name() == QLatin1String( "recent" ) )
-          {
-            readRecent();
-          }
-          else
-          {
-            qWarning() << "recentsUpdated->recents: expected: recent, found: " << reader->name().toString();
-          }
+          readRecent( &currNode );
+        }
+        else
+        {
+          qWarning() << "unsupported tag: " << currName;
         }
       }
-      else
-      {
-        //
-        // unsupportet elements
-        //
-        qWarning() << "unsupported tag:" << reader->name().toString() << " --> " << reader->readElementText();
-      }
     }
-    //
-    // eventuelle Reste zuende lesen und ignorieren
-    //
-    while ( IResponseObject::getNextStartTag( reader ) )
-      ;
+    else
+    {
+      //
+      // unsupportet elements
+      //
+      qWarning() << "unsupported tag";
+    }
   }
 
   /**
@@ -53,28 +55,48 @@ namespace bose_soundtoch_lib
     qDebug() << "...";
   }
 
-  void WsRecentsUpdated::readRecent( void )
+  void WsRecentsUpdated::readRecent( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "recent" ) );
+    int contentItemCount = 0;
+    Q_ASSERT( node->nodeName() == QLatin1String( "recent" ) );
     qDebug() << "...";
     DeviceRecent recent;
-    recent.deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    recent.deviceId = IResponseObject::getAttribute( node, QLatin1String( "deviceID" ) );
     qDebug() << "recent device id: " << recent.deviceId;
-    recent.utcTime = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "utcTime" ) ).toLong() );
+    recent.utcTime = static_cast< qint64 >( IResponseObject::getAttribute( node, QLatin1String( "utcTime" ) ).toLong() );
     qDebug() << "recent time: " << recent.utcTime << " ("
              << QDateTime::fromSecsSinceEpoch( recent.utcTime ).toString( "dd.MM.yyyy hh:mm:ss" ) << ")";
-    recent.id = static_cast< qint64 >( IResponseObject::getAttribute( reader, QLatin1String( "id" ) ).toLong() );
+    recent.id = static_cast< qint64 >( IResponseObject::getAttribute( node, QLatin1String( "id" ) ).toLong() );
     qDebug() << "recent id: " << recent.id;
-    if ( IResponseObject::getNextStartTag( reader ) )
+    //
+    // erzeuge Liste mit Kindknoten (sollte hier eigetnlich nur einer sein)
+    //
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
-      if ( reader->name() == QLatin1String( "contentItem" ) )
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      //
+      // unterscheide die Knoten
+      // der Name ist hier als QString
+      //
+      QString currName( currNode.nodeName() );
+      if ( currName.compare( QLatin1String( "ContentItem" ), Qt::CaseInsensitive ) == 0 )
       {
-        qDebug() << "contentItem found.";
-        recent.contentItem = std::shared_ptr< ContentItem >( new ContentItem( reader, this ) );
+        contentItemCount++;
+        if ( contentItemCount > 1 )
+        {
+          qWarning() << "Element ContentItem in device preset mor than one times in preset structure. This is an mistake....";
+        }
+        recent.contentItem = std::unique_ptr< ContentItem >( new ContentItem( &currNode, this ) );
       }
       else
       {
-        qWarning() << "expected item <contentItem> read: " << reader->name().toString();
+        //
+        // unsupportet elements
+        //
+        qWarning() << "unsupported tag (expected ContentItem): " << currName << " --> " << currNode.toElement().text();
       }
     }
     qDebug() << "add recent entry to list...";

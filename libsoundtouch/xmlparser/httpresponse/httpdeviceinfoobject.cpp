@@ -7,120 +7,125 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpDeviceInfoObject::HttpDeviceInfoObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpDeviceInfoObject::HttpDeviceInfoObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "info" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "info" ) );
     resultType = ResultobjectType::R_DEVICE_INFO;
     //
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceID" ) );
     qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList rootChildNodesList( domElem->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       //
-      // das nächste element bearbeiten, welches ist es?
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-
+      QString currName( currNode.nodeName() );
       // STRINGS
-      if ( reader->name() == QLatin1String( "name" ) )
+      if ( currName == QLatin1String( "name" ) )
       {
         //
         // Geräetename direkt als Element
         //
-        deviceName = reader->readElementText();
+        deviceName = currNode.toElement().text();
         qDebug() << "device name: " << deviceName;
       }
-      else if ( reader->name() == QLatin1String( "type" ) )
+      else if ( currName == QLatin1String( "type" ) )
       {
         //
         // Type des Gerätes als Element
         //
-        deviceType = reader->readElementText();
+        deviceType = currNode.toElement().text();
         qDebug() << "device type: " << deviceType;
       }
       // unsupported strings 2018-05-01
-      else if ( reader->name() == QLatin1String( "margeAccountUUID" ) )
+      else if ( currName == QLatin1String( "margeAccountUUID" ) )
       {
         //
         // margeAccountUUID des Gerätes als Element
         //
-        _margeAccountUUID = reader->readElementText();
+        _margeAccountUUID = currNode.toElement().text();
         qDebug() << "module margeAccountUUID: " << _margeAccountUUID;
       }
-      else if ( reader->name() == QLatin1String( "margeURL" ) )
+      else if ( currName == QLatin1String( "margeURL" ) )
       {
         //
         // margeURL des Gerätes als Element
         //
-        _margeURL = reader->readElementText();
+        _margeURL = currNode.toElement().text();
         qDebug() << "module margeURL: " << _margeURL;
       }
-      else if ( reader->name() == QLatin1String( "moduleType" ) )
+      else if ( currName == QLatin1String( "moduleType" ) )
       {
         //
         // Modultype des Gerätes als Element
         //
-        _moduleType = reader->readElementText();
+        _moduleType = currNode.toElement().text();
         qDebug() << "module type: " << _moduleType;
       }
-      else if ( reader->name() == QLatin1String( "variant" ) )
+      else if ( currName == QLatin1String( "variant" ) )
       {
         //
         // Variante des Gerätes als Element
         //
-        _variant = reader->readElementText();
+        _variant = currNode.toElement().text();
         qDebug() << "module variant: " << _variant;
       }
-      else if ( reader->name() == QLatin1String( "variantMode" ) )
+      else if ( currName == QLatin1String( "variantMode" ) )
       {
         //
         // Variant Mode des Gerätes als Element
         //
-        _variantMode = reader->readElementText();
+        _variantMode = currNode.toElement().text();
         qDebug() << "module variant mode: " << _variantMode;
       }
-      else if ( reader->name() == QLatin1String( "countryCode" ) )
+      else if ( currName == QLatin1String( "countryCode" ) )
       {
         //
         // Ländercode des Gerätes als Element
         //
-        _countryCode = reader->readElementText();
+        _countryCode = currNode.toElement().text();
         qDebug() << "module country code: " << _countryCode;
       }
-      else if ( reader->name() == QLatin1String( "regionCode" ) )
+      else if ( currName == QLatin1String( "regionCode" ) )
       {
         //
         // Regioncode des Gerätes als Element
         //
-        _regionCode = reader->readElementText();
+        _regionCode = currNode.toElement().text();
         qDebug() << "module region code: " << _regionCode;
       }
       // OBJEKTE
-      else if ( reader->name() == QLatin1String( "components" ) )
+      else if ( currName == QLatin1String( "components" ) )
       {
         //
         // Liste der Gerätekomponenten unterobjekte sind "component"
         //
-        parseComponents();
+        parseComponents( &currNode );
       }
-      else if ( reader->name() == QLatin1String( "networkInfo" ) )
+      else if ( currName == QLatin1String( "networkInfo" ) )
       {
         //
         // Objekt mit Netzwerkinformationen
         //
-        parseNetworkInfo();
+        parseNetworkInfo( &currNode );
       }
       else
       {
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }
@@ -136,58 +141,76 @@ namespace bose_soundtoch_lib
   /**
    * @brief HttpDeviceInfoObject::parseComponents
    */
-  void HttpDeviceInfoObject::parseComponents( void )
+  void HttpDeviceInfoObject::parseComponents( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "components" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "components" ) );
     qDebug() << "...";
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
-      if ( reader->name() == QLatin1String( "component" ) )
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      if ( currNode.nodeName() == QLatin1String( "component" ) )
       {
         //
         // einzelne Komponente parsen und in die Liste eintragen
         //
-        parseSingleComponent();
+        parseSingleComponent( &currNode );
+      }
+      else
+      {
+        //
+        // unsupportet elements
+        //
+        qWarning() << "unsupported tag: " << currNode.nodeName() << " --> " << currNode.toElement().text();
       }
     }
   }
 
-  void HttpDeviceInfoObject::parseSingleComponent( void )
+  void HttpDeviceInfoObject::parseSingleComponent( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "component" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "component" ) );
     qDebug() << "...";
     //
     // lese die Komponente aus und trage sie in die Liste der Komponenten ein
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       // neues lokales Element
       DeviceComponent currComponent;
       //
-      // welchen Eintrag hab ich gefunden?
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-      if ( reader->name() == QLatin1String( "componentCategory" ) )
+      QString currName( currNode.nodeName() );
+      //
+      if ( currName == QLatin1String( "componentCategory" ) )
       {
         // UNSUPPORTED
-        currComponent._componentCategory = reader->readElementText();
+        currComponent._componentCategory = currNode.toElement().text();
         qDebug() << "component category: " << currComponent._componentCategory;
       }
-      else if ( reader->name() == QLatin1String( "softwareVersion" ) )
+      else if ( currName == QLatin1String( "softwareVersion" ) )
       {
-        currComponent.softwareVersion = reader->readElementText();
+        currComponent.softwareVersion = currNode.toElement().text();
         qDebug() << "software version: " << currComponent.softwareVersion;
       }
-      else if ( reader->name() == QLatin1String( "serialNumber" ) )
+      else if ( currName == QLatin1String( "serialNumber" ) )
       {
-        currComponent.serialNumber = reader->readElementText();
+        currComponent.serialNumber = currNode.toElement().text();
         qDebug() << "serial number: " << currComponent.serialNumber;
       }
       else
       {
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
       //
       // und die Komponente hinzufügen
@@ -200,40 +223,49 @@ namespace bose_soundtoch_lib
   /**
    * @brief HttpDeviceInfoObject::parseNetworkInfo
    */
-  void HttpDeviceInfoObject::parseNetworkInfo( void )
+  void HttpDeviceInfoObject::parseNetworkInfo( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "networkInfo" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "networkInfo" ) );
     DeviceNetworkInfo singleDeviceNetworkInfo;
     qDebug() << "...";
     //
     // Network type finden (Attribute von <networkInfo>)
     //
-    singleDeviceNetworkInfo._type = IResponseObject::getAttribute( reader, QLatin1String( "type" ) );
+    singleDeviceNetworkInfo._type = IResponseObject::getAttribute( node, QLatin1String( "type" ) );
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
-      if ( reader->name() == QLatin1String( "macAddress" ) )
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      //
+      // unterscheide die Knoten
+      // der Name ist hier als QString
+      //
+      QString currName( currNode.nodeName() );
+      //
+      if ( currName == QLatin1String( "macAddress" ) )
       {
-        singleDeviceNetworkInfo.macAddress = reader->readElementText();
+        singleDeviceNetworkInfo.macAddress = currNode.toElement().text();
         qDebug() << "macAddress: " << singleDeviceNetworkInfo.macAddress;
       }
-      else if ( reader->name() == QLatin1String( "ipAddress" ) )
+      else if ( currName == QLatin1String( "ipAddress" ) )
       {
-        singleDeviceNetworkInfo.macAddress = reader->readElementText();
+        singleDeviceNetworkInfo.macAddress = currNode.toElement().text();
         qDebug() << "ipAddress: " << singleDeviceNetworkInfo.macAddress;
       }
-      else if ( reader->name() == QLatin1String( "type" ) )
+      else if ( currName == QLatin1String( "type" ) )
       {
         // unsupported
-        singleDeviceNetworkInfo._type = reader->readElementText();
+        singleDeviceNetworkInfo._type = currNode.toElement().text();
         qDebug() << "type: " << singleDeviceNetworkInfo._type;
       }
       else
       {
-        qWarning() << "unsupportet etag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupportet etag: " << currName << " --> " << currNode.toElement().text();
       }
     }
     deviceNetworkInfos.append( singleDeviceNetworkInfo );

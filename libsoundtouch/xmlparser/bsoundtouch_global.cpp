@@ -9,60 +9,68 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  ContentItem::ContentItem( QXmlStreamReader *xmlreader, QObject *parent )
-      : QObject( parent ), reader( xmlreader ), isPresetable( false )
+  ContentItem::ContentItem( QDomNode *node, QObject *parent ) : QObject( parent ), node( node ), isPresetable( false )
   {
-    Q_ASSERT( reader->isStartElement() &&
-              ( reader->name() == QLatin1String( "ContentItem" ) || reader->name() == QLatin1String( "contentItem" ) ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "ContentItem" ) || node->nodeName() == QLatin1String( "contentItem" ) );
     //
     // source/location/sourceAccount/isPresetable finden (Attribute von
     // <ContentItem>)
     //
     qDebug() << "ContentItem...";
-
     //
     // Attribut "source"
     //
-    source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
+    source = IResponseObject::getAttribute( node, QLatin1String( "source" ) );
+    qDebug() << "ContentItem:source: " << source;
     //
     // Attribute "type"
     //
-    type = IResponseObject::getAttribute( reader, QLatin1String( "type" ) );
+    type = IResponseObject::getAttribute( node, QLatin1String( "type" ) );
+    qDebug() << "ContentItem:type: " << type;
     //
     // Attribut "location"
     //
-    location = IResponseObject::getAttribute( reader, QLatin1String( "location" ) );
+    location = IResponseObject::getAttribute( node, QLatin1String( "location" ) );
+    qDebug() << "ContentItem:location: " << location;
     //
     // Attribut "sourceAccount"
     //
-    sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
+    sourceAccount = IResponseObject::getAttribute( node, QLatin1String( "sourceAccount" ) );
+    qDebug() << "ContentItem:sourceAccount: " << sourceAccount;
     //
     // Attribut "isPresetable"
     //
-    if ( IResponseObject::getAttribute( reader, QLatin1String( "isPresetable" ) ) == QLatin1String( "true" ) )
+    if ( IResponseObject::getAttribute( node, QLatin1String( "isPresetable" ) ) == QLatin1String( "true" ) )
     {
       isPresetable = true;
+      qDebug() << "ContentItem:isPresetable: true";
     }
     //
     // jetzt die Elemente (childknoten) lesen
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList childNodesList( node->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < childNodesList.length(); nodeIdx++ )
     {
-      qDebug().nospace() << "--------- tag " << reader->name().toString() << " -------------------";
+      QDomNode currNode( childNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
+      QString currName( currNode.nodeName() );
       //
       // welchen Eintrag hab ich gefunden?
       //
-      if ( reader->name() == QLatin1String( "itemName" ) )
+      if ( currName == QLatin1String( "itemName" ) )
       {
-        itemName = reader->readElementText();
+        itemName = currNode.toElement().text();
+        qDebug() << "ContentItem:itemName: " << itemName;
       }
-      else if ( reader->name() == QLatin1String( "containerArt" ) )
+      else if ( currName == QLatin1String( "containerArt" ) )
       {
-        containerArt = reader->readElementText();
+        containerArt = currNode.toElement().text();
+        qDebug() << "ContentItem:containerArt: " << containerArt;
       }
       else
       {
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }

@@ -2,37 +2,44 @@
 
 namespace bose_soundtoch_lib
 {
-  HttpSourcesObject::HttpSourcesObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpSourcesObject::HttpSourcesObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "sources" ) );
-    resultType = ResultobjectType::R_SOURCES;
+    Q_ASSERT( domElem->tagName() == QLatin1String( "sources" ) );
+    resultType = ResultobjectType::R_DEVICE_INFO;
     //
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceID" ) );
     qDebug() << "device id: " << deviceId;
     //
-    // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
+    // lese soweit neue Elemente vorhanden sind
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList rootChildNodesList( domElem->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       //
-      // das nächste element bearbeiten, welches ist es?
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-      if ( reader->name() == QLatin1String( "sourceItem" ) )
+      QString currName( currNode.nodeName() );
+      //
+      if ( currName == QLatin1String( "sourceItem" ) )
       {
         //
         // Ein Eintrag über eine source
         //
-        parseSourceItem();
+        parseSourceItem( &currNode );
       }
       else
       {
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }
@@ -42,35 +49,35 @@ namespace bose_soundtoch_lib
     qDebug() << "...";
   }
 
-  void HttpSourcesObject::parseSourceItem( void )
+  void HttpSourcesObject::parseSourceItem( QDomNode *node )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "sourceItem" ) );
+    Q_ASSERT( node->nodeName() == QLatin1String( "sourceItem" ) );
     SourceItem sourceItem;
     //
     // source infos finden (Attribute von <sourceItem>)
     //
     qDebug() << "...";
-    sourceItem.source = IResponseObject::getAttribute( reader, QLatin1String( "source" ) );
+    sourceItem.source = IResponseObject::getAttribute( node, QLatin1String( "source" ) );
     qDebug() << "source: " << sourceItem.source;
     // sourceAccount
-    sourceItem.sourceAccount = IResponseObject::getAttribute( reader, QLatin1String( "sourceAccount" ) );
+    sourceItem.sourceAccount = IResponseObject::getAttribute( node, QLatin1String( "sourceAccount" ) );
     qDebug() << "source account: " << sourceItem.sourceAccount;
     // status
-    sourceItem.status = IResponseObject::getAttribute( reader, QLatin1String( "status" ) );
+    sourceItem.status = IResponseObject::getAttribute( node, QLatin1String( "status" ) );
     qDebug() << "source status: " << sourceItem.status;
     // isLocal
-    if ( IResponseObject::getAttribute( reader, QLatin1String( "isLocal" ) ) == QLatin1String( "true" ) )
+    if ( IResponseObject::getAttribute( node, QLatin1String( "isLocal" ) ) == QLatin1String( "true" ) )
     {
       sourceItem.isLocal = true;
       qDebug() << "is local: " << sourceItem.isLocal;
     }
     // multiroomallowed
-    if ( IResponseObject::getAttribute( reader, QLatin1String( "multiroomalowed" ) ) == QLatin1String( "true" ) )
+    if ( IResponseObject::getAttribute( node, QLatin1String( "multiroomalowed" ) ) == QLatin1String( "true" ) )
     {
       sourceItem.multiroomallowed = true;
       qDebug() << "multi roo alowed: " << sourceItem.multiroomallowed;
     }
-    sourceItem.Content = reader->readElementText();
+    sourceItem.Content = node->toElement().text();
     qDebug() << "entry \"Content\" has value " << sourceItem.Content;
     //
     // in die Liste aufnehmen

@@ -7,37 +7,45 @@ namespace bose_soundtoch_lib
    * @param xmlreader
    * @param parent
    */
-  HttpBassObject::HttpBassObject( QXmlStreamReader *xmlreader, QObject *parent ) : IResponseObject( xmlreader, parent )
+  HttpBassObject::HttpBassObject( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent )
   {
-    Q_ASSERT( reader->isStartElement() && reader->name() == QLatin1String( "bass" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "bass" ) );
     resultType = ResultobjectType::R_BASS;
     //
     // Device ID finden (Attribute von <info>)
     //
     qDebug() << "...";
-    deviceId = IResponseObject::getAttribute( reader, QLatin1String( "deviceID" ) );
+    deviceId = IResponseObject::getAttribute( domElem, QLatin1String( "deviceID" ) );
+    qDebug() << "device id: " << deviceId;
     //
     // lese soweit neue Elemente vorhanden sind, bei schliessendem Tag -> Ende
     //
-    while ( IResponseObject::getNextStartTag( reader ) )
+    QDomNodeList rootChildNodesList( domElem->childNodes() );
+    for ( int nodeIdx = 0; nodeIdx < rootChildNodesList.length(); nodeIdx++ )
     {
+      QDomNode currNode( rootChildNodesList.item( nodeIdx ) );
+      if ( currNode.isNull() )
+        continue;
       //
-      // das nächste element bearbeiten, welches ist es?
+      // unterscheide die Knoten
+      // der Name ist hier als QString
       //
-      if ( reader->name() == QLatin1String( "targetbass" ) )
+      QString currName( currNode.nodeName() );
+      //
+      if ( currName == QLatin1String( "targetbass" ) )
       {
         //
         // Bass zieleinstellung
         //
-        targetbass = reader->readElementText().toInt();
+        targetbass = currNode.toElement().text().toInt();
         qDebug() << "bass target is " << targetbass;
       }
-      else if ( reader->name() == QLatin1String( "actualbass" ) )
+      else if ( currName == QLatin1String( "actualbass" ) )
       {
         //
         // Bass aktuelle einstellung
         //
-        actualbass = reader->readElementText().toInt();
+        actualbass = currNode.toElement().text().toInt();
         qDebug() << "bass is actual " << actualbass;
       }
       else
@@ -45,7 +53,7 @@ namespace bose_soundtoch_lib
         //
         // unsupportet elements
         //
-        qWarning() << "unsupported tag: " << reader->name().toString() << " --> " << reader->readElementText();
+        qWarning() << "unsupported tag: " << currName << " --> " << currNode.toElement().text();
       }
     }
   }

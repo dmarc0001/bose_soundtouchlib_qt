@@ -2,6 +2,9 @@
 #define WSNOWSELECTIONUPDATED_HPP
 
 #include <qglobal.h>
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -18,7 +21,7 @@ namespace bose_soundtoch_lib
     DevicePreset preset;  //! ein Preset wurde verändert
 
     public:
-    explicit WsNowSelectionUpdated( QXmlStreamReader *xmlreader, QObject *parent );
+    explicit WsNowSelectionUpdated( QDomElement *domElem, QObject *parent );
     ~WsNowSelectionUpdated() override;
     //
     // GETTER
