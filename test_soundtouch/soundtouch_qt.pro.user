@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.6.2, 2018-07-12T14:14:28. -->
+<!-- Written by QtCreator 4.6.2, 2018-07-12T14:31:40. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -234,7 +234,7 @@
     </valuelist>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes">
-     <value type="QString">LD_LIBRARY_PATH=/home/dmarcini/entwicklung/soundtouchlib_qt/test_soundtouch/../lib/QT-5110-GCC-64:/opt/Qt/5.11.0/gcc_64/lib:/opt/Qt/5.11.0/gcc_64/lib</value>
+     <value type="QString">LD_LIBRARY_PATH=/home/dmarcini/entwicklung/soundtouchlib_qt/lib/QT-5110-GCC-64:/opt/Qt/5.11.0/gcc_64/lib:/opt/Qt/5.11.0/gcc_64/lib</value>
     </valuelist>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">soundtouch_qt</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
