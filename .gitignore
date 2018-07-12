@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 lib/
 *.qm
 *.pro.user
 include/
 
+=======
+include/
+lib/
+>>>>>>> develop/dom_parsing
