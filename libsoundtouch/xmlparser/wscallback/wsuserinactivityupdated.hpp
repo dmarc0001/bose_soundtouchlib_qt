@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsUserInactivityUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsUserInactivityUpdated : public IResponseObject
   {
     public:
     explicit WsUserInactivityUpdated( QDomElement *domElem, QObject *parent );

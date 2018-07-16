@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsLanguageUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsLanguageUpdated : public IResponseObject
   {
     private:
     QString language;  //! zu welcher sprache gewechselt?

@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsBrowseUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsBrowseUpdated : public IResponseObject
   {
     private:
     QString source;         //! browse source?

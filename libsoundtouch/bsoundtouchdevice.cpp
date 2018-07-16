@@ -479,8 +479,9 @@ namespace bose_soundtoch_lib
       {
         qDebug() << "result object type: " << response->getResultTypeName();
         //
-        // TODO: hier verarbeiten
+        // hier verarbeiten / benachtichtigen
         //
+        emit sigOnRequestAnswer( response );
       }
     }
     reply->deleteLater();

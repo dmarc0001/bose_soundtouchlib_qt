@@ -137,8 +137,8 @@ headercopy.depends                    = first
 headerdel.target                      = delheaders
 headerdel.commands                    = cd $${EXPORT_INCLUDE} && rm -rf *
 
-QMAKE_EXTRA_TARGETS += headercopy
-QMAKE_EXTRA_TARGETS += headerdel
+QMAKE_EXTRA_TARGETS                   += headercopy
+QMAKE_EXTRA_TARGETS                   += headerdel
 
 
 message( library version $$VERSION kit $${KIT} )

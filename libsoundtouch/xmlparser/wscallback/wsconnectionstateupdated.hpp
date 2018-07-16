@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsConnectionStateUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsConnectionStateUpdated : public IResponseObject
   {
     private:
     bool isUp;       //! is connection up?

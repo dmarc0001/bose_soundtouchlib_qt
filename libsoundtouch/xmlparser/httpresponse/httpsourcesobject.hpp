@@ -12,7 +12,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpSourcesObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpSourcesObject : public IResponseObject
   {
     private:
     QVector< SourceItem > sourceItems;

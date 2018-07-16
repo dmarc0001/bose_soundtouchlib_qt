@@ -11,7 +11,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpResultOkObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpResultOkObject : public IResponseObject
   {
     private:
     QString status;

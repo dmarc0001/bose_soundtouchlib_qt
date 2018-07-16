@@ -16,12 +16,6 @@
 #include "xmlparser/bsoundtouch_global.hpp"
 #include "xmlparser/iresponseobject.hpp"
 
-#if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
-#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_EXPORT
-#else
-#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_IMPORT
-#endif
-
 // bose developer dmarc0001
 // pw dd03353e83
 
@@ -133,10 +127,11 @@ namespace bose_soundtoch_lib
     static void myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg );
 
     signals:
-    void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );
-    void sigOnWSConnected( void );
-    void sigOnWSDisConnected( void );
-    void sigOnWSTextMessageReceived( QString message );
+    void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );  //! sig wenn Authentifizierung gefordert
+    void sigOnWSConnected( void );                                                         //! sig wenn Websocket erbunden ist
+    void sigOnWSDisConnected( void );                                                      //! sif wenn Websocket getrennt wurde
+    void sigOnWSTextMessageReceived( QString message );                                    //! sig wenn Websocket etwas gesendet hat
+    void sigOnRequestAnswer( std::shared_ptr< IResponseObject > response );                //! Antwort auf ein HTTP Request
     //
     void sigOnPresetsUpdated( std::shared_ptr< IResponseObject > );          //! sig on preset Update
     void sigOnNowPlayingUpdated( std::shared_ptr< IResponseObject > );       //! sig on now playing Update

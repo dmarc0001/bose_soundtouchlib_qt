@@ -21,7 +21,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class XmlResultParser : public QObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT XmlResultParser : public QObject
   {
     Q_OBJECT
     private:

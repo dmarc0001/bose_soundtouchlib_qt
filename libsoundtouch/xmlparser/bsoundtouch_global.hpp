@@ -12,6 +12,14 @@
 #include <QtDebug>
 #include <memory>
 
+#if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
+#ifndef SOUNDTOUCH_QT_LIBSHARED_EXPORT
+#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_EXPORT
+#else
+#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_IMPORT
+#endif
+#endif
+
 namespace bose_soundtoch_lib
 {
   //
@@ -24,7 +32,7 @@ namespace bose_soundtoch_lib
   using SoundTouchMemberList = QVector< SoundTouchMemberObject >;
 
   //! typ des Resultobjektes
-  enum class ResultobjectType : quint8
+  enum class /*SOUNDTOUCH_QT_LIBSHARED_EXPORT*/ ResultobjectType : quint8
   {
     R_OK,
     R_ERROR,
@@ -61,10 +69,10 @@ namespace bose_soundtoch_lib
     R_UNKNOWN
   };
 
-  class ContentItem;
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT ContentItem;
 
   //! Klasse speichert zurückliegende gewählte Sourcen des Gerätes
-  class DeviceRecent
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT DeviceRecent
   {
     public:
     QString deviceId;  //! welches Gerät
@@ -74,7 +82,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Genaue Beschreibung einer Medienquelle
-  class ContentItem : public QObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT ContentItem : public QObject
   {
     Q_OBJECT
     protected:
@@ -95,7 +103,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Beschreibung des Logos der Quelle
-  class PlayingArt
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT PlayingArt
   {
     public:
     QString artImageStatus;
@@ -103,7 +111,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Soeilzeit der Quelle (total/aktuell)
-  class PlayingTime
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT PlayingTime
   {
     public:
     int total_sec;
@@ -111,7 +119,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Verbindungsstatus des Gerätes
-  class DeviceConnectionStatusInfo
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT DeviceConnectionStatusInfo
   {
     public:
     QString status;
@@ -119,7 +127,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Teil der Geräteinfo, beschreibt Teile der Harware
-  class DeviceComponent
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT DeviceComponent
   {
     public:
     QString _componentCategory;
@@ -128,7 +136,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Netzwerk des Gerätes (auch mnehrfach, z.B WLAN/Ethernet)
-  class DeviceNetworkInfo
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT DeviceNetworkInfo
   {
     public:
     QString _type;  //! unsupported
@@ -137,7 +145,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Die Belegung der sechs Stationstasten/Presets
-  class DevicePreset
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT DevicePreset
   {
     public:
     QString id;
@@ -149,7 +157,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Beschreibung einer Quelle (Intennet, BLuethooth etc)
-  class SourceItem
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT SourceItem
   {
     public:
     QString source;
@@ -161,7 +169,7 @@ namespace bose_soundtoch_lib
   };
 
   //! SoundTouch 10 - Rolle eines Gerätes in der Gruppe
-  class GroupRole
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT GroupRole
   {
     public:
     QString deviceId;
@@ -170,7 +178,7 @@ namespace bose_soundtoch_lib
   };
 
   //! Inhalt einer Fehlermeldung bei http response
-  class ResponseError
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT ResponseError
   {
     public:
     int value;
