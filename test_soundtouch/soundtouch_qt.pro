@@ -15,6 +15,7 @@ EXPORT_LIB                             = $${PWD}/../lib
 win32:VERSION                          = $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD} # major.minor.patch.build
 else:VERSION                           = $${MAJOR}.$${MINOR}.$${PATCH}    # major.minor.patch
 
+DEFINES                                += SOUNDTOUCH_QT_LIB_IMPORT
 DEFINES                                += QT_DEPRECATED_WARNINGS
 DEFINES                                += $$DEBUG
 
@@ -35,12 +36,14 @@ CONFIG                                 += c++11
 
 CONFIG(release, debug|release) {
   TARGET                               = soundtouch_qt
-  LIBS                                 += -lsoundtouch_qt
+  win32:LIBS                           += -lsoundtouch_qt1
+  else:LIBS                            += -lsoundtouch_qt
   DEFINES                              += QT_NO_DEBUG_OUTPUT
 }
 CONFIG(debug, debug|release) {
   TARGET                               = soundtouch_qt_debug
-  LIBS                                 += -lsoundtouch_debug_qt
+  win32:LIBS                           += -lsoundtouch_debug_qt1
+  else:LIBS                            += -lsoundtouch_debug_qt
 }
 
 MOC_DIR                                = moc

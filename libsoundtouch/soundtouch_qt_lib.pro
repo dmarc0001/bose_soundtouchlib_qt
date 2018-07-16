@@ -15,7 +15,7 @@ EXPORT_LIB                             = $${PWD}/../lib
 win32:VERSION                          = $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD} # major.minor.patch.build
 else:VERSION                           = $${MAJOR}.$${MINOR}.$${PATCH}    # major.minor.patch
 
-DEFINES                                += SOUNDTOUCH_QT_LIB_LIBRARY
+DEFINES                                += SOUNDTOUCH_QT_LIB_EXPORT
 DEFINES                                += QT_DEPRECATED_WARNINGS
 DEFINES                                += $$DEBUG
 DEFINES                                += VMAJOR=$$MAJOR
