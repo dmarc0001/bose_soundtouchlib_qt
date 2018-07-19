@@ -21,7 +21,7 @@ DEFINES                                += $$DEBUG
 
 TARGET                                 = soundtouch_qt
 TEMPLATE                               = app
-DESTDIR                                = ../out
+DESTDIR                                = out
 LIBS                                   += -L$${EXPORT_LIB}/$${KIT}
 #
 QT                                     += core
@@ -53,7 +53,7 @@ UI_DIR                                 = ui
 #
 # Target auf dem entfernten GERÄT
 #
-target.path                            = /home/pi/qt5pi/soundtouch_qt
+target.path                            = /home/pi/qt5pi/$${TARGET}
 INSTALLS                               += target
 
 SOURCES += \
