@@ -34,7 +34,7 @@ namespace bose_soundtoch_lib
   using SoundTouchMemberList = QVector< SoundTouchMemberObject >;
 
   //! typ des Resultobjektes
-  enum class /*SOUNDTOUCH_QT_LIBSHARED_EXPORT*/ ResultobjectType : quint8
+  enum class ResultobjectType : quint8
   {
     R_OK,
     R_ERROR,

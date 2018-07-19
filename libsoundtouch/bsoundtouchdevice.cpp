@@ -348,6 +348,18 @@ namespace bose_soundtoch_lib
     return ( keynames.value( bose_key::KEY_UNKNOWN ) );
   }
 
+  BSoundTouchDevice::bose_key BSoundTouchDevice::getKeyForName( const QString &name )
+  {
+    for ( QList< bose_key >::ConstIterator it = keynames.keys().begin(); it != keynames.keys().end(); it++ )
+    {
+      if ( keynames.value( *it ) == name )
+      {
+        return ( *it );
+      }
+    }
+    return ( bose_key::KEY_UNKNOWN );
+  }
+
   QString BSoundTouchDevice::getKeyStateName( bose_keystate state ) const
   {
     if ( keystati.contains( state ) )

@@ -99,6 +99,7 @@ namespace bose_soundtoch_lib
     void getDeviceInfo( void );
     void getGroup( void );  //! Soundtouch 10 only
     QString getKeyName( bose_key key ) const;
+    bose_key getKeyForName( const QString &name );
     QString getKeyStateName( bose_keystate state ) const;
     void setKey( bose_key whichkey, bose_keystate keystate, QString sender = "Gabbo" );       // POST
     void selectSource( const QString &source, const QString &account );                       //! AUX/AMAZON/INTERNET etc...
