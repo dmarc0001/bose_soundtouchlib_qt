@@ -62,6 +62,15 @@ namespace bose_soundtoch_lib
       KEY_POWER,
       KEY_UNKNOWN
     };
+    //! Aufzählung der Playstsati
+    enum class bose_playstate : int
+    {
+      PLAY_STATE,
+      PAUSE_STATE,
+      STOP_STATE,
+      BUFFERING_STATE,
+      UNKNOWN_STATE
+    };
 
     private:
     QString hostname;
@@ -73,7 +82,8 @@ namespace bose_soundtoch_lib
     QNetworkAccessManager qnam;
     // QNetworkReply *reply;
     static const QMap< bose_keystate, QString > keystati;
-    static const QMap< bose_key, QString > keynames;  //! Namen der Tasten
+    static const QMap< bose_key, QString > keynames;         //! Namen der Tasten
+    static const QMap< bose_playstate, QString > playstate;  // mögliche Playstati
     static const char *subproto;
     constexpr static int timeoutMillis = 80;
     static const QString version;
@@ -101,6 +111,8 @@ namespace bose_soundtoch_lib
     QString getKeyName( bose_key key ) const;
     bose_key getKeyForName( const QString &name );
     QString getKeyStateName( bose_keystate state ) const;
+    QString getPlayStateName( bose_playstate state ) const;
+    bose_playstate getKeyPlayStateName( const QString playstate );
     void setKey( bose_key whichkey, bose_keystate keystate, QString sender = "Gabbo" );       // POST
     void selectSource( const QString &source, const QString &account );                       //! AUX/AMAZON/INTERNET etc...
     void setBass( int bass );                                                                 // POST

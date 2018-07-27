@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.7.0, 2018-07-19T12:26:55. -->
+<!-- Written by QtCreator 4.7.0, 2018-07-27T15:24:20. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -242,7 +242,7 @@
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">soundtouch_qt_test.pro</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseTerminal">true</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory"></value>
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">/home/dmarcini/entwicklung/soundtouchlib_qt/test_soundtouch/QT-5110-GCC-64/Debug/out</value>
+    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">/home/dmarcini/entwicklung/radiowecker_qt/QT-5110-GCC-64/Debug/out</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
