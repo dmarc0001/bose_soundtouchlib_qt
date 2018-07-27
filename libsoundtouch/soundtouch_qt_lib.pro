@@ -5,7 +5,7 @@
 ###############################################################################
 MAJOR                                  = 1 # major version number
 MINOR                                  = 0 # minor version number
-PATCH                                  = 4 # patch number
+PATCH                                  = 5 # patch number
 BUILD                                  = 0 # win32: build number
 
 # da hin sollen die includedateien exportiert werden
