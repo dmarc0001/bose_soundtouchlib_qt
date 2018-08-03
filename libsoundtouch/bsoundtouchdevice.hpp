@@ -124,7 +124,7 @@ namespace bose_soundtoch_lib
     // websocket überwachung
     void addVolumeListener( void );
     QString getVersion() const;
-    void connectWs( void );     //! verbinde gerät mit Websocket, falls noch nciht geschehen
+    void connectWs( void );     //! verbinde gerät mit Websocket, falls noch nicht geschehen
     void disconnectWs( void );  //! trenne WS
 
     private:
