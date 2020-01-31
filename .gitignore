@@ -1,3 +1,4 @@
 *.qm
 include/
 lib/
+QT5*/
