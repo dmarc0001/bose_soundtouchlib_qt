@@ -25,7 +25,7 @@ int main( int argc, char *argv[] )
                                                  << "ws-port",
                                    QCoreApplication::translate( "main", "Port for websocket [default: 8080]." ),
                                    QCoreApplication::translate( "main", "ws-port" ),
-                                   QLatin1Literal( bose_soundtoch_lib::ProgramConfig::wsport ) );
+                                   QLatin1String( bose_soundtoch_lib::ProgramConfig::wsport ) );
   //
   // ws port einstellen (default 8080)
   //
@@ -33,7 +33,7 @@ int main( int argc, char *argv[] )
                                                    << "http-port",
                                      QCoreApplication::translate( "main", "Port for httpsocket [default: 8090]." ),
                                      QCoreApplication::translate( "main", "http-port" ),
-                                     QLatin1Literal( bose_soundtoch_lib::ProgramConfig::httpport ) );
+                                     QLatin1String( bose_soundtoch_lib::ProgramConfig::httpport ) );
   //
   // url lesen (default localhost)
   //
@@ -41,7 +41,7 @@ int main( int argc, char *argv[] )
                                                << "host",
                                  QCoreApplication::translate( "main", "host for client [default: localhost]." ),
                                  QCoreApplication::translate( "main", "host" ),
-                                 QLatin1Literal( bose_soundtoch_lib::ProgramConfig::server ) );
+                                 QLatin1String( bose_soundtoch_lib::ProgramConfig::server ) );
 
   parser.addOption( dbgOption );
   parser.addOption( wsPortOption );

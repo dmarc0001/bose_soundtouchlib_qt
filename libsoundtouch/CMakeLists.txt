@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ###############################################################################
-# Projekt definitionen                                                        #
+# Projekt Definitionen                                                        #
 ###############################################################################
 set(KIT QT5141)
 set(MAJOR 1) # major version number
@@ -45,16 +45,16 @@ set(prj_version VMAJOR=${MAJOR} VMINOR=${MINOR} VPATCH=${PATCH})
 
 add_compile_definitions(${qt_defs} ${prj_version})
 
-# da hin sollen die includedateien exportiert werden
 set(EXPORT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 set(EXPORT_LIB ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
-set(DESTDIR ${EXPORT_LIB}/${KIT})
+# da hin sollen die includedateien exportiert werden
 message("INCLUDE export to ${EXPORT_INCLUDE}")
 message("LIBRARY export to directory ${EXPORT_LIB}")
-message("DESTINATION for library: ${DESTDIR}")
 
-find_package(Qt5 COMPONENTS Core WebSockets Network Xml REQUIRED)
 
+###############################################################################
+# Quellen zusammenstellen                                                     #
+###############################################################################
 set(SOURCES
   bsoundtouchdevice.cpp
   xmlparser/xmlresultparser.cpp
@@ -136,38 +136,59 @@ set( HEADERS
   xmlparser/httpresponse/httpbassobject.hpp
   xmlparser/httpresponse/httpbasscapabilitiesobject.hpp
 )
-
+# quellen zusammenstellen
 add_library( ${lib_name} SHARED
   ${HEADERS}
   ${SOURCES}
 )
 
-set(common_libs  )
+###############################################################################
+# benötigte Bibliotheken finden                                               #
+###############################################################################
+find_package(Qt5 COMPONENTS Core WebSockets Network Xml REQUIRED)
+# und zusammenstellen
 set(qt_libs Qt5::Core Qt5::Network Qt5::WebSockets Qt5::Xml)
+target_link_libraries(${lib_name} PRIVATE ${qt_libs} )
 
-target_link_libraries(${lib_name} PRIVATE ${qt_libs} ${common_libs})
+###############################################################################
+# definiere Namen für die library                                             #
+###############################################################################
 target_compile_definitions(${lib_name} PRIVATE LIBSOUNDTOUCH_LIBRARY)
 
+###############################################################################
+# für den installer ein paar Regeln                                           #
+###############################################################################
 
-###############################################################################
-# POST Build                                                                  #
-###############################################################################
-#add_custom_command(TARGET ${lib_name} POST_BUILD
-#add_custom_command(TARGET deploy
-add_custom_target(deploy
-    DEPENDS ${lib_name}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Running deployment..."
-    COMMAND pwd
-    COMMAND touch ${EXPORT_INCLUDE}/toDel
-    COMMAND rm -rf ${EXPORT_INCLUDE}/*
-    COMMAND cp -f --parents ${HEADERS} ${EXPORT_INCLUDE}
-    COMMAND touch ${EXPORT_LIB}/${lib_name}.del
-    COMMAND rm -f ${EXPORT_LIB}/${lib_name}.*
-    COMMAND cp -f ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}.* ${EXPORT_LIB}/
-    COMMAND echo "BUILD DIR: ${CMAKE_CURRENT_BINARY_DIR}"
+# die library
+install(TARGETS ${lib_name}
+  ARCHIVE
+    DESTINATION ${EXPORT_LIB}
+  RUNTIME
+    DESTINATION ${EXPORT_LIB}
+
+)
+
+# die Header
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+  DESTINATION  ${EXPORT_INCLUDE}
+  FILES_MATCHING PATTERN "*.hpp"
 )
 
 
+# TODO: PUBLIC_HEADER ???
 
+###############################################################################
+# WAS EIGENES                                                                 #
+###############################################################################
+#add_custom_command(TARGET ${lib_name}
+#  POST_BUILD
+#  COMMENT POST BUILD
+#  COMMAND cmake --build . --target install
+#)
+
+add_custom_target(installer
+    DEPENDS ${lib_name} install
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND echo Dateien installiert
+)
 
