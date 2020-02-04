@@ -10,7 +10,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpBassCapabilitiesObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpBassCapabilitiesObject : public IResponseObject
   {
     private:
     bool bassAvailable = false;  //! Bassfunktion verfügbar?

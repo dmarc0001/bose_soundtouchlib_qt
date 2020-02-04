@@ -15,7 +15,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsNowSelectionUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsNowSelectionUpdated : public IResponseObject
   {
     private:
     DevicePreset preset;  //! ein Preset wurde verändert

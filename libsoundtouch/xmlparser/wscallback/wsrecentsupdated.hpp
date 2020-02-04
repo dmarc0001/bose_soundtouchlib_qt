@@ -14,7 +14,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsRecentsUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsRecentsUpdated : public IResponseObject
   {
     private:
     QVector< DeviceRecent > recents;  //! Liste der zurückliegend gespielten Sender

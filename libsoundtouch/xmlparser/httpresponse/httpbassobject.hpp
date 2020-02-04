@@ -10,7 +10,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpBassObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpBassObject : public IResponseObject
   {
     private:
     int targetbass;  //! gewünschte Einstellung

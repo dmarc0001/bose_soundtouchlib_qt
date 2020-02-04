@@ -11,7 +11,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpDeviceInfoObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpDeviceInfoObject : public IResponseObject
   {
     private:
     QString deviceName;         //! Gerätename

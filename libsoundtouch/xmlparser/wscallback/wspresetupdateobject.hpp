@@ -15,7 +15,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsPresetUpdateObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsPresetUpdateObject : public IResponseObject
   {
     private:
     QVector< DevicePreset > devicePresets;  //! Liste mit Presets des Gerätes/der Geräte. Aktuell 6 stück möglich

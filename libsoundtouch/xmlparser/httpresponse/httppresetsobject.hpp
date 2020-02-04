@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpPresetsObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpPresetsObject : public IResponseObject
   {
     private:
     QVector< bose_soundtoch_lib::DevicePreset > presets;  //! Liste von Presets (aktell max 6)

@@ -13,7 +13,7 @@
 namespace bose_soundtoch_lib
 {
   //! class with SoundTouch 10 only important
-  class HttpGroupObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpGroupObject : public IResponseObject
   {
     private:
     QString groupId;             //! Gruppen id

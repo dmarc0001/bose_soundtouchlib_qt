@@ -12,7 +12,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpZoneObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpZoneObject : public IResponseObject
   {
     private:
     QString master;                //! Zonenmaster

@@ -34,7 +34,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class XMLUpdateParser : public QObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT XMLUpdateParser : public QObject
   {
     Q_OBJECT
     private:

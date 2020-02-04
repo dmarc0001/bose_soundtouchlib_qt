@@ -10,7 +10,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpVolumeObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpVolumeObject : public IResponseObject
   {
     private:
     int targetvolume;  //! Lautstärke gewünscht

@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsErrorUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsErrorUpdated : public IResponseObject
   {
     private:
     ResponseError error;  //! enthält die Fehlermeldungen

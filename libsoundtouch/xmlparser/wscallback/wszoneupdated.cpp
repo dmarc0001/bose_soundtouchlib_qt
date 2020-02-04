@@ -9,7 +9,7 @@ namespace bose_soundtoch_lib
    */
   WsZoneUpdated::WsZoneUpdated( QDomElement *domElem, QObject *parent ) : IResponseObject( domElem, parent ), updated( false )
   {
-    Q_ASSERT( domElem->tagName() == QLatin1String( "bassUpdated" ) );
+    Q_ASSERT( domElem->tagName() == QLatin1String( "zoneUpdated" ) );
     resultType = ResultobjectType::U_ZONE;
     qDebug() << "(updated)...";
     updated = true;

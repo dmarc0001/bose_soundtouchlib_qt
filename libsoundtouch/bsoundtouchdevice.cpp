@@ -42,6 +42,15 @@ namespace bose_soundtoch_lib
       {bose_keystate::KEY_TOGGLE, "toggle"},
       {bose_keystate::KEY_UNKNOWN, "unknown state"}};
 
+  const QMap< BSoundTouchDevice::bose_playstate, QString > BSoundTouchDevice::playstate = {
+      {bose_playstate::PLAY_STATE, "PLAY_STATE"},
+      {bose_playstate::PAUSE_STATE, "PAUSE_STATE"},
+      {bose_playstate::STOP_STATE, "STOP_STATE"},
+      {bose_playstate::BUFFERING_STATE, "BUFFERING_STATE"},
+      {bose_playstate::UNKNOWN_STATE, "UNKNOWN_STATE"}
+
+  };
+
   //! Subprotokoll für soundtouch, ist imer Gabbo
   const char *BSoundTouchDevice::subproto = "Gabbo";
   /**
@@ -348,11 +357,44 @@ namespace bose_soundtoch_lib
     return ( keynames.value( bose_key::KEY_UNKNOWN ) );
   }
 
+  BSoundTouchDevice::bose_key BSoundTouchDevice::getKeyForName( const QString &name )
+  {
+    QList< bose_key > kList = BSoundTouchDevice::keynames.keys();
+    for ( QList< bose_key >::ConstIterator it = kList.begin(); it != kList.end(); it++ )
+    {
+      if ( BSoundTouchDevice::keynames.value( *it ).compare( name, Qt::CaseInsensitive ) == 0 )
+      {
+        return ( *it );
+      }
+    }
+    return ( bose_key::KEY_UNKNOWN );
+  }
+
   QString BSoundTouchDevice::getKeyStateName( bose_keystate state ) const
   {
-    if ( keystati.contains( state ) )
-      return ( keystati.value( state ) );
-    return ( keystati.value( bose_keystate::KEY_UNKNOWN ) );
+    if ( BSoundTouchDevice::keystati.contains( state ) )
+      return ( BSoundTouchDevice::keystati.value( state ) );
+    return ( BSoundTouchDevice::keystati.value( bose_keystate::KEY_UNKNOWN ) );
+  }
+
+  QString BSoundTouchDevice::getPlayStateName( bose_playstate state ) const
+  {
+    if ( BSoundTouchDevice::playstate.contains( state ) )
+      return ( BSoundTouchDevice::playstate.value( state ) );
+    return ( BSoundTouchDevice::playstate.value( bose_playstate::UNKNOWN_STATE ) );
+  }
+
+  BSoundTouchDevice::bose_playstate BSoundTouchDevice::getKeyPlayStateName( const QString playstate )
+  {
+    QList< bose_playstate > kList = BSoundTouchDevice::playstate.keys();
+    for ( QList< bose_playstate >::ConstIterator it = kList.begin(); it != kList.end(); it++ )
+    {
+      if ( BSoundTouchDevice::playstate.value( *it ).compare( playstate, Qt::CaseInsensitive ) == 0 )
+      {
+        return ( *it );
+      }
+    }
+    return ( bose_playstate::UNKNOWN_STATE );
   }
 
   void BSoundTouchDevice::editZone( const QString &masterId, const SoundTouchMemberList &memberList )
@@ -479,8 +521,9 @@ namespace bose_soundtoch_lib
       {
         qDebug() << "result object type: " << response->getResultTypeName();
         //
-        // TODO: hier verarbeiten
+        // hier verarbeiten / benachtichtigen
         //
+        emit sigOnRequestAnswer( response );
       }
     }
     reply->deleteLater();

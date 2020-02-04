@@ -11,7 +11,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpNowPlayingObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpNowPlayingObject : public IResponseObject
   {
     private:
     QString source;                                          //! Quelle die gespielt wird (internet, Bluetooth etc...)

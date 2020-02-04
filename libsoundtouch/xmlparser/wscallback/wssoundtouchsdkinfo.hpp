@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsSoundTouchSdkInfo : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsSoundTouchSdkInfo : public IResponseObject
   {
     private:
     QString serverVersion;

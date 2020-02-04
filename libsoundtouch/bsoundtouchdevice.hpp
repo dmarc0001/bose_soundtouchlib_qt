@@ -16,12 +16,6 @@
 #include "xmlparser/bsoundtouch_global.hpp"
 #include "xmlparser/iresponseobject.hpp"
 
-#if defined( SOUNDTOUCH_QT_LIB_LIBRARY )
-#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_EXPORT
-#else
-#define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_IMPORT
-#endif
-
 // bose developer dmarc0001
 // pw dd03353e83
 
@@ -68,6 +62,15 @@ namespace bose_soundtoch_lib
       KEY_POWER,
       KEY_UNKNOWN
     };
+    //! Aufzählung der Playstsati
+    enum class bose_playstate : int
+    {
+      PLAY_STATE,
+      PAUSE_STATE,
+      STOP_STATE,
+      BUFFERING_STATE,
+      UNKNOWN_STATE
+    };
 
     private:
     QString hostname;
@@ -79,7 +82,8 @@ namespace bose_soundtoch_lib
     QNetworkAccessManager qnam;
     // QNetworkReply *reply;
     static const QMap< bose_keystate, QString > keystati;
-    static const QMap< bose_key, QString > keynames;  //! Namen der Tasten
+    static const QMap< bose_key, QString > keynames;         //! Namen der Tasten
+    static const QMap< bose_playstate, QString > playstate;  // mögliche Playstati
     static const char *subproto;
     constexpr static int timeoutMillis = 80;
     static const QString version;
@@ -105,7 +109,10 @@ namespace bose_soundtoch_lib
     void getDeviceInfo( void );
     void getGroup( void );  //! Soundtouch 10 only
     QString getKeyName( bose_key key ) const;
+    bose_key getKeyForName( const QString &name );
     QString getKeyStateName( bose_keystate state ) const;
+    QString getPlayStateName( bose_playstate state ) const;
+    bose_playstate getKeyPlayStateName( const QString playstate );
     void setKey( bose_key whichkey, bose_keystate keystate, QString sender = "Gabbo" );       // POST
     void selectSource( const QString &source, const QString &account );                       //! AUX/AMAZON/INTERNET etc...
     void setBass( int bass );                                                                 // POST
@@ -117,7 +124,7 @@ namespace bose_soundtoch_lib
     // websocket überwachung
     void addVolumeListener( void );
     QString getVersion() const;
-    void connectWs( void );     //! verbinde gerät mit Websocket, falls noch nciht geschehen
+    void connectWs( void );     //! verbinde gerät mit Websocket, falls noch nicht geschehen
     void disconnectWs( void );  //! trenne WS
 
     private:
@@ -133,10 +140,11 @@ namespace bose_soundtoch_lib
     static void myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg );
 
     signals:
-    void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );
-    void sigOnWSConnected( void );
-    void sigOnWSDisConnected( void );
-    void sigOnWSTextMessageReceived( QString message );
+    void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );  //! sig wenn Authentifizierung gefordert
+    void sigOnWSConnected( void );                                                         //! sig wenn Websocket erbunden ist
+    void sigOnWSDisConnected( void );                                                      //! sif wenn Websocket getrennt wurde
+    void sigOnWSTextMessageReceived( QString message );                                    //! sig wenn Websocket etwas gesendet hat
+    void sigOnRequestAnswer( std::shared_ptr< IResponseObject > response );                //! Antwort auf ein HTTP Request
     //
     void sigOnPresetsUpdated( std::shared_ptr< IResponseObject > );          //! sig on preset Update
     void sigOnNowPlayingUpdated( std::shared_ptr< IResponseObject > );       //! sig on now playing Update

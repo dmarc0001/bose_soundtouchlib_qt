@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsAudioProductLevelControls : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsAudioProductLevelControls : public IResponseObject
   {
     private:
     QString controls;  //! controls?

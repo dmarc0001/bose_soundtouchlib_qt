@@ -12,7 +12,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class HttpResultErrorObject : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT HttpResultErrorObject : public IResponseObject
   {
     private:
     QVector< ResponseError > errors;  //! Liste von Fehlermeldungen

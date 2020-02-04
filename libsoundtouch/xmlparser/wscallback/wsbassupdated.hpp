@@ -13,7 +13,7 @@
 
 namespace bose_soundtoch_lib
 {
-  class WsBassUpdated : public IResponseObject
+  class SOUNDTOUCH_QT_LIBSHARED_EXPORT WsBassUpdated : public IResponseObject
   {
     private:
     bool updatet;  //! updated?
