@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(soundtouch_qt_test LANGUAGES CXX)
+project(soundtouch_test LANGUAGES CXX)
 
 ###############################################################################
 #                                                                             #
@@ -13,6 +13,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if (CMAKE_CROSSCOMPILING)
+    message("============= CROSSCOMPILER ========================")
+    set(CMAKE_PREFIX_PATH /home/dmarcini/raspi/rpi-dest)
+    set(QTDIR /home/dmarcini/raspi/qt-5-14-1-loc)
+endif()
 
 ###############################################################################
 # Projekt definitionen                                                        #
@@ -104,8 +110,10 @@ target_link_libraries(${prog_name} PRIVATE ${qt_libs} ${common_libs})
 
 install(TARGETS ${prog_name}
   RUNTIME
-    DESTINATION ${EXPORT_LIB}
-    )
+    DESTINATION ${IMPORT_LIB}
+  LIBRARY
+    DESTINATION ${IMPORT_LIB}
+ )
 
 #install(TARGETS ${prog_name}
 #  ARCHIVE
