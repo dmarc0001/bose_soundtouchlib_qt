@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include "logging/Logger.hpp"
 
 namespace bose_commserver
 {
@@ -14,7 +15,12 @@ namespace bose_commserver
     QString bindport;
     QString defaultWsport;
     QString defaultHttpport;
+    QString logger;
+    QString logpath;
+    LgThreshold threshold;
     bool isDebug;
+    //
+    std::shared_ptr< Logger > lg;
 
     public:
     DaemonConfig();
@@ -30,6 +36,14 @@ namespace bose_commserver
     void setDefaultHttpport( const QString &value );
     bool getIsDebug() const;
     void setIsDebug( bool value );
+    QString getLogger() const;
+    void setLogger( const QString &value );
+    LgThreshold getThreshold() const;
+    void setThreshold( const LgThreshold &value );
+    QString getLogpath() const;
+    void setLogpath( const QString &value );
+    std::shared_ptr< Logger > getLogger();
+    void setLogger( const std::shared_ptr< Logger > &value );
   };
 }  // namespace bose_commserver
 #endif  // DAEMONCONFIG_HPP

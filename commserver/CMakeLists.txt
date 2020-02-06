@@ -77,14 +77,18 @@ set(HEADERS
   main.hpp
   config/programconfig.hpp
   config/DaemonConfig.hpp
+  logging/Logger.hpp
   commserver/BoseCommServer.hpp
+  commserver/ConnectionHandler.hpp
 )
 
 set(SOURCES
   main.cpp
   config/programconfig.cpp
   config/DaemonConfig.cpp
+  logging/Logger.cpp
   commserver/BoseCommServer.cpp
+  commserver/ConnectionHandler.cpp
 )
 
 
