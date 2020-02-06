@@ -38,12 +38,12 @@ set(IMPORT_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
 ###############################################################################
 if (CMAKE_BUILD_TYPE  STREQUAL "Debug")
   set(prog_name commserver_debug)
-  set(lib_name soundtouch_debug_qt)
+  set(lib_name soundtouch_debug)
   message(" ==> create ${prog_name} in debug mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(DEBUG)
 else()
   set(prog_name commserver)
-  set(lib_name soundtouch_qt)
+  set(lib_name soundtouch)
   message(" ==> create  ${prog_name} in release mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(QT_NO_DEBUG_OUTPUT)
 endif()
@@ -59,6 +59,10 @@ add_compile_definitions(${qt_defs} ${prj_version})
 # cmake definitionen für module finden                                        #
 ###############################################################################
 find_package(Qt5 COMPONENTS Core WebSockets Network REQUIRED)
+#
+# wenn die lib da ist oder nicht
+#find_path(SOUNDTOUCH_LIB_PATH ${IMPORT_LIB})
+#find_library(SOUNDTOUCH_LIB ${lib_name} REQUIRED )
 
 ###############################################################################
 # Orte der Bibliothek bekannt geben                                           #
@@ -89,11 +93,11 @@ add_executable(${prog_name}
   ${SOURCES}
 )
 
+#
 set(IMPORT_LIBS ${lib_name} )
 set(QT_CORELIBS Qt5::Core Qt5::Network Qt5::WebSockets)
 # und zusammenfassen zum Programm
 target_link_libraries(${prog_name} PRIVATE ${QT_CORELIBS} ${IMPORT_LIBS})
-
 
 
 
