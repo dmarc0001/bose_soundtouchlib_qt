@@ -1,25 +1,32 @@
 #ifndef ECHOCLIENT_H
 #define ECHOCLIENT_H
 
+#include <QJsonDocument>
 #include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
+//
 
-class TestClient : public QObject
+namespace testclient
 {
-  Q_OBJECT
-  public:
-  explicit TestClient( const QUrl &url, QObject *parent = nullptr );
+  class TestClient : public QObject
+  {
+    Q_OBJECT
+    public:
+    explicit TestClient( const QUrl &url, QObject *parent = nullptr );
 
-  Q_SIGNALS:
-  void closed();
+    Q_SIGNALS:
+    void closed();
 
-  private Q_SLOTS:
-  void onConnected();
-  void onTextMessageReceived( QString message );
+    private Q_SLOTS:
+    void onConnected();
+    void onTextMessageReceived( QString message );
+    void onBinaryMessageReceived( QByteArray message );
+    void onSocketDisconnected();
 
-  private:
-  QWebSocket m_webSocket;
-  QUrl m_url;
-};
+    private:
+    QWebSocket m_webSocket;
+    QUrl m_url;
+  };
+}  // namespace testclient
 
 #endif  // ECHOCLIENT_H

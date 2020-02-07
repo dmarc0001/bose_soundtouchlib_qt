@@ -1,4 +1,5 @@
 #include "BoseCommServer.hpp"
+
 #include <QtDebug>
 
 namespace bose_commserver
@@ -66,8 +67,8 @@ namespace bose_commserver
         // signal für neue Verbindungen verbinden
         //
         qDebug() << "commserver server socket connect slots...";
-        connect( cServer.get(), &QWebSocketServer::newConnection, this, &BoseCommServer::newRemConnection );
-        connect( cServer.get(), &QWebSocketServer::closed, this, &BoseCommServer::closedRemListening );
+        connect( cServer.get(), &QWebSocketServer::newConnection, this, &BoseCommServer::onNewConnection );
+        connect( cServer.get(), &QWebSocketServer::closed, this, &BoseCommServer::onClosedListening );
         qDebug() << "commserver server socket connect slots...OK";
       }
       else
@@ -88,31 +89,64 @@ namespace bose_commserver
   /**
    * @brief BoseCommServer::newRemConnection
    */
-  void BoseCommServer::newRemConnection()
+  void BoseCommServer::onNewConnection()
   {
     //
     // gib mal den Zeiger auf die neue Verbindung her
     //
     std::shared_ptr< QWebSocket > nSock = std::shared_ptr< QWebSocket >( cServer->nextPendingConnection() );
-    // QWebSocket *nSock = cServer->nextPendingConnection();
-    std::shared_ptr< ConnectionHandler > handler = std::make_shared< ConnectionHandler >( ConnectionHandler( config, nSock, this ) );
-    qDebug() << "commserver: new Connection: " << nSock->peerName() << nSock->origin();
-    connect( nSock.get(), &QWebSocket::textMessageReceived, handler.get(), &ConnectionHandler::remProcTextMessage );
-    connect( nSock.get(), &QWebSocket::binaryMessageReceived, handler.get(), &ConnectionHandler::remProcBinaryMessage );
-    connect( nSock.get(), &QWebSocket::disconnected, handler.get(), &ConnectionHandler::remSocketDisconnected );
+    //
+    // std::make_shared< ConnectionHandler > geht hier nicht, da er ein Objekt erzeugt und dann
+    // kopiert. Das geht schief beieinem übergebenen Socket :-(
+    //
+    //
+    // std::shared_ptr< ConnectionHandler > handler = std::make_shared< ConnectionHandler >( ConnectionHandler( config, nSock, this )
+    // );
+    std::shared_ptr< ConnectionHandler > handler =
+        std::shared_ptr< ConnectionHandler >( new ConnectionHandler( config, nSock, this ) );
+    qDebug() << "commserver: new connection: " << nSock->peerAddress().toString();
+    //
+    // connect close
+    //
+    connect( handler.get(), &ConnectionHandler::closed, this, &BoseCommServer::onClientClosed );
     // in die Liste
+    qDebug() << "commserver: new connection object to list...";
     remoteConnections << handler;
   }
 
   /**
-   * @brief BoseCommServer::closedRemListening
+   * @brief BoseCommServer::onClientClosed Der Handler hat die Verbindung gewschlossen/verloren
+   * @param handler
    */
-  void BoseCommServer::closedRemListening()
+  void BoseCommServer::onClientClosed( const ConnectionHandler *handler )
+  {
+    ulong toDeleteHandlerId = handler->getCurrentHandler();
+    qDebug() << "commserver: closed connection handler id: " << toDeleteHandlerId;
+    for ( std::shared_ptr< ConnectionHandler > currHandler : remoteConnections )
+    {
+      if ( toDeleteHandlerId == currHandler->getCurrentHandler() )
+      {
+        //
+        // hurraaaaa, hau weg das Ding
+        // entfernen aus der Liste
+        //
+        remoteConnections.removeAll( currHandler );
+        qDebug() << "commserver: closed connection handler id: " << toDeleteHandlerId << " deleted!";
+        break;
+      }
+    }
+  }
+
+  /**
+   * @brief BonNewConnectionlosedRemListening
+   */
+  void BoseCommServer::onClosedListening()
   {
     //
     // alles schliessen, fertig
     //
     qDebug() << "commserver: listening socket closed...";
+    // remoteConnections
     // TODO: bestehende sitzungen beednen/schiessen
     // TODO: emit commandClosedSignal
   }
@@ -125,7 +159,10 @@ namespace bose_commserver
     QString logDirStr = config->getLogpath();
     QDir logDir( logDirStr );
     // Logger erzeugen
-    std::shared_ptr< Logger > lg = std::make_shared< Logger >( Logger() );
+    // wg Copycontruktor eher nicht...
+    // std::shared_ptr< Logger > lg = std::make_shared< Logger >( Logger() );
+    //
+    std::shared_ptr< Logger > lg = std::shared_ptr< Logger >( new Logger() );
     if ( lg )
     {
       //

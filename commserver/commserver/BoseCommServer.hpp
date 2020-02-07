@@ -8,6 +8,7 @@
 #include <QtWebSockets/QWebSocket>
 #include <QtWebSockets/QWebSocketServer>
 #include <memory>
+
 #include "ConnectionHandler.hpp"
 #include "config/DaemonConfig.hpp"
 #include "logging/Logger.hpp"
@@ -37,8 +38,9 @@ namespace bose_commserver
     void closed();  //! signalisiere alles geschlossen -> Ende TODO: brauch ich dann nicht mehr
 
     private slots:
-    void newRemConnection();    //! neue ankommende Kommandoverbindung
-    void closedRemListening();  //! serversocket geschlossen
+    void onNewConnection();    //! neue ankommende Kommandoverbindung
+    void onClosedListening();  //! serversocket geschlossen
+    void onClientClosed( const ConnectionHandler *handler );
     // void remProcTextMessage( QString msg );       //! Kommando als text empfangen
     // void remProcBinaryMessage( QByteArray msg );  //! Kommando binär empfangen
     // void remSocketDisconnected();                 //! Kommandoverbindung beendet

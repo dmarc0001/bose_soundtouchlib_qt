@@ -49,6 +49,9 @@
 ****************************************************************************/
 #include "main.hpp"
 
+#include <QDebug>
+using namespace testclient;
+
 int main( int argc, char *argv[] )
 {
   QCoreApplication app( argc, argv );
@@ -57,18 +60,12 @@ int main( int argc, char *argv[] )
   parser.setApplicationDescription( "Bose library: testclient" );
   parser.addHelpOption();
   //
-  // debug option
-  //
-  QCommandLineOption dbgOption( "debug", "Debug output [default: off]." );
-  //
   // bindaddr fuer diesen Daemon
   //
-  QCommandLineOption urlOption( "url", QString( "connect url [default: ws://localhost:8080]" ), "destination",
-                                QLatin1String( "ws://localhost:8080]" ) );
+  QCommandLineOption urlOption( "url", QString( "connect url [default: ws://localhost:8080]" ), "destination", "ws://localhost:8080" );
   //
   // Optionen parsen und einlesen
   //
-  parser.addOption( dbgOption );
   parser.addOption( urlOption );
   parser.process( app );
   QUrl url = QUrl( parser.value( urlOption ) );
