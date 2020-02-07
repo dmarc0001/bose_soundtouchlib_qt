@@ -48,7 +48,7 @@ namespace bose_commserver
 
     public:
     explicit Logger();
-    Logger::Logger( Logger &lg );
+    Logger( const Logger &lg );
     virtual ~Logger();  //! Destruktor
 
     int startLogging( LgThreshold th = LG_DEBUG, const QString &fn = "logging.log" );  //! Loggen beginnen

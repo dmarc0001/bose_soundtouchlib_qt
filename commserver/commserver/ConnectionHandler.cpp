@@ -1,4 +1,5 @@
 #include "ConnectionHandler.hpp"
+
 #include <QDebug>
 
 namespace bose_commserver
@@ -10,7 +11,7 @@ namespace bose_commserver
   {
   }
 
-  ConnectionHandler::ConnectionHandler( ConnectionHandler &cp )
+  ConnectionHandler::ConnectionHandler( const ConnectionHandler &cp )
   {
     config = cp.config;
     connected = cp.connected;

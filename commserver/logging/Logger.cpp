@@ -1,4 +1,5 @@
 ﻿#include "Logger.hpp"
+
 #include <QDateTime>
 #include <QFileInfo>
 
@@ -25,7 +26,7 @@ namespace bose_commserver
     // shutdown();
   }
 
-  Logger::Logger( Logger &lg )
+  Logger::Logger( const Logger &lg )
   {
     threshold = lg.threshold;
     logFile = lg.logFile;

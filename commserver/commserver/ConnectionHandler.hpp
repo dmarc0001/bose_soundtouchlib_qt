@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QWebSocket>
 #include <memory>
+
 #include "config/DaemonConfig.hpp"
 
 namespace bose_commserver
@@ -20,7 +21,7 @@ namespace bose_commserver
     explicit ConnectionHandler( std::shared_ptr< DaemonConfig > dconfig,
                                 std::shared_ptr< QWebSocket > theSock,
                                 QObject *parent = nullptr );
-    ConnectionHandler( ConnectionHandler &cp );
+    ConnectionHandler( const ConnectionHandler &cp );
     ~ConnectionHandler();
     void disconnectWebsocket();  //! Verbindung trennen
 
