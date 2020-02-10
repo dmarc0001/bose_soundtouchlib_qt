@@ -15,25 +15,14 @@ namespace bose_commserver
    * @brief Logger::Logger Konstruktor mit Konfigurationsdatei Übergabe
    * @param lFile
    */
-  Logger::Logger() : threshold( LG_DEBUG ), logFile( nullptr ), textStream( nullptr )
+  Logger::Logger() : threshold( LG_DEBUG ), logFile( nullptr )
   {
-    logMutex = std::shared_ptr< QMutex >();
   }
 
   Logger::~Logger()
   {
     qDebug().noquote().nospace() << "SHUTDOWN LOGGING...";
     // shutdown();
-  }
-
-  Logger::Logger( const Logger &lg )
-  {
-    threshold = lg.threshold;
-    logFile = lg.logFile;
-    textStream = lg.textStream;
-    dateTime = lg.dateTime;
-    logMutex = lg.logMutex;
-    dateTime = lg.dateTime;
   }
 
   int Logger::startLogging( LgThreshold th, const QString &fileName )
@@ -48,9 +37,9 @@ namespace bose_commserver
       {
         // Super, das Logfile ist benannt!
         qDebug().noquote().nospace() << "START LOGGING...(" << fileName << ")";
-        logFile = std::make_shared< QFile >( fileName );
+        logFile = std::unique_ptr< QFile >( new QFile( fileName ) );
         logFile->open( QIODevice::WriteOnly | QIODevice::Append );
-        textStream = std::make_shared< QTextStream >( logFile.get() );
+        textStream = std::unique_ptr< QTextStream >( new QTextStream( logFile.get() ) );
         *textStream << getDateString() << "START LOGGING" << endl;
         if ( logFile && logFile->isOpen() && textStream )
         {
@@ -91,7 +80,7 @@ namespace bose_commserver
   void Logger::warn( const QString &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qWarning().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_WARN )
     {
@@ -102,7 +91,7 @@ namespace bose_commserver
   void Logger::warn( const char *msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qWarning().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_WARN )
     {
@@ -113,7 +102,7 @@ namespace bose_commserver
   void Logger::warn( const std::string &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qWarning().noquote().nospace() << msg.c_str();
     if ( textStream && threshold >= LG_WARN )
     {
@@ -128,7 +117,7 @@ namespace bose_commserver
   void Logger::info( const QString &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qInfo().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_INFO )
     {
@@ -139,7 +128,7 @@ namespace bose_commserver
   void Logger::info( const char *msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qInfo().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_INFO )
     {
@@ -149,7 +138,7 @@ namespace bose_commserver
   void Logger::info( const std::string &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qInfo().noquote().nospace() << msg.c_str();
     if ( textStream && threshold >= LG_INFO )
     {
@@ -164,7 +153,7 @@ namespace bose_commserver
   void Logger::debug( const QString &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qDebug().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_DEBUG )
     {
@@ -175,7 +164,7 @@ namespace bose_commserver
   void Logger::debug( const char *msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qDebug().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_DEBUG )
     {
@@ -186,7 +175,7 @@ namespace bose_commserver
   void Logger::debug( const std::string &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qDebug().noquote().nospace() << msg.c_str();
     if ( textStream && threshold >= LG_DEBUG )
     {
@@ -201,7 +190,7 @@ namespace bose_commserver
   void Logger::crit( const QString &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qCritical().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_DEBUG )
     {
@@ -212,7 +201,7 @@ namespace bose_commserver
   void Logger::crit( const char *msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qCritical().noquote().nospace() << msg;
     if ( textStream && threshold >= LG_DEBUG )
     {
@@ -223,7 +212,7 @@ namespace bose_commserver
   void Logger::crit( const std::string &msg )
   {
     //! Serialisieren...
-    QMutexLocker locker( logMutex.get() );
+    QMutexLocker locker( &logMutex );
     qCritical().noquote().nospace() << msg.c_str();
     if ( textStream && threshold >= LG_DEBUG )
     {
@@ -254,13 +243,4 @@ namespace bose_commserver
     return ( dateTime.toString( dateTimeFormat ) );
   }
 
-  std::shared_ptr< QFile > Logger::getLogFile()
-  {
-    return logFile;
-  }
-
-  std::shared_ptr< QTextStream > Logger::getTextStream()
-  {
-    return textStream;
-  }
 }  // namespace bose_commserver

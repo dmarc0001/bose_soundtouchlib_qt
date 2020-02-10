@@ -9,5 +9,5 @@ namespace bose_commserver
   const char *ProgramConfig::httpport{"8090"};
   const char *ProgramConfig::logger{"commserver.log"};
   const char *ProgramConfig::logpath{""};
-  const LgThreshold ProgramConfig::threshold{LgThreshold::LG_CRIT};
+  const LgThreshold ProgramConfig::threshold{LgThreshold::LG_DEBUG};
 }  // namespace bose_commserver

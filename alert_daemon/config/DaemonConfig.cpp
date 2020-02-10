@@ -63,14 +63,14 @@ namespace bose_commserver
     isDebug = value;
   }
 
-  QString DaemonConfig::getLogger() const
+  QString DaemonConfig::getLoggerFileName() const
   {
-    return logger;
+    return loggerFile;
   }
 
-  void DaemonConfig::setLogger( const QString &value )
+  void DaemonConfig::setLoggerFileName( const QString &value )
   {
-    logger = value;
+    loggerFile = value;
   }
 
   LgThreshold DaemonConfig::getThreshold() const
@@ -98,7 +98,7 @@ namespace bose_commserver
     return lg;
   }
 
-  void DaemonConfig::setLogger( const std::shared_ptr< Logger > &value )
+  void DaemonConfig::setLogger( const std::shared_ptr< Logger > value )
   {
     lg = value;
   }
@@ -109,7 +109,7 @@ namespace bose_commserver
       , bindport( ProgramConfig::bindport )
       , defaultWsport( ProgramConfig::wsport )
       , defaultHttpport( ProgramConfig::httpport )
-      , logger( ProgramConfig::logfile )
+      , loggerFile( ProgramConfig::logfile )
       , logpath( ProgramConfig::logpath )
       , threshold( ProgramConfig::threshold )
       , isDebug( false )

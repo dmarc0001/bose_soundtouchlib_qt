@@ -15,7 +15,7 @@ namespace bose_commserver
     QString bindport;
     QString defaultWsport;
     QString defaultHttpport;
-    QString logger;
+    QString loggerFile;
     QString logpath;
     LgThreshold threshold;
     bool isDebug;
@@ -36,14 +36,14 @@ namespace bose_commserver
     void setDefaultHttpport( const QString &value );
     bool getIsDebug() const;
     void setIsDebug( bool value );
-    QString getLogger() const;
-    void setLogger( const QString &value );
+    QString getLoggerFileName() const;
+    void setLoggerFileName( const QString &value );
     LgThreshold getThreshold() const;
     void setThreshold( const LgThreshold &value );
     QString getLogpath() const;
     void setLogpath( const QString &value );
     std::shared_ptr< Logger > getLogger();
-    void setLogger( const std::shared_ptr< Logger > &value );
+    void setLogger( const std::shared_ptr< Logger > value );
   };
 }  // namespace bose_commserver
 #endif  // DAEMONCONFIG_HPP

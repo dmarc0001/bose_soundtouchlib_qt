@@ -4,7 +4,7 @@
 
 namespace bose_commserver
 {
-  ulong ConnectionHandler::handlerNumberCounter{0};
+  qlonglong ConnectionHandler::handlerNumberCounter{0};
 
   /**
    * @brief ConnectionHandler::ConnectionHandler
@@ -16,13 +16,15 @@ namespace bose_commserver
                                         std::shared_ptr< QWebSocket > theSock,
                                         QObject *parent )
       : QObject( parent )
-      , currentHandler( ConnectionHandler::handlerNumberCounter++ )
+      , currentHandlerNum( ConnectionHandler::handlerNumberCounter++ )
       , config( dconfig )
       , connected( false )
       , nSock( theSock )
+      , lg( dconfig->getLogger() )
   {
     //
-    qDebug() << "ConnectionHandler: created handler id: " << currentHandler;
+    lg->debug( QString( "ConnectionHandler::ConnectionHandler: created handler id: %1" )
+                   .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) ) );
     init();
   }
 
@@ -30,21 +32,34 @@ namespace bose_commserver
    * @brief ConnectionHandler::ConnectionHandler
    * @param cp
    */
-  ConnectionHandler::ConnectionHandler( const ConnectionHandler &cp ) : currentHandler( cp.currentHandler )
+  ConnectionHandler::ConnectionHandler( const ConnectionHandler &cp ) : currentHandlerNum( cp.currentHandlerNum )
   {
-    qDebug() << "ConnectionHandler: copyconstructor created handler id: " << currentHandler;
+    lg->debug( QString( "ConnectionHandler::ConnectionHandler: copyconstructor created handler id: %1" )
+                   .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) ) );
     config = cp.config;
     connected = cp.connected;
     nSock = cp.nSock;
     init();
   }
 
+  /**
+   * @brief ConnectionHandler::init
+   */
   void ConnectionHandler::init()
   {
-    qDebug() << "ConnectionHandler: connect slots...";
+    lg->debug( "ConnectionHandler::init: connect slots for websocket..." );
     connect( nSock.get(), &QWebSocket::textMessageReceived, this, &ConnectionHandler::onRecTextMessage );
     connect( nSock.get(), &QWebSocket::binaryMessageReceived, this, &ConnectionHandler::onRecBinaryMessage );
     connect( nSock.get(), &QWebSocket::disconnected, this, &ConnectionHandler::onDisconnected );
+  }
+
+  /**
+   * @brief ConnectionHandler::getNSock
+   * @return
+   */
+  std::shared_ptr< QWebSocket > ConnectionHandler::getNSock() const
+  {
+    return nSock;
   }
 
   /**
@@ -52,7 +67,8 @@ namespace bose_commserver
    */
   ConnectionHandler::~ConnectionHandler()
   {
-    qDebug() << "ConnectionHandler: destructor handler id: " << currentHandler;
+    lg->debug( QString( "ConnectionHandler::~ConnectionHandler: destruction handler id: %1" )
+                   .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) ) );
     /*
     // Websocket verbindung beenden
     if ( nSock->isValid() )
@@ -69,9 +85,9 @@ namespace bose_commserver
    * @brief ConnectionHandler::getCurrentHandler
    * @return
    */
-  ulong ConnectionHandler::getCurrentHandler() const
+  qlonglong ConnectionHandler::getCurrentHandlerNum() const
   {
-    return currentHandler;
+    return currentHandlerNum;
   }
 
   /**
@@ -79,7 +95,8 @@ namespace bose_commserver
    */
   void ConnectionHandler::disconnectWebsocket()
   {
-    qDebug() << "ConnectionHandler: disconnect handler id: " << currentHandler;
+    lg->debug( QString( "ConnectionHandler::disconnectWebsocket: disconnect handler id: %1" )
+                   .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) ) );
     // Websocket verbindung beenden
     if ( nSock->isValid() )
       if ( connected )
@@ -96,26 +113,22 @@ namespace bose_commserver
    */
   void ConnectionHandler::onRecTextMessage( QString msg )
   {
-    qDebug() << "ConnectionHandler: recived text handler id: " << currentHandler;
-    //
-    // wer war das?
-    //
-    // QWebSocket *nSock = qobject_cast< QWebSocket * >( sender() );
-    qDebug() << "commserver: msg recived: " << msg << " from: " << nSock->peerAddress().toString() << ", " << nSock->peerPort();
+    lg->debug( QString( "ConnectionHandler::onRecTextMessage: handler id: %1 recived: %2 from %3" )
+                   .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) )
+                   .arg( msg )
+                   .arg( nSock->peerAddress().toString() ) );
     nSock->sendTextMessage( "TEXT ACKNOWLEDGED" );
   }
 
   /**
    * @brief ConnectionHandler::onRecBinaryMessage
    */
-  void ConnectionHandler::onRecBinaryMessage( QByteArray )
+  void ConnectionHandler::onRecBinaryMessage( QByteArray msg )
   {
-    qDebug() << "ConnectionHandler: recived binary handler id: " << currentHandler;
-    //
-    // wer war das?
-    //
-    // QWebSocket *nSock = qobject_cast< QWebSocket * >( sender() );
-    qDebug() << "commserver: binary msg recived from: " << nSock->peerAddress().toString() << ", " << nSock->peerPort();
+    lg->debug( QString( "ConnectionHandler::onRecTextMessage: handler id: %1 recived: %2 from %3" )
+                   .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) )
+                   .arg( QString( msg.toHex( ':' ) ) )
+                   .arg( nSock->peerAddress().toString() ) );
     nSock->sendTextMessage( "BINARY ACKNOWLEDGED" );
   }
 
@@ -124,17 +137,16 @@ namespace bose_commserver
    */
   void ConnectionHandler::onDisconnected()
   {
-    qDebug() << "ConnectionHandler: in disconnected handler id: " << currentHandler;
+    qDebug() << "ConnectionHandler: in disconnected handler id: " << currentHandlerNum;
     //
     // wer war das?
     //
-    // QWebSocket *nSock = qobject_cast< QWebSocket * >( sender() );
     qDebug() << "commserver: closed remote connection from: " << nSock->peerAddress().toString() << ", " << nSock->peerPort();
+    //
+    // gib bei der App bescheid, dass alles erledigt ist
+    // => Programm beenden
+    //
     emit closed( this );
-
-    // TODO: noch was intelligenten machen
-    // remoteSockets.removeAll( nSock );
-    // nSock->deleteLater();
   }
 
 }  // namespace bose_commserver

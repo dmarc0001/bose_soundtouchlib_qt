@@ -4,11 +4,12 @@
 #include <QDir>
 #include <QException>
 #include <QList>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
 #include <QtWebSockets/QWebSocketServer>
 #include <memory>
-
 #include "ConnectionHandler.hpp"
 #include "config/DaemonConfig.hpp"
 #include "logging/Logger.hpp"
@@ -25,6 +26,8 @@ namespace bose_commserver
     std::shared_ptr< QWebSocketServer > cServer;
     QList< std::shared_ptr< ConnectionHandler > > remoteConnections;  //! Liste mit verbundenen Sockets
     QWebSocket m_webSocket;                                           //! Client Socket zum BOSE Gerät
+    std::shared_ptr< Logger > lg;                                     //! wenn ein logger erstellt wurde
+    QMutex qMutex;                                                    //! nurt einem Zugang gewähren
 
     public:
     explicit BoseCommServer( std::shared_ptr< DaemonConfig > dconfig, QObject *parent = nullptr );  //! der Konstruktor

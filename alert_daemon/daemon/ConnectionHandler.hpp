@@ -2,6 +2,7 @@
 #define CONNECTIONHANDLER_HPP
 
 #include <QJsonDocument>
+#include <QLatin1Char>
 #include <QObject>
 #include <QWebSocket>
 #include <memory>
@@ -14,11 +15,12 @@ namespace bose_commserver
   {
     Q_OBJECT
     private:
-    static ulong handlerNumberCounter;
-    const ulong currentHandler;
+    static qlonglong handlerNumberCounter;
+    const qlonglong currentHandlerNum;
     std::shared_ptr< DaemonConfig > config;
     bool connected;
     std::shared_ptr< QWebSocket > nSock;
+    std::shared_ptr< Logger > lg;  //! wenn ein logger erstellt wurde
 
     public:
     explicit ConnectionHandler( std::shared_ptr< DaemonConfig > dconfig,
@@ -27,8 +29,9 @@ namespace bose_commserver
     ConnectionHandler( const ConnectionHandler &cp );
     void init();
     ~ConnectionHandler();
-    void disconnectWebsocket();       //! Verbindung trennen
-    ulong getCurrentHandler() const;  // den aktuellen handler identifizieren
+    void disconnectWebsocket();              //! Verbindung trennen
+    qlonglong getCurrentHandlerNum() const;  // den aktuellen handler identifizieren
+    std::shared_ptr< QWebSocket > getNSock() const;
 
     signals:
     void closed( const ConnectionHandler *handler );

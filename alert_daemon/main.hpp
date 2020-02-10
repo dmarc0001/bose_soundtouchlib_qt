@@ -5,7 +5,7 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
 #include <memory>
-#include "commserver/BoseCommServer.hpp"
+#include "daemon/BoseCommServer.hpp"
 #include "config/DaemonConfig.hpp"
 #include "config/programconfig.hpp"
 

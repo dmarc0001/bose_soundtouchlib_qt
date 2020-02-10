@@ -1,5 +1,11 @@
+//
+// Websocket Kommunikation
+//
+// der Serverprozess vermittelt
+// - zwischen dem Web Frontend (dem User) und dem Interface für die Konfiguration
+// - kommunizieert zwischen dem Timermodul und den Geräten
+//
 #include "BoseCommServer.hpp"
-
 #include <QtDebug>
 
 namespace bose_commserver
@@ -9,26 +15,24 @@ namespace bose_commserver
    * @param dconfig
    * @param parent
    */
-  BoseCommServer::BoseCommServer( std::shared_ptr< DaemonConfig > dconfig, QObject *parent )
-      : QObject( parent ), config( dconfig )  // , cServer( QStringLiteral( "command server" ), QWebSocketServer::NonSecureMode, this )
+  BoseCommServer::BoseCommServer( std::shared_ptr< DaemonConfig > dconfig, QObject *parent ) : QObject( parent ), config( dconfig )
   {
-    if ( config->getIsDebug() )
-    {
-      qDebug() << "commserver object created...";
-      qDebug() << "create serversocket...";
-    }
+    qDebug() << "commserver object created...";
+    qDebug() << "create serversocket...";
     if ( !createLogger() )
     {
       //
       // was drastisches machen, exception werfen oder so
       //
+      qCritical() << "can't create logger, abort commserver....";
       emit closed();
     }
     else
     {
       configServer();
-      if ( config->getIsDebug() )
-        qDebug() << "create serversocket...OK";
+      qDebug() << "LOGFILE" << config->getLogfile();
+      lg->debug( "BoseCommServer::BoseCommServer: serversocket created..." );
+      qDebug() << "create serversocket...OK";
     }
   }
 
@@ -37,13 +41,17 @@ namespace bose_commserver
    */
   BoseCommServer::~BoseCommServer()
   {
+    lg->info( "BoseCommServer::~BoseCommServer: destructor..." );
     cServer->close();
-    // for ( std::shared_ptr< ConnectionHandler > handler : remoteConnections )
-    // {
-    // alle durchgehen, die Liste selber wird vom Destruktor gelöscht
-    // die Handlerzeiger machen das für sich selbstständig
-    //   handler->disconnectWebsocket();
-    // }
+    for ( std::shared_ptr< ConnectionHandler > handler : remoteConnections )
+    {
+      //
+      // alle durchgehen, die Liste selber wird vom Destruktor gelöscht
+      // die Einträge aus der Liste löschen sich selber
+      //
+      handler->disconnectWebsocket();
+    }
+    lg->shutdown();
   }
 
   /**
@@ -54,33 +62,36 @@ namespace bose_commserver
   {
     try
     {
-      qDebug() << "commserver server socket create...";
+      lg->debug( "BoseCommServer::configServer: commserver create server socket..." );
       cServer = std::make_unique< QWebSocketServer >( QStringLiteral( "command server" ), QWebSocketServer::NonSecureMode, this );
-      qDebug() << "commserver server socket create...OK";
+      lg->debug( "BoseCommServer::configServer: commserver create server socket...OK" );
       //
       // feststellen ob der Server gebunden wird
       //
+      lg->debug( "BoseCommServer::configServer: commserver try listen on socket..." );
       if ( cServer->listen( QHostAddress( config->getBindaddr() ), static_cast< quint16 >( config->getBindport().toInt() ) ) )
       {
-        qDebug() << "Server socket started!";
+        lg->debug( "BoseCommServer::configServer: commserver try listen on socket...OK" );
+        lg->info( "commserver is ready for connections..." );
         //
         // signal für neue Verbindungen verbinden
         //
-        qDebug() << "commserver server socket connect slots...";
+        lg->debug( "BoseCommServer::configServer: commserver connect socket to slots..." );
         connect( cServer.get(), &QWebSocketServer::newConnection, this, &BoseCommServer::onNewConnection );
         connect( cServer.get(), &QWebSocketServer::closed, this, &BoseCommServer::onClosedListening );
-        qDebug() << "commserver server socket connect slots...OK";
+        lg->debug( "BoseCommServer::configServer: commserver connect socket to slots...OK" );
       }
       else
       {
-        qDebug() << "Server socket could not start";
+        lg->crit( "commserver can't start!" );
         // TODO: ALARM!
         return false;
       }
     }
-    catch ( QException ex )
+    catch ( QException &ex )
     {
-      // TODO: mach weas!
+      // TODO: mach was!
+      lg->crit( QString( "BoseCommServer::configServer" ).arg( ex.what() ) );
       return false;
     }
     return true;
@@ -91,26 +102,26 @@ namespace bose_commserver
    */
   void BoseCommServer::onNewConnection()
   {
+    QMutexLocker locker( &qMutex );
     //
     // gib mal den Zeiger auf die neue Verbindung her
     //
     std::shared_ptr< QWebSocket > nSock = std::shared_ptr< QWebSocket >( cServer->nextPendingConnection() );
     //
     // std::make_shared< ConnectionHandler > geht hier nicht, da er ein Objekt erzeugt und dann
-    // kopiert. Das geht schief beieinem übergebenen Socket :-(
+    // kopiert. Das geht schief bei einem übergebenen Socket :-(
     //
-    //
-    // std::shared_ptr< ConnectionHandler > handler = std::make_shared< ConnectionHandler >( ConnectionHandler( config, nSock, this )
-    // );
     std::shared_ptr< ConnectionHandler > handler =
         std::shared_ptr< ConnectionHandler >( new ConnectionHandler( config, nSock, this ) );
-    qDebug() << "commserver: new connection: " << nSock->peerAddress().toString();
+    lg->info( QString( "BoseCommServer::onNewConnection: commserver: new connection from: %1, id: %2" )
+                  .arg( nSock->peerAddress().toString() )
+                  .arg( handler->getCurrentHandlerNum(), 12, 10, QLatin1Char( '0' ) ) );
     //
     // connect close
     //
     connect( handler.get(), &ConnectionHandler::closed, this, &BoseCommServer::onClientClosed );
     // in die Liste
-    qDebug() << "commserver: new connection object to list...";
+    lg->debug( "BoseCommServer::onNewConnection: commserver: new connection to list" );
     remoteConnections << handler;
   }
 
@@ -120,21 +131,28 @@ namespace bose_commserver
    */
   void BoseCommServer::onClientClosed( const ConnectionHandler *handler )
   {
-    ulong toDeleteHandlerId = handler->getCurrentHandler();
-    qDebug() << "commserver: closed connection handler id: " << toDeleteHandlerId;
+    QMutexLocker locker( &qMutex );
+    qlonglong toDeleteHandlerId = handler->getCurrentHandlerNum();
+    lg->info( QString( "BoseCommServer::onClientClosed: commserver: closed connection from: %1, id: %2" )
+                  .arg( handler->getNSock()->peerAddress().toString() )
+                  .arg( toDeleteHandlerId, 12, 10, QLatin1Char( '0' ) ) );
     for ( std::shared_ptr< ConnectionHandler > currHandler : remoteConnections )
     {
-      if ( toDeleteHandlerId == currHandler->getCurrentHandler() )
+      if ( toDeleteHandlerId == currHandler->getCurrentHandlerNum() )
       {
         //
         // hurraaaaa, hau weg das Ding
         // entfernen aus der Liste
         //
-        remoteConnections.removeAll( currHandler );
-        qDebug() << "commserver: closed connection handler id: " << toDeleteHandlerId << " deleted!";
+        bool wasRemoved = remoteConnections.removeOne( currHandler );
+        lg->debug( QString( "BoseCommServer::onClientClosed: commserver: closed connection from: %1, id: %2 deleted %3" )
+                       .arg( handler->getNSock()->peerAddress().toString() )
+                       .arg( toDeleteHandlerId, 12, 10, QLatin1Char( '0' ) )
+                       .arg( wasRemoved ) );
         break;
       }
     }
+    lg->debug( QString( "BoseCommServer::onClientClosed: commserver: open connections %1" ).arg( remoteConnections.count() ) );
   }
 
   /**
@@ -145,7 +163,7 @@ namespace bose_commserver
     //
     // alles schliessen, fertig
     //
-    qDebug() << "commserver: listening socket closed...";
+    lg->info( "BoseCommServer::onClosedListening: listening comserver socket closed." );
     // remoteConnections
     // TODO: bestehende sitzungen beednen/schiessen
     // TODO: emit commandClosedSignal
@@ -160,9 +178,9 @@ namespace bose_commserver
     QDir logDir( logDirStr );
     // Logger erzeugen
     // wg Copycontruktor eher nicht...
-    // std::shared_ptr< Logger > lg = std::make_shared< Logger >( Logger() );
+    // lg = std::make_shared< Logger >( Logger() );
     //
-    std::shared_ptr< Logger > lg = std::shared_ptr< Logger >( new Logger() );
+    lg = std::shared_ptr< Logger >( new Logger() );
     if ( lg )
     {
       //
@@ -175,21 +193,22 @@ namespace bose_commserver
           //
           // Das ging schief
           //
-          qDebug() << "BoseCommServer::createLogger -> path NOT created!";
+          qCritical() << "BoseCommServer::createLogger -> path NOT created!";
           return ( false );
         }
       }
       //
       // das wird wohl klappen
       //
+      // lg->startLogging( LgThreshold::LG_DEBUG, config->getLogfile() );
       lg->startLogging( static_cast< LgThreshold >( config->getThreshold() ), config->getLogfile() );
       config->setLogger( lg );
+      lg->debug( "BoseCommServer::createLogger: logger created..." );
       return ( true );
     }
     //
     // Fehler, melde das dem User
     //
-    qDebug() << "BoseCommServer::createLogger -> NOT created!";
     return ( false );
   }
 

@@ -28,13 +28,13 @@ namespace bose_commserver
     //! Logs level
     LgThreshold threshold;
     //! Zeiger auf das Logdateiobjekt
-    std::shared_ptr< QFile > logFile;
+    std::unique_ptr< QFile > logFile;
     //! Zeiger auf einen Textstrom
-    std::shared_ptr< QTextStream > textStream;
+    std::unique_ptr< QTextStream > textStream;
     //! das lokale Datum/Zeit objekt
     QDateTime dateTime;
     //! Mutex zum locken der Queue
-    std::shared_ptr< QMutex > logMutex;
+    QMutex logMutex;
     //! Format der Zeitausgabe
     static const QString dateTimeFormat;
     //! String für Debuglevel
@@ -48,7 +48,7 @@ namespace bose_commserver
 
     public:
     explicit Logger();
-    Logger( const Logger &lg );
+    // Logger( const Logger &lg );
     virtual ~Logger();  //! Destruktor
 
     int startLogging( LgThreshold th = LG_DEBUG, const QString &fn = "logging.log" );  //! Loggen beginnen
@@ -86,10 +86,6 @@ namespace bose_commserver
     void crit( const char *msg );
     //
     void shutdown();  //! Logger explizit herunterfahren
-
-    protected:
-    std::shared_ptr< QFile > getLogFile();
-    std::shared_ptr< QTextStream > getTextStream();
 
     private:
     QString getDateString();  //! interne Funktion für den Datumsstring
