@@ -13,7 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 add_subdirectory(libsoundtouch)
 add_subdirectory(test_soundtouch)
-add_subdirectory(commserver)
+add_subdirectory(alert_daemon)
 add_subdirectory(testclient)
 
 #add_dependencies(commserver libsoundtouch)
