@@ -1,11 +1,11 @@
 #include "alertconfig.hpp"
+#include <QDebug>
 
 namespace bose_commserver
 {
   const char *AlertConfig::defaultLogFile{"alert_daemon.log"};
   const char *AlertConfig::keyLogFile{"logfile"};
   const char *AlertConfig::defaultLogPath{""};
-  const char *AlertConfig::keyLogPath{"logpath"};
   const char *AlertConfig::defaultBindAddr{"0.0.0.0"};
   const char *AlertConfig::keyBindAddr{"bindaddr"};
   const char *AlertConfig::defaultBindPort{"8080"};
@@ -15,6 +15,12 @@ namespace bose_commserver
   const char *AlertConfig::defaultHttpPort{"8090"};
   const char *AlertConfig::keyHttpPort{"httpport"};
   const char *AlertConfig::defaultConfigFile{"alert_config.ini"};
+  // logfile festlegungen
+  const char *AlertConfig::constNoData{"-"};
+  const char *AlertConfig::constLogGroupName{"logger"};
+  const char *AlertConfig::constKeyLogPath{"logpath"};
+  const char *AlertConfig::constAppGroupName{"application"};
+  const char *AlertConfig::constAlertGroupPattern{"alert-"};
 
   AlertConfig::AlertConfig()
       : logFileName( AlertConfig::defaultLogFile )
@@ -22,7 +28,7 @@ namespace bose_commserver
       , bindport( AlertConfig::defaultBindPort )
       , wsPort( AlertConfig::defaultWsport )
       , httpPort( AlertConfig::defaultHttpPort )
-      , logpath( AlertConfig::defaultLogPath )
+      , logPath( AlertConfig::defaultLogPath )
       , threshold( LgThreshold::LG_DEBUG )
       , configFileName( AlertConfig::defaultConfigFile )
       , isDebug( false )
@@ -32,6 +38,7 @@ namespace bose_commserver
       , isBindPortManual( false )
       , lg( nullptr )
   {
+    qDebug().noquote() << "AppConfigClass::AppConfigClass()";
     QFile iniFile( configFileName );
     if ( iniFile.exists() && iniFile.isWritable() )
     {
@@ -120,15 +127,94 @@ namespace bose_commserver
     lg = value;
   }
 
+  /**
+   * @brief AlertConfig::loadSettings
+   * Lade Einstellungen aus der Datei
+   * @return
+   */
   bool AlertConfig::loadSettings( void )
   {
-    return false;
+    qDebug().noquote() << "AppConfigClass::~loadSettings(), logfile: " << getFullLogFilePath();
+    //
+    // Ini Dateihandling initialisieren, Datei einlesen
+    //
+    QSettings settings( configFileName, QSettings::IniFormat );
+    //
+    // die verschiedenen Sektionen behandeln
+    //
+    if ( !loadLogSettings( settings ) )
+    {
+      makeDefaultLogSettings( settings );
+    }
+    if ( !loadAppSettings( settings ) )
+    {
+      makeAppDefaultSettings( settings );
+    }
+
+    QString alertGroupBody( AlertConfig::constAlertGroupPattern );
+    for ( int i = 0; i < 100; i++ )
+    {
+      //
+      // suche nach Alarm von 00 bis 99
+      //
+      QString currentAlertGroup = QString( "%1%2" ).arg( alertGroupBody ).arg( i, 2, 10, QLatin1Char( '0' ) );
+      // TODO: loadAlertSetting( currentAlertGroup );
+    }
+
+    return ( true );
   }
 
-  bool AlertConfig::loadSettings( QString &configFile )
+  /**
+   * @brief AlertConfig::loadSettings
+   * Lade Einstellungen aus einer angegebenen Datei
+   * @param configFile
+   * @return
+   */
+  bool AlertConfig::loadSettings( const QString &configFile )
   {
+    qDebug().noquote() << "AppConfigClass::~loadSettings(" << configFile << ")...";
     configFileName = configFile;
-    return true;
+    return loadSettings();
+  }
+
+  bool AlertConfig::loadLogSettings( QSettings &settings )
+  {
+    bool retval = true;
+    qDebug().noquote() << "AppConfigClass::~loadLogSettings() START...";
+    //
+    // Öffne die Gruppe Logeinstellungen
+    //
+    settings.beginGroup( constLogGroupName );
+    //
+    // lese den Logpfad aus
+    //
+    logPath = settings.value( AlertConfig::constKeyLogPath, AlertConfig::constNoData ).toString();
+    if ( QString::compare( logfilePath, constNoData ) == 0 )
+    {
+      // Nicht gefunden -> Fehler markieren
+      retval = false;
+    }
+    qDebug().noquote().nospace() << "AppConfigClass::loadLogSettings(): Logfile Path: <" << logfilePath << ">";
+    //
+    // Lese den Dateinamen aus
+    //
+    logfileName = settings.value( constLogFileKey, AppConfigClass::constNoData ).toString();
+    if ( QString::compare( logfileName, constNoData ) == 0 )
+    {
+      // Nicht gefunden -> Fehler markieren
+      retval = false;
+    }
+    qDebug().noquote().nospace() << "AppConfigClass::loadLogSettings(): Logfile: <" << logfileName << ">";
+    //
+    // Ende der Gruppe
+    //
+    settings.endGroup();
+    //
+    // Ergebnis kommunizieren
+    //
+
+    qDebug().noquote() << "AppConfigClass::~loadLogSettings() END...";
+    return retval;
   }
 
   bool AlertConfig::saveSettings( void )

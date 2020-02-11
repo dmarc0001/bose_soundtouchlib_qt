@@ -2,7 +2,6 @@
 #define ALERTCONFIG_HPP
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -23,7 +22,6 @@ namespace bose_commserver
     const static char *defaultLogFile;
     const static char *keyLogFile;
     const static char *defaultLogPath;
-    const static char *keyLogPath;
     const static char *defaultBindAddr;
     const static char *keyBindAddr;
     const static char *defaultBindPort;
@@ -33,14 +31,20 @@ namespace bose_commserver
     const static char *defaultHttpPort;
     const static char *keyHttpPort;
     const static char *defaultConfigFile;
+    // configfile
+    const static char *constNoData;
+    const static char *constLogGroupName;
+    const static char *constKeyLogPath;
+    const static char *constLogfilePathKey;
+    const static char *constAppGroupName;
+    const static char *constAlertGroupPattern;
     // aktuelle Config
     QString logFileName;
     QString bindaddr;
     QString bindport;
     QString wsPort;
     QString httpPort;
-    QString loggerFile;
-    QString logpath;
+    QString logPath;
     LgThreshold threshold;
     QString configFileName;
     bool isDebug;
@@ -64,9 +68,12 @@ namespace bose_commserver
     //! lade Einstellungen aus default Konfigdatei
     bool loadSettings( void );
     //! lade Einstellungen aus benannter Konfigdatei
-    bool loadSettings( QString &configFile );
+    bool loadSettings( const QString &configFile );
     //! sichere Einstellungen
     bool saveSettings( void );
+    //! lese logger einstellungen
+    bool loadLogSettings( QSettings &settings );
+    //
     //! Name der Konfigdatei ausgeben
     QString getConfigFile( void ) const;
     //! Name der Logdatei ausgeben
