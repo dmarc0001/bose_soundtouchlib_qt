@@ -5,8 +5,9 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
 #include <memory>
+
 #include "config/alertconfig.hpp"
-#include "daemon/BoseCommServer.hpp"
+#include "daemon/bosecommserver.hpp"
 
 int main( int argc, char *argv[] );
 

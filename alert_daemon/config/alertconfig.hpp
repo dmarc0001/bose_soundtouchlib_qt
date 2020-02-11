@@ -11,34 +11,39 @@
 #include <QString>
 #include <QVector>
 #include <memory>
+
 #include "logging/logger.hpp"
 
 namespace bose_commserver
 {
   class AlertConfig
   {
-    private:
+    protected:
     // statische defaults
-    const static char *defaultLogFile;
-    const static char *keyLogFile;
-    const static char *defaultLogPath;
-    const static char *defaultBindAddr;
-    const static char *keyBindAddr;
-    const static char *defaultBindPort;
-    const static char *keyBindPort;
-    const static char *defaultWsport;
-    const static char *keyWsport;
-    const static char *defaultHttpPort;
-    const static char *keyHttpPort;
-    const static char *defaultConfigFile;
-    // configfile
-    const static char *constNoData;
-    const static char *constLogGroupName;
-    const static char *constKeyLogPath;
-    const static char *constLogfilePathKey;
-    const static char *constAppGroupName;
-    const static char *constAlertGroupPattern;
+    static constexpr const char *defaultLogFile{"alert_daemon.log"};
+    static constexpr const char *defaultLogPath{""};
+    static constexpr const char *defaultBindAddr{"0.0.0.0"};
+    static constexpr const char *defaultBindPort{"8080"};
+    static constexpr const char *defaultWsport{"8080"};
+    static constexpr const char *defaultHttpPort{"8090"};
+    static constexpr const LgThreshold defaultThreshold{LgThreshold::LG_CRIT};
+    // globale festlegungen
+    static constexpr const char *constNoData{"-"};
+    // logfile festlegungen
+    static constexpr const char *constLogGroupName{"logger"};
+    static constexpr const char *constKeyLogPath{"logpath"};
+    static constexpr const char *constKeyLogFile{"logfile"};
+    static constexpr const char *constLogThresholdKey{"threshold"};
+    // app einstellungen
+    static constexpr const char *constAppGroupName{"application"};
+    static constexpr const char *constBindAddrKey{"bindaddr"};
+    static constexpr const char *constBindPortKey{"bindport"};
+    static constexpr const char *constWsportKey{"wsport"};
+    static constexpr const char *constHttpPortKey{"httpport"};
+    // Alarm Einstellungen
+    static constexpr const char *constAlertGroupPattern{"alert-"};
     // aktuelle Config
+    private:
     QString logFileName;
     QString bindaddr;
     QString bindport;
@@ -66,26 +71,24 @@ namespace bose_commserver
     //! default bind port
     static QString getDefaultBindPort();
     //! lade Einstellungen aus default Konfigdatei
-    bool loadSettings( void );
+    bool loadSettings();
     //! lade Einstellungen aus benannter Konfigdatei
     bool loadSettings( const QString &configFile );
     //! sichere Einstellungen
-    bool saveSettings( void );
-    //! lese logger einstellungen
-    bool loadLogSettings( QSettings &settings );
+    bool saveSettings();
     //
     //! Name der Konfigdatei ausgeben
-    QString getConfigFile( void ) const;
+    QString getConfigFile() const;
     //! Name der Logdatei ausgeben
-    QString getLogfileName( void ) const;
+    QString getLogfileName() const;
     // Pfad zur Logdatei zurück geben
-    QString getLogfilePath( void ) const;
+    QString getLogfilePath() const;
     //! Name der Logdatei setzten
     void setLogfileName( const QString &value );
     //! Name des Pfades zur Logdatei setzten
     void setLogFilePath( const QString &value );
     //! den vollen Pfas/Namen der logdatei...
-    QString getFullLogFilePath( void );
+    QString getFullLogFilePath();
 
     bool getIsDebug() const;
     void setIsDebug( bool value );
@@ -107,10 +110,13 @@ namespace bose_commserver
 
     private:
     // Logeinstellungen
-    bool loadLogSettings( QSettings &settings );
+    //! erzeuge default Einträge für logging
     void makeDefaultLogSettings( QSettings &settings );
+    //! lese logger einstellungen
+    bool loadLogSettings( QSettings &settings );
+    //! sichere Log settings
     bool saveLogSettings( QSettings &settings );
-    // allg. Programmeinstellungen
+    //! lese allgemeine Einstellugnen der App
     bool loadAppSettings( QSettings &settings );
     void makeAppDefaultSettings( QSettings &settings );
     bool saveAppSettings( QSettings &settings );

@@ -1,4 +1,4 @@
-﻿#include "Logger.hpp"
+﻿#include "logger.hpp"
 
 #include <QDateTime>
 #include <QFileInfo>
@@ -6,6 +6,7 @@
 namespace bose_commserver
 {
   const QString Logger::dateTimeFormat{"[yyyy-MM-dd hh:mm:ss.z] "};
+  const QString Logger::NONE_STR{"NONE "};
   const QString Logger::DEBUG_STR{"DEBUG "};
   const QString Logger::INFO_STR{"INFO  "};
   const QString Logger::WARN_STR{"WARN  "};
@@ -243,4 +244,26 @@ namespace bose_commserver
     return ( dateTime.toString( dateTimeFormat ) );
   }
 
+  const QString Logger::getThresholdString( LgThreshold th )
+  {
+    switch ( th )
+    {
+      case LG_NONE:
+        return Logger::NONE_STR;
+        break;
+      case LG_CRIT:
+        return Logger::CRIT_STR;
+        break;
+      case LG_WARN:
+        return Logger::WARN_STR;
+        break;
+      case LG_INFO:
+        return Logger::INFO_STR;
+        break;
+      case LG_DEBUG:
+        return Logger::DEBUG_STR;
+        break;
+    }
+    return QString( "unknown" );
+  }
 }  // namespace bose_commserver

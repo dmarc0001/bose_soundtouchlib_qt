@@ -37,6 +37,8 @@ namespace bose_commserver
     QMutex logMutex;
     //! Format der Zeitausgabe
     static const QString dateTimeFormat;
+    //! String für keinen level
+    static const QString NONE_STR;
     //! String für Debuglevel
     static const QString DEBUG_STR;
     //! String für Infolevel
@@ -84,8 +86,10 @@ namespace bose_commserver
     void crit( const std::string &msg );
     //! CRIT Ausgaben
     void crit( const char *msg );
-    //
-    void shutdown();  //! Logger explizit herunterfahren
+    //! Logger explizit herunterfahren
+    void shutdown();
+    //! string zum level erfahren
+    static const QString getThresholdString( LgThreshold th );
 
     private:
     QString getDateString();  //! interne Funktion für den Datumsstring

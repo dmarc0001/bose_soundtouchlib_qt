@@ -10,8 +10,9 @@
 #include <QtWebSockets/QWebSocket>
 #include <QtWebSockets/QWebSocketServer>
 #include <memory>
-#include "ConnectionHandler.hpp"
+
 #include "config/alertconfig.hpp"
+#include "connectionhandler.hpp"
 #include "logging/logger.hpp"
 
 namespace bose_commserver
