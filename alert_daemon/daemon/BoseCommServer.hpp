@@ -11,8 +11,8 @@
 #include <QtWebSockets/QWebSocketServer>
 #include <memory>
 #include "ConnectionHandler.hpp"
-#include "config/DaemonConfig.hpp"
-#include "logging/Logger.hpp"
+#include "config/alertconfig.hpp"
+#include "logging/logger.hpp"
 
 namespace bose_commserver
 {
@@ -21,7 +21,7 @@ namespace bose_commserver
     Q_OBJECT
 
     private:
-    std::shared_ptr< DaemonConfig > config;  //! geteilter Zeiger auf Config Objekt
+    std::shared_ptr< AlertConfig > config;  //! geteilter Zeiger auf Config Objekt
     // std::unique_ptr< QWebSocketServer > cServer;  //! Kommandoserver
     std::shared_ptr< QWebSocketServer > cServer;
     QList< std::shared_ptr< ConnectionHandler > > remoteConnections;  //! Liste mit verbundenen Sockets
@@ -30,8 +30,8 @@ namespace bose_commserver
     QMutex qMutex;                                                    //! nurt einem Zugang gewähren
 
     public:
-    explicit BoseCommServer( std::shared_ptr< DaemonConfig > dconfig, QObject *parent = nullptr );  //! der Konstruktor
-    ~BoseCommServer();                                                                              //! Zerstörer
+    explicit BoseCommServer( std::shared_ptr< AlertConfig > dconfig, QObject *parent = nullptr );  //! der Konstruktor
+    ~BoseCommServer();                                                                             //! Zerstörer
 
     private:
     bool configServer();  //! erzeuge Einstellungen zum Kommandoserver

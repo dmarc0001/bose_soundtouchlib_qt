@@ -2,8 +2,8 @@
 #include <QDebug>
 #include <QSettings>
 
-#include "AppConfigClass.hpp"
-#include "CurrBuildDef.hpp"
+#include "appconfigclass.hpp"
+#include "currbuilddef.hpp"
 
 namespace spx
 {

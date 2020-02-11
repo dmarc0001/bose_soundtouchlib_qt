@@ -71,20 +71,18 @@ link_directories(${IMPORT_LIB})
 ###############################################################################
 set(HEADERS
   main.hpp
-  config/programconfig.hpp
-  config/DaemonConfig.hpp
-  logging/Logger.hpp
-  daemon/BoseCommServer.hpp
-  daemon/ConnectionHandler.hpp
+  config/alertconfig.hpp
+  logging/logger.hpp
+  daemon/bosecommserver.hpp
+  daemon/connectionhandler.hpp
 )
 
 set(SOURCES
   main.cpp
-  config/programconfig.cpp
-  config/DaemonConfig.cpp
-  logging/Logger.cpp
-  daemon/BoseCommServer.cpp
-  daemon/ConnectionHandler.cpp
+  config/alertconfig.cpp
+  logging/logger.cpp
+  daemon/bosecommserver.cpp
+  daemon/connectionhandler.cpp
 )
 
 

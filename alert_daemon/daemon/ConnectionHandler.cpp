@@ -1,4 +1,4 @@
-#include "ConnectionHandler.hpp"
+#include "connectionhandler.hpp"
 
 #include <QDebug>
 
@@ -12,7 +12,7 @@ namespace bose_commserver
    * @param theSock
    * @param parent
    */
-  ConnectionHandler::ConnectionHandler( std::shared_ptr< DaemonConfig > dconfig,
+  ConnectionHandler::ConnectionHandler( std::shared_ptr< AlertConfig > dconfig,
                                         std::shared_ptr< QWebSocket > theSock,
                                         QObject *parent )
       : QObject( parent )

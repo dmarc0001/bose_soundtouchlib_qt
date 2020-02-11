@@ -5,7 +5,7 @@
 // - zwischen dem Web Frontend (dem User) und dem Interface für die Konfiguration
 // - kommunizieert zwischen dem Timermodul und den Geräten
 //
-#include "BoseCommServer.hpp"
+#include "bosecommserver.hpp"
 #include <QtDebug>
 
 namespace bose_commserver
@@ -15,7 +15,7 @@ namespace bose_commserver
    * @param dconfig
    * @param parent
    */
-  BoseCommServer::BoseCommServer( std::shared_ptr< DaemonConfig > dconfig, QObject *parent ) : QObject( parent ), config( dconfig )
+  BoseCommServer::BoseCommServer( std::shared_ptr< AlertConfig > dconfig, QObject *parent ) : QObject( parent ), config( dconfig )
   {
     qDebug() << "commserver object created...";
     qDebug() << "create serversocket...";
@@ -30,7 +30,7 @@ namespace bose_commserver
     else
     {
       configServer();
-      qDebug() << "LOGFILE" << config->getLogfile();
+      qDebug() << "LOGFILE" << config->getLogfileName();
       lg->debug( "BoseCommServer::BoseCommServer: serversocket created..." );
       qDebug() << "create serversocket...OK";
     }
@@ -174,7 +174,7 @@ namespace bose_commserver
     //
     // erzeuge einen Logger, untersuche zunächst ob es das Verzeichnis gibt
     //
-    QString logDirStr = config->getLogpath();
+    QString logDirStr = config->getLogfilePath();
     QDir logDir( logDirStr );
     // Logger erzeugen
     // wg Copycontruktor eher nicht...
@@ -201,7 +201,7 @@ namespace bose_commserver
       // das wird wohl klappen
       //
       // lg->startLogging( LgThreshold::LG_DEBUG, config->getLogfile() );
-      lg->startLogging( static_cast< LgThreshold >( config->getThreshold() ), config->getLogfile() );
+      lg->startLogging( static_cast< LgThreshold >( config->getThreshold() ), config->getLogfileName() );
       config->setLogger( lg );
       lg->debug( "BoseCommServer::createLogger: logger created..." );
       return ( true );
