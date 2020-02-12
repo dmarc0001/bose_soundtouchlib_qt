@@ -15,10 +15,11 @@ namespace bose_commserver
    * @param dconfig
    * @param parent
    */
-  BoseCommServer::BoseCommServer( std::shared_ptr< AlertConfig > dconfig, QObject *parent ) : QObject( parent ), config( dconfig )
+  BoseCommServer::BoseCommServer( std::shared_ptr< AlertAppConfig > dconfig, QObject *parent ) : QObject( parent ), config( dconfig )
   {
     qDebug() << "commserver object created...";
     qDebug() << "create serversocket...";
+    qDebug() << "config hash <" << dconfig->getConfigHash() << ">";
     if ( !createLogger() )
     {
       //

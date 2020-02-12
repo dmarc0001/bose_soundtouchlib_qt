@@ -12,7 +12,7 @@ namespace bose_commserver
    * @param theSock
    * @param parent
    */
-  ConnectionHandler::ConnectionHandler( std::shared_ptr< AlertConfig > dconfig,
+  ConnectionHandler::ConnectionHandler( std::shared_ptr< AlertAppConfig > dconfig,
                                         std::shared_ptr< QWebSocket > theSock,
                                         QObject *parent )
       : QObject( parent )

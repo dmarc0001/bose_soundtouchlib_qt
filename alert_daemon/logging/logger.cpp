@@ -20,12 +20,21 @@ namespace bose_commserver
   {
   }
 
+  /**
+   * @brief Logger::~Logger
+   */
   Logger::~Logger()
   {
     qDebug().noquote().nospace() << "SHUTDOWN LOGGING...";
     // shutdown();
   }
 
+  /**
+   * @brief Logger::startLogging
+   * @param th
+   * @param fileName
+   * @return
+   */
   int Logger::startLogging( LgThreshold th, const QString &fileName )
   {
     threshold = th;
@@ -89,6 +98,10 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::warn
+   * @param msg
+   */
   void Logger::warn( const char *msg )
   {
     //! Serialisieren...
@@ -100,6 +113,10 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::warn
+   * @param msg
+   */
   void Logger::warn( const std::string &msg )
   {
     //! Serialisieren...
@@ -126,6 +143,10 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::info
+   * @param msg
+   */
   void Logger::info( const char *msg )
   {
     //! Serialisieren...
@@ -136,6 +157,11 @@ namespace bose_commserver
       *textStream << getDateString() << INFO_STR << msg << endl;
     }
   }
+
+  /**
+   * @brief Logger::info
+   * @param msg
+   */
   void Logger::info( const std::string &msg )
   {
     //! Serialisieren...
@@ -162,6 +188,10 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::debug
+   * @param msg
+   */
   void Logger::debug( const char *msg )
   {
     //! Serialisieren...
@@ -173,6 +203,10 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::debug
+   * @param msg
+   */
   void Logger::debug( const std::string &msg )
   {
     //! Serialisieren...
@@ -199,6 +233,10 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::crit
+   * @param msg
+   */
   void Logger::crit( const char *msg )
   {
     //! Serialisieren...
@@ -210,6 +248,10 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::crit
+   * @param msg
+   */
   void Logger::crit( const std::string &msg )
   {
     //! Serialisieren...
@@ -221,6 +263,9 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::shutdown
+   */
   void Logger::shutdown()
   {
     if ( textStream != nullptr )
@@ -238,31 +283,35 @@ namespace bose_commserver
     }
   }
 
+  /**
+   * @brief Logger::getDateString
+   * @return
+   */
   QString Logger::getDateString()
   {
     dateTime = QDateTime::currentDateTime();
     return ( dateTime.toString( dateTimeFormat ) );
   }
 
+  /**
+   * @brief Logger::getThresholdString
+   * @param th
+   * @return
+   */
   const QString Logger::getThresholdString( LgThreshold th )
   {
     switch ( th )
     {
       case LG_NONE:
         return Logger::NONE_STR;
-        break;
       case LG_CRIT:
-        return Logger::CRIT_STR;
-        break;
+        return Logger::CRIT_STR.trimmed();
       case LG_WARN:
-        return Logger::WARN_STR;
-        break;
+        return Logger::WARN_STR.trimmed();
       case LG_INFO:
-        return Logger::INFO_STR;
-        break;
+        return Logger::INFO_STR.trimmed();
       case LG_DEBUG:
-        return Logger::DEBUG_STR;
-        break;
+        return Logger::DEBUG_STR.trimmed();
     }
     return QString( "unknown" );
   }

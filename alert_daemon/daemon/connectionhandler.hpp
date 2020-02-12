@@ -17,13 +17,13 @@ namespace bose_commserver
     private:
     static qlonglong handlerNumberCounter;
     const qlonglong currentHandlerNum;
-    std::shared_ptr< AlertConfig > config;
+    std::shared_ptr< AlertAppConfig > config;
     bool connected;
     std::shared_ptr< QWebSocket > nSock;
     std::shared_ptr< Logger > lg;  //! wenn ein logger erstellt wurde
 
     public:
-    explicit ConnectionHandler( std::shared_ptr< AlertConfig > dconfig,
+    explicit ConnectionHandler( std::shared_ptr< AlertAppConfig > dconfig,
                                 std::shared_ptr< QWebSocket > theSock,
                                 QObject *parent = nullptr );
     ConnectionHandler( const ConnectionHandler &cp );

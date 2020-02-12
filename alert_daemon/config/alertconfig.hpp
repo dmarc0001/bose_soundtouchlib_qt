@@ -1,14 +1,20 @@
 #ifndef ALERTCONFIG_HPP
 #define ALERTCONFIG_HPP
 
+#include <QByteArray>
 #include <QCoreApplication>
+#include <QCryptographicHash>
+#include <QDate>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QList>
 #include <QObject>
+#include <QRegularExpression>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QString>
+#include <QTime>
 #include <QVector>
 #include <memory>
 
@@ -16,7 +22,17 @@
 
 namespace bose_commserver
 {
-  class AlertConfig
+  //
+  // Vorausdefinition
+  //
+  class SingleAlertConfig;
+  //
+  // kleine Schreibhilfe, d.h. Abkürzung
+  //
+  using AlertList = QList< SingleAlertConfig >;
+
+  //! Klasse beinhaltet die Konfiguration
+  class AlertAppConfig
   {
     protected:
     // statische defaults
@@ -42,6 +58,22 @@ namespace bose_commserver
     static constexpr const char *constHttpPortKey{"httpport"};
     // Alarm Einstellungen
     static constexpr const char *constAlertGroupPattern{"alert-"};
+    static constexpr const char *constAlertVolumeKey{"volume"};
+    static constexpr const char *constAlertDateKey{"date"};
+    static constexpr const char *constAlertTimeKey{"time"};
+    static constexpr const char *constAlertLocationKey{"location"};
+    static constexpr const char *constAlertSourceKey{"source"};
+    static constexpr const char *constAlertRaiseVolKey{"raise_vol"};
+    static constexpr const char *constAlertDurationKey{"duration"};
+    static constexpr const char *constAlertAccountKey{"source_account"};
+    static constexpr const char *constAlertDaysKey{"days"};
+    static constexpr const char *constAlertDevicesKey{"devices"};
+    static constexpr const char *constAlertTypeKey{"type"};
+    static constexpr const char *constAlertEnableKey{"enable"};
+    static constexpr const char *constAlertNoteKey{"note"};
+    // Suchpattern
+    static constexpr const char *constPatternTime{"^([01][0-9])|(2[0-4]):[0-5][0-9]$"};
+
     // aktuelle Config
     private:
     QString logFileName;
@@ -57,13 +89,19 @@ namespace bose_commserver
     bool isLogfileManual;
     bool isBindAddrManual;
     bool isBindPortManual;
+    bool haveToCreateConfigFile;
+    bool isHashValid;
     std::shared_ptr< Logger > lg;
+    //! pointer auf Liste mit Alarmmeldungen zum weitergeben
+    //! und bearbeiten
+    std::shared_ptr< AlertList > alConfigs;
+    QByteArray configHash;
 
     public:
     //! der Konstruktor
-    explicit AlertConfig();
+    explicit AlertAppConfig();
     //! Destruktor
-    virtual ~AlertConfig();
+    virtual ~AlertAppConfig();
     //! default logfilename
     static QString getDefaultLogFile();
     //! default binddir zurückgeben
@@ -76,6 +114,8 @@ namespace bose_commserver
     bool loadSettings( const QString &configFile );
     //! sichere Einstellungen
     bool saveSettings();
+    //! gib einien hash über die config zurück und erstele den wenn nötig
+    QByteArray getConfigHash();
     //
     //! Name der Konfigdatei ausgeben
     QString getConfigFile() const;
@@ -89,24 +129,19 @@ namespace bose_commserver
     void setLogFilePath( const QString &value );
     //! den vollen Pfas/Namen der logdatei...
     QString getFullLogFilePath();
-
     bool getIsDebug() const;
     void setIsDebug( bool value );
-
     QString getLogFileName() const;
     void setLogFileName( const QString &value );
-
     QString getBindaddr() const;
     void setBindaddr( const QString &value );
-
     QString getBindport() const;
     void setBindport( const QString &value );
-
     LgThreshold getThreshold() const;
     void setThreshold( const LgThreshold &value );
-
     std::shared_ptr< Logger > getLogger() const;
     void setLogger( const std::shared_ptr< Logger > &value );
+    std::shared_ptr< AlertList > getAlConfigs() const;
 
     private:
     // Logeinstellungen
@@ -114,13 +149,74 @@ namespace bose_commserver
     void makeDefaultLogSettings( QSettings &settings );
     //! lese logger einstellungen
     bool loadLogSettings( QSettings &settings );
-    //! sichere Log settings
-    bool saveLogSettings( QSettings &settings );
     //! lese allgemeine Einstellugnen der App
     bool loadAppSettings( QSettings &settings );
     void makeAppDefaultSettings( QSettings &settings );
+    //! lade Einstellungen für spezifischen Alarm
+    bool loadAlertSetting( QSettings &settings, const QString &currentAlertGroup );
+    //! Datei mit Datumserweiterung kopieren
+    QString duplicateConfigFile( const QString &fileName );
+    bool resetConfigFile( const QString &duplicatFileName );
+    bool saveLogSettings( QSettings &settings );
     bool saveAppSettings( QSettings &settings );
-    // Alarm-einstellungen
+    bool saveAlertSettings( QSettings &settings, const SingleAlertConfig &currConfig );
+  };
+
+  //! Klasse beinhaltet Konfig für einnen einzelnen alarm
+  class SingleAlertConfig
+  {
+    private:
+    //
+    // die Eigenschaften eines Alarms
+    //
+    QString alName;
+    qint8 alVolume;
+    QDate alDate;
+    QTime alTime;
+    QString alLocation;
+    QString alSource;
+    bool alRaiseVolume;
+    qint16 alDuration;
+    QString alSourceAccount;
+    QList< qint8 > alDays;
+    QStringList alDevices;
+    QString alType;
+    bool alEnable;
+    QString alNote;
+    bool isHashValid;
+    QByteArray alertHash;
+
+    public:
+    explicit SingleAlertConfig( const QString &_name );
+    //! gib einien hash über die config zurück und erstele den wenn nötig
+    QByteArray getConfigHash();
+    QString getName() const;
+    qint8 getAlVolume() const;
+    void setAlVolume( const qint8 &value );
+    QDate getAlDate() const;
+    void setAlDate( const QDate &value );
+    QTime getAlTime() const;
+    void setAlTime( const QTime &value );
+    QString getAlLocation() const;
+    void setAlLocation( const QString &value );
+    QString getAlSource() const;
+    void setAlSource( const QString &value );
+    bool getAlRaiseVolume() const;
+    void setAlRaiseVolume( bool value );
+    qint16 getAlDuration() const;
+    void setAlDuration( const qint16 &value );
+    QString getAlSourceAccount() const;
+    void setAlSourceAccount( const QString &value );
+    QList< qint8 > getAlDays() const;
+    void setAlDays( const QList< qint8 > &value );
+    QStringList getAlDevices() const;
+    void setAlDevices( const QStringList &value );
+    QString getAlType() const;
+    void setAlType( const QString &value );
+    bool getAlEnable() const;
+    void setAlEnable( bool value );
+    QString getAlNote() const;
+    void setAlNote( const QString &value );
   };
 }  // namespace bose_commserver
 #endif  // ALERTCONFIG_HPP

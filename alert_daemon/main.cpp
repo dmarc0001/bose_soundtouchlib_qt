@@ -6,7 +6,7 @@ int main( int argc, char *argv[] )
 {
   QCoreApplication app( argc, argv );
   QCommandLineParser parser;
-  std::shared_ptr< AlertConfig > dConf = std::shared_ptr< AlertConfig >( new AlertConfig() );
+  std::shared_ptr< AlertAppConfig > dConf = std::shared_ptr< AlertAppConfig >( new AlertAppConfig() );
   QString appName( QCoreApplication::applicationName() );
   QString defaultini = appName.append( ".ini" );
   //
@@ -25,18 +25,18 @@ int main( int argc, char *argv[] )
   //
   // Logger Option, kein default
   //
-  QCommandLineOption logOption( "logfile", QString( "logging file [default: %1]" ).arg( AlertConfig::getDefaultLogFile() ),
+  QCommandLineOption logOption( "logfile", QString( "logging file [default: %1]" ).arg( AlertAppConfig::getDefaultLogFile() ),
                                 "filename" );
   //
   // bindaddr fuer dieseen Daemon
   //
-  QCommandLineOption bindAddrOption( "bind", QString( "bind addr [default: %1]" ).arg( AlertConfig::getDefaultBindAddr() ),
-                                     "local addr", AlertConfig::getDefaultBindAddr() );
+  QCommandLineOption bindAddrOption( "bind", QString( "bind addr [default: %1]" ).arg( AlertAppConfig::getDefaultBindAddr() ),
+                                     "local addr", AlertAppConfig::getDefaultBindAddr() );
   //
   // bindport fuer diesen daemon
   //
-  QCommandLineOption portOption( "port", QString( "bind port [default: %1]" ).arg( AlertConfig::getDefaultBindPort() ), "local addr",
-                                 AlertConfig::getDefaultBindPort() );
+  QCommandLineOption portOption( "port", QString( "bind port [default: %1]" ).arg( AlertAppConfig::getDefaultBindPort() ),
+                                 "local addr", AlertAppConfig::getDefaultBindPort() );
   parser.addOption( dbgOption );
   parser.addOption( configOption );
   parser.addOption( logOption );
