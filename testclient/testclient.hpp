@@ -12,10 +12,22 @@
 
 namespace testclient
 {
+  enum LogLevel : quint8
+  {
+    LG_NONE = 0,
+    LG_CRIT,  // 1
+    LG_WARN,  // 2
+    LG_INFO,  // 3
+    LG_DEBUG  // 4
+  };
+
+  using JsonObjSPtr = std::shared_ptr< QJsonObject >;
+
   class TestClient : public QObject
   {
     Q_OBJECT
     private:
+    const static char *names[];
     QWebSocket m_webSocket;
     QUrl m_url;
     int counter;
@@ -25,7 +37,8 @@ namespace testclient
     explicit TestClient( const QUrl &url, QObject *parent = nullptr );
 
     private:
-    std::shared_ptr< QJsonObject > getFirstJSONObject();
+    JsonObjSPtr getSetLoglevelJSONObject( const LogLevel level );
+    JsonObjSPtr getFirstJSONObject();
     // std::shared_ptr< QJsonObject > getDeviceVolumeJSONObject( const QString device, qint8 volume );
 
     signals:
