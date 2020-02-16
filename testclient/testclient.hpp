@@ -22,6 +22,7 @@ namespace testclient
   };
 
   using JsonObjSPtr = std::shared_ptr< QJsonObject >;
+  using JSonStringPtr = std::shared_ptr< QString >;
 
   class TestClient : public QObject
   {
@@ -37,9 +38,10 @@ namespace testclient
     explicit TestClient( const QUrl &url, QObject *parent = nullptr );
 
     private:
-    JsonObjSPtr getSetLoglevelJSONObject( const LogLevel level );
-    JsonObjSPtr getFirstJSONObject();
-    // std::shared_ptr< QJsonObject > getDeviceVolumeJSONObject( const QString device, qint8 volume );
+    JSonStringPtr setLoglevelJSONObject( LogLevel level );
+    JSonStringPtr getDaemonJSONConfig();
+    JSonStringPtr getAlertJSONConfig( int which );
+    JSonStringPtr getAllAlertJSONConfig();
 
     signals:
     void closed();

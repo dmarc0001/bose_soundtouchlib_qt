@@ -1,37 +1,78 @@
-//
-// oberstes level JSON: "config", "get", "set", "delete" ARRAY
-//
-// ARRAY besteht aus Objekten
-//
-//
-// get Kommando :
-//                config-id,config,all,devices
-//                config-id  : Version der config
-//                config     : komplette Konfiguration
-//                alert      : einen oder merhrere alarme, oder alle
-//                devices    : verfügbare geräte
-//                new        : neue, leere Konfiguration für einen Alarm
-//
-// set Kommando: alert       :
-//                            alle eigenschaften eines Alarmes
-//                            name, enable, preset|source
-//               loglevel    : loglevel(0..4)
-//
-// delete Kommando:
-//               alert (alert-xx)
-//
-// propertys für alert
-//               volume, date, location, source, raise_vol, duration, source_account,
-//               days, devices, type, enable, note, time
-//
-// {"delete":[{"alert":"alert-04"}, {"alert":"alert-03"}]}
-// {"set":
-//     [
-//       {"alert":"alert-04","enable":"true", ...},
-//       {"alert":"alert-03","enable":"true", ...}
-//     ]
-// }
-//
+/******************************************************************************
+  oberstes level JSON: "config", "get", "set", "delete" ARRAY
+
+  ARRAY besteht aus Objekten
+
+
+  get Kommando :
+                config-id,config(,all,devices)
+                config-id  : Version der config
+                config     : komplette Konfiguration
+                alert      : einen oder merhrere alarme, oder alle
+                devices    : verfügbare geräte
+                new        : neue, leere Konfiguration für einen Alarm
+
+  set Kommando: alert       :
+                            alle eigenschaften eines Alarmes
+                            name, enable, preset|source
+               loglevel    : loglevel(0..4)
+
+  delete Kommando:
+               alert (alert-xx)
+
+  propertys für alert
+               volume, date, location, source, raise_vol, duration, source_account,
+               days, devices, type, enable, note, time
+
+  {
+    "get":
+      {
+        "config":"all"    (alarms) oder
+        "config":"devices"  (geräte) oder
+        "config","daemon"  (app)
+      }
+  }
+  {
+    "get":
+      {
+        "alert-01",
+        "alert-03"
+      }
+  }
+  {
+    "delete":
+      {
+        "alert":"alert-04",
+        "alert":"alert-03"
+      }
+  }
+  {
+    "set":
+      {
+        "alert-04":{"enable":"true", ...},
+        "alert-03":{"enable":"true", ...}
+      }
+  }
+  ############## antworten ##################
+  config, error, ack
+
+  CONFIG Antwort
+  {
+     "xxxx":{},
+     "yyyy": {}
+  }
+
+  {
+    "error": {},
+    "error": {}....
+  }
+
+  {
+    "ack": {},
+    "ack": {}....
+  }
+******************************************************************************/
+
 #include "testclient.hpp"
 
 #include <QtCore/QDebug>
@@ -66,7 +107,7 @@ namespace testclient
     connect( &m_webSocket, &QWebSocket::binaryMessageReceived, this, &TestClient::onBinaryMessageReceived );
     connect( &m_webSocket, &QWebSocket::disconnected, this, &TestClient::onSocketDisconnected );
     qDebug() << "WebSocket send message...";
-    m_webSocket.sendTextMessage( QStringLiteral( "Hello, world!" ) );
+    // m_webSocket.sendTextMessage( QStringLiteral( "Hello, world!" ) );
   }
 
   /**
@@ -101,14 +142,44 @@ namespace testclient
    */
   void TestClient::onTimer()
   {
-    if ( counter < 5 )
+    if ( counter < 20 )
     {
-      JsonObjSPtr firstObj = getFirstJSONObject();
-      QJsonDocument doc( *firstObj );
-      // QString strJson( doc.toJson( QJsonDocument::Indented ) );
-      QString strJson( doc.toJson( QJsonDocument::Compact ) );
+      switch ( counter )
+      {
+        case 0:
+          // debug umschalten
+          // qDebug() << "send set loglevel to debug";
+          // m_webSocket.sendTextMessage( *setLoglevelJSONObject( LogLevel::LG_DEBUG ) );
+          break;
+        case 1:
+          // dämon konfig anfordern
+          qDebug() << "request daemon config";
+          m_webSocket.sendTextMessage( *getDaemonJSONConfig() );
+          break;
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+          // dämon konfig anfordern
+          qDebug() << "request alert" << counter - 1 << "config";
+          m_webSocket.sendTextMessage( *getAlertJSONConfig( counter - 1 ) );
+          break;
+        case 8:
+          // alle alarme
+          qDebug() << "request all alerts config";
+          m_webSocket.sendTextMessage( *getAllAlertJSONConfig() );
+          break;
+        case 9:
+          // debug umschalten
+          // qDebug() << "send set loglevel to info";
+          // m_webSocket.sendTextMessage( *setLoglevelJSONObject( LogLevel::LG_INFO ) );
+          break;
+        default:
+          qDebug() << "noop...";
+      }
       counter++;
-      m_webSocket.sendTextMessage( strJson );
     }
     else if ( counter < 60 )
     {
@@ -121,42 +192,62 @@ namespace testclient
     }
   }
 
-  JsonObjSPtr TestClient::getSetLoglevelJSONObject( const LogLevel level )
+  /**
+   * @brief TestClient::setLoglevelJSONObject
+   * @param level
+   * @return
+   */
+  JSonStringPtr TestClient::setLoglevelJSONObject( LogLevel level )
   {
-    // {"set" : [ {"alert" : "alert-04", "enable" : "true", ...}, {"alert" : "alert-03", "enable" : "true", ...} ]}
-    // das Objekt zum Übergebenb
-    JsonObjSPtr testObj = JsonObjSPtr( new QJsonObject() );
-    // Das Array für SET Commandos
-    QJsonObject setArray;
-    // setArray.insert( "loglevel", QLatin1String( "eins" ) );
-    setArray.insert( "loglevel", TestClient::names[ static_cast< int >( level ) ] );
-    testObj->insert( "set", setArray );
-    return testObj;
+    // das Objekt zum Übergeben
+    JsonObjSPtr jsonObj = JsonObjSPtr( new QJsonObject() );
+    // Das Objekt für SET Commandos
+    QJsonObject setObj;
+    setObj.insert( "loglevel", TestClient::names[ static_cast< int >( level ) ] );
+    jsonObj->insert( "set", setObj );
+    QJsonDocument doc( *jsonObj );
+    JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( QJsonDocument::Indented ) ) );
+    return strJson;
   }
 
   /**
-   * @brief getFirstJSONObject
+   * @brief TestClient::getDaemonConfig
    * @return
    */
-  JsonObjSPtr TestClient::getFirstJSONObject()
+  JSonStringPtr TestClient::getDaemonJSONConfig()
   {
-    JsonObjSPtr testObj = JsonObjSPtr( new QJsonObject() );
-    QJsonObject deviceProps_01;
-    deviceProps_01.insert( "name", QLatin1String( "device 01" ) );
-    deviceProps_01.insert( "volume", QLatin1String( "23" ) );
-    deviceProps_01.insert( "preset", QLatin1String( "4" ) );
-    QJsonObject deviceProps_02;
-    deviceProps_02.insert( "name", QLatin1String( "device 02" ) );
-    deviceProps_02.insert( "volume", QLatin1String( "12" ) );
-    deviceProps_02.insert( "preset", QLatin1String( "1" ) );
-    //
-    QJsonArray devices;
-    devices.append( deviceProps_01 );
-    devices.append( deviceProps_02 );
-    //
-    testObj->insert( "props", devices );
-    //
-    return ( testObj );
+    // das Objekt zum Übergeben
+    JsonObjSPtr jsonObj = JsonObjSPtr( new QJsonObject() );
+    // Das Array für GET Commandos
+    QJsonObject getObj;
+    getObj.insert( "config", "daemon" );
+    jsonObj->insert( "get", getObj );
+    QJsonDocument doc( *jsonObj );
+    JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( QJsonDocument::Indented ) ) );
+    return strJson;
   }
 
+  JSonStringPtr TestClient::getAlertJSONConfig( int which )
+  {
+    // das Objekt zum Übergeben
+    JsonObjSPtr jsonObj = JsonObjSPtr( new QJsonObject() );
+    QJsonObject getObj;
+    getObj.insert( "config", QString( "alert-%1" ).arg( which, 2, 10, QChar( '0' ) ) );
+    jsonObj->insert( "get", getObj );
+    QJsonDocument doc( *jsonObj );
+    JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( QJsonDocument::Indented ) ) );
+    return strJson;
+  }
+
+  JSonStringPtr TestClient::getAllAlertJSONConfig()
+  {
+    // das Objekt zum Übergeben
+    JsonObjSPtr jsonObj = JsonObjSPtr( new QJsonObject() );
+    QJsonObject getObj;
+    getObj.insert( "config", "all" );
+    jsonObj->insert( "get", getObj );
+    QJsonDocument doc( *jsonObj );
+    JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( QJsonDocument::Indented ) ) );
+    return strJson;
+  }
 }  // namespace testclient

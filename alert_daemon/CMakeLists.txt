@@ -73,8 +73,10 @@ set(HEADERS
   main.hpp
   config/alertconfig.hpp
   logging/logger.hpp
+  daemon/common_def.hpp
   daemon/bosecommserver.hpp
   daemon/connectionhandler.hpp
+  daemon/commandgethandler.hpp
 )
 
 set(SOURCES
@@ -83,6 +85,7 @@ set(SOURCES
   logging/logger.cpp
   daemon/bosecommserver.cpp
   daemon/connectionhandler.cpp
+  daemon/commandgethandler.cpp
 )
 
 

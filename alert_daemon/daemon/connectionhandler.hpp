@@ -2,11 +2,13 @@
 #define CONNECTIONHANDLER_HPP
 
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QLatin1Char>
 #include <QObject>
 #include <QWebSocket>
 #include <memory>
-
+#include "commandgethandler.hpp"
+#include "common_def.hpp"
 #include "config/alertconfig.hpp"
 
 namespace bose_commserver
@@ -17,21 +19,23 @@ namespace bose_commserver
     private:
     static qlonglong handlerNumberCounter;
     const qlonglong currentHandlerNum;
-    std::shared_ptr< AlertAppConfig > config;
+    AppConfigPtr config;
     bool connected;
     std::shared_ptr< QWebSocket > nSock;
     std::shared_ptr< Logger > lg;  //! wenn ein logger erstellt wurde
+    // QJsonDocument::JsonFormat jsonFormat;
 
     public:
-    explicit ConnectionHandler( std::shared_ptr< AlertAppConfig > dconfig,
-                                std::shared_ptr< QWebSocket > theSock,
-                                QObject *parent = nullptr );
+    explicit ConnectionHandler( AppConfigPtr dconfig, std::shared_ptr< QWebSocket > theSock, QObject *parent = nullptr );
     ConnectionHandler( const ConnectionHandler &cp );
     void init();
     ~ConnectionHandler();
     void disconnectWebsocket();              //! Verbindung trennen
     qlonglong getCurrentHandlerNum() const;  // den aktuellen handler identifizieren
     std::shared_ptr< QWebSocket > getNSock() const;
+
+    private:
+    JSonStringPtr getJSONErrorMessage( const QString &errormsg );
 
     signals:
     void closed( const ConnectionHandler *handler );

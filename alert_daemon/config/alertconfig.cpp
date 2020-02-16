@@ -23,6 +23,7 @@ namespace bose_commserver
       , lg( nullptr )
       , alConfigs( std::shared_ptr< AlertList >( new AlertList() ) )
   {
+    availDevices.clear();
     qDebug().noquote() << "AlertAppConfig::AlertAppConfig()";
   }
 
@@ -54,6 +55,7 @@ namespace bose_commserver
     allHashObj.addData( logPath.toUtf8() );
     allHashObj.addData( QString( "%1" ).arg( static_cast< int >( threshold ) ).toUtf8() );
     allHashObj.addData( configFileName.toUtf8() );
+    // allHashObj.addData( availDevices.join( ',' ).toUtf8() );
     allHashObj.addData( QString( "%1" ).arg( isDebug ).toUtf8() );
     allHashObj.addData( QString( "%1" ).arg( isDebugManual ).toUtf8() );
     allHashObj.addData( QString( "%1" ).arg( isLogfileManual ).toUtf8() );
@@ -672,6 +674,37 @@ namespace bose_commserver
   //###########################################################################
   //###########################################################################
 
+  QStringList AlertAppConfig::getAvailDevices() const
+  {
+    return availDevices;
+  }
+
+  void AlertAppConfig::setAvailDevices( const QStringList &value )
+  {
+    availDevices = value;
+  }
+
+  void AlertAppConfig::addAvailDevices( const QString &dev )
+  {
+    availDevices.append( dev );
+  }
+
+  QRegularExpression AlertAppConfig::getAlertPattern()
+  {
+    QRegularExpression re( AlertAppConfig::constAlertGroupPattern );
+    return re;
+  }
+
+  QString AlertAppConfig::getDefaultWsPort() const
+  {
+    return wsPort;
+  }
+
+  QString AlertAppConfig::getDefaultHttpPort() const
+  {
+    return httpPort;
+  }
+
   QString AlertAppConfig::getDefaultLogFile()
   {
     return QString( AlertAppConfig::defaultLogFile );
@@ -863,6 +896,40 @@ namespace bose_commserver
     allHashObj.addData( alNote.toUtf8() );
     alertHash = allHashObj.result().toHex().toUpper();
     return alertHash;
+  }
+
+  QStringList SingleAlertConfig::getAlDaysStr() const
+  {
+    QStringList days;
+    for ( qint8 daynum : alDays )
+    {
+      switch ( daynum )
+      {
+        case 1:
+          days << "mo";
+          break;
+        case 2:
+          days << "tu";
+          break;
+        case 3:
+          days << "we";
+          break;
+        case 4:
+          days << "th";
+          break;
+        case 5:
+          days << "fr";
+          break;
+        case 6:
+          days << "sa";
+          break;
+        case 7:
+        default:
+          days << "su";
+          break;
+      }
+    }
+    return days;
   }
 
   QString SingleAlertConfig::getName() const

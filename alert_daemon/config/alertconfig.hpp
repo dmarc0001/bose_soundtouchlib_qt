@@ -26,9 +26,6 @@ namespace bose_commserver
   // Vorausdefinition
   //
   class SingleAlertConfig;
-  //
-  // kleine Schreibhilfe, d.h. Abkürzung
-  //
   using AlertList = QList< SingleAlertConfig >;
 
   //! Klasse beinhaltet die Konfiguration
@@ -84,6 +81,7 @@ namespace bose_commserver
     QString logPath;
     LgThreshold threshold;
     QString configFileName;
+    QStringList availDevices;
     bool isDebug;
     bool isDebugManual;
     bool isLogfileManual;
@@ -142,6 +140,12 @@ namespace bose_commserver
     std::shared_ptr< Logger > getLogger() const;
     void setLogger( const std::shared_ptr< Logger > &value );
     std::shared_ptr< AlertList > getAlConfigs() const;
+    QString getDefaultWsPort() const;
+    QString getDefaultHttpPort() const;
+    QRegularExpression getAlertPattern();
+    QStringList getAvailDevices() const;
+    void setAvailDevices( const QStringList &value );
+    void addAvailDevices( const QString &dev );
 
     private:
     // Logeinstellungen
@@ -208,6 +212,7 @@ namespace bose_commserver
     QString getAlSourceAccount() const;
     void setAlSourceAccount( const QString &value );
     QList< qint8 > getAlDays() const;
+    QStringList getAlDaysStr() const;
     void setAlDays( const QList< qint8 > &value );
     QStringList getAlDevices() const;
     void setAlDevices( const QStringList &value );

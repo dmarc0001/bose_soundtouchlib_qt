@@ -12,9 +12,7 @@ namespace bose_commserver
    * @param theSock
    * @param parent
    */
-  ConnectionHandler::ConnectionHandler( std::shared_ptr< AlertAppConfig > dconfig,
-                                        std::shared_ptr< QWebSocket > theSock,
-                                        QObject *parent )
+  ConnectionHandler::ConnectionHandler( AppConfigPtr dconfig, std::shared_ptr< QWebSocket > theSock, QObject *parent )
       : QObject( parent )
       , currentHandlerNum( ConnectionHandler::handlerNumberCounter++ )
       , config( dconfig )
@@ -117,7 +115,74 @@ namespace bose_commserver
                    .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) )
                    .arg( msg )
                    .arg( nSock->peerAddress().toString() ) );
-    nSock->sendTextMessage( "TEXT ACKNOWLEDGED" );
+    JSonStringPtr answer;
+    //
+    // ein JSON Dokument aus der Nachricht erzeugen
+    //
+    QJsonDocument doc = QJsonDocument::fromJson( msg.toUtf8() );
+    if ( doc.isNull() )
+    {
+      //
+      // Fehler bei der Erstellung
+      //
+      lg->warn( "ConnectionHandler::onRecTextMessage: create json object failed! Ignore!" );
+      //
+      // sende Fehlermeldung
+      //
+      answer = getJSONErrorMessage( "not a valid json recived" );
+      nSock->sendTextMessage( *answer );
+      return;
+    }
+    // das jsonObject holen
+    QJsonObject jObject = doc.object();
+    QStringList keys = jObject.keys();
+    if ( keys.contains( "get" ) )
+    {
+      //
+      // get kommando an das richtige objekt übergeben
+      // wird relativ selten gebraucht, daher temporär erzeugt und dann verworfen
+      //
+      CommandGetHandler getHandler( config, jObject );
+      answer = getHandler.getResponse();
+    }
+    else if ( keys.contains( "set" ) )
+    {
+      // set kommando
+      answer = getJSONErrorMessage( "set command" );
+    }
+    else if ( keys.contains( "delete" ) )
+    {
+      // delete kommando
+      answer = getJSONErrorMessage( "delete command" );
+    }
+    else
+    {
+      // Fehlermeldung senden
+      lg->warn( "ConnectionHandler::onRecTextMessage: unknown command recived!" );
+      answer = getJSONErrorMessage( "unknown command" );
+    }
+    //
+    // Antwort senden
+    //
+    nSock->sendTextMessage( *answer );
+  }
+
+  /**
+   * @brief ConnectionHandler::getJSONErrorMessage
+   * @param errormsg
+   * @return
+   */
+  JSonStringPtr ConnectionHandler::getJSONErrorMessage( const QString &errormsg )
+  {
+    // das Objekt zum Übergeben
+    JsonObjSPtr jsonObj = JsonObjSPtr( new QJsonObject() );
+    // Das Array für Fehlermeldung
+    QJsonObject errArray;
+    errArray.insert( "msg", errormsg );
+    jsonObj->insert( "error", errArray );
+    QJsonDocument doc( *jsonObj );
+    JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( jsonFormat ) ) );
+    return strJson;
   }
 
   /**
