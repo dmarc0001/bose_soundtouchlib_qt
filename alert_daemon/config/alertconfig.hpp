@@ -18,7 +18,7 @@
 #include <QVector>
 #include <memory>
 
-#include "daemon/common_def.hpp"
+#include "config/common_def.hpp"
 #include "logging/logger.hpp"
 
 namespace bose_commserver

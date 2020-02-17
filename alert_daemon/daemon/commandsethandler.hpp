@@ -5,8 +5,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QTime>
-#include "common_def.hpp"
 #include "config/alertconfig.hpp"
+#include "config/common_def.hpp"
 #include "connectionhandler.hpp"
 
 namespace bose_commserver

@@ -9,8 +9,8 @@
 #include <memory>
 #include "commandgethandler.hpp"
 #include "commandsethandler.hpp"
-#include "common_def.hpp"
 #include "config/alertconfig.hpp"
+#include "config/common_def.hpp"
 
 namespace bose_commserver
 {
