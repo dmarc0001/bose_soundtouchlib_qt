@@ -4,8 +4,9 @@
 
 namespace bose_commserver
 {
-  AlertAppConfig::AlertAppConfig()
-      : logFileName( AlertAppConfig::defaultLogFile )
+  AlertAppConfig::AlertAppConfig( QObject *parent )
+      : QObject( parent )
+      , logFileName( AlertAppConfig::defaultLogFile )
       , bindaddr( AlertAppConfig::defaultBindAddr )
       , bindport( AlertAppConfig::defaultBindPort )
       , wsPort( AlertAppConfig::defaultWsport )
@@ -22,15 +23,66 @@ namespace bose_commserver
       , isHashValid( false )
       , lg( nullptr )
       , alConfigs( std::shared_ptr< AlertList >( new AlertList() ) )
+      , configTimerCounter( 0 )
+      , configSaveTimeout( 0 )
   {
     availDevices.clear();
     qDebug().noquote() << "AlertAppConfig::AlertAppConfig()";
+    configCheckTimer.setInterval( TIMER_INTERVAL + 100 );
+    connect( &configCheckTimer, &QTimer::timeout, this, &AlertAppConfig::onConfigCheckTimer );
+    configCheckTimer.start();
   }
 
   AlertAppConfig::~AlertAppConfig()
   {
     qDebug().noquote() << "AlertAppConfig::~AlertAppConfig()";
     saveSettings();
+  }
+
+  /**
+   * @brief AlertAppConfig::onConfigCheckTimer
+   */
+  void AlertAppConfig::onConfigCheckTimer()
+  {
+    configTimerCounter++;
+    //
+    // wenn ich was sichern muss, ist der wert > 0
+    //
+    if ( configSaveTimeout > 0 )
+    {
+      configSaveTimeout--;
+      if ( configSaveTimeout == 0 )
+      {
+        if ( lg )
+        {
+          lg->debug( "AlertAppConfig::onConfigCheckTimer: save changed config..." );
+        }
+        saveSettings();
+      }
+    }
+    //
+    // aller 10 Sekunden
+    //
+    if ( configTimerCounter % 12 == 0 )
+    {
+      if ( lg )
+      {
+        lg->debug( "AlertAppConfig::onConfigCheckTimer: check config hashvalue..." );
+      }
+      // configHash prüfen
+      if ( !isHashValid )
+      {
+        //
+        // da muss ich was machen...
+        //
+        getConfigHash();
+        //
+        // 15 Sekunden warten
+        // immer bei einer Änderung 15 Sekunden zufügen
+        //
+        configSaveTimeout = 15;
+      }
+    }
   }
 
   //###########################################################################
@@ -138,6 +190,7 @@ namespace bose_commserver
     {
       saveSettings();
     }
+    getConfigHash();
     return ( true );
   }
 
@@ -661,6 +714,7 @@ namespace bose_commserver
 
   void AlertAppConfig::setAvailDevices( const QStringList &value )
   {
+    isHashValid = false;
     availDevices = value;
   }
 
@@ -1043,6 +1097,16 @@ namespace bose_commserver
   {
     alNote = value;
     isHashValid = false;
+  }
+
+  QDateTime SingleAlertConfig::getRunSince() const
+  {
+    return runSince;
+  }
+
+  void SingleAlertConfig::setRunSince( const QDateTime &value )
+  {
+    runSince = value;
   }
 
 }  // namespace bose_commserver

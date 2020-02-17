@@ -11,7 +11,7 @@
 
 namespace bose_commserver
 {
-  static const constexpr char NONE_AL[] = "not-a-alert";
+  // static const constexpr char NONE_AL[] = "not-a-alert";
   //
   class CommandSetHandler
   {

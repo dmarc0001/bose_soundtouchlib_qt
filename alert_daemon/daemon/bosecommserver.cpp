@@ -35,6 +35,12 @@ namespace bose_commserver
       lg->debug( "BoseCommServer::BoseCommServer: serversocket created..." );
       qDebug() << "create serversocket...OK";
     }
+    lg->debug( "BoseCommServer::BoseCommServer: create timer..." );
+    dTimer = std::unique_ptr< DaemonTimer >( new DaemonTimer( config, this ) );
+    lg->debug( "BoseCommServer::BoseCommServer: connect timer events..." );
+    connect( dTimer.get(), &DaemonTimer::sigStartAlert, this, &BoseCommServer::onStartAlert );
+    connect( dTimer.get(), &DaemonTimer::sigStopAlert, this, &BoseCommServer::onStopAlert );
+    lg->debug( "BoseCommServer::BoseCommServer: connect timer events...OK" );
   }
 
   /**
@@ -211,6 +217,16 @@ namespace bose_commserver
     // Fehler, melde das dem User
     //
     return ( false );
+  }
+
+  void BoseCommServer::onStartAlert( SingleAlertConfig &alert )
+  {
+    lg->debug( QString( "BoseCommServer::onStartAlert: <%1>..." ).arg( alert.getName() ) );
+  }
+
+  void BoseCommServer::onStopAlert( SingleAlertConfig &alert )
+  {
+    lg->debug( QString( "BoseCommServer::onStopAlert: <%1>..." ).arg( alert.getName() ) );
   }
 
 }  // namespace bose_commserver

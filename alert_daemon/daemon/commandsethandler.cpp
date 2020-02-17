@@ -89,7 +89,7 @@ namespace bose_commserver
           // suche, ob der gewünschte alarm key in den Configs vorhanden ist
           //
           SingleAlertConfig &sAlert = findAlert( key );
-          if ( sAlert.getName().compare( NONE_AL ) == 0 )
+          if ( sAlert.getName().compare( command::confAlertNONE ) == 0 )
           {
             //
             // nix gefunden, neu machen, wenn attribute "new-alert" drin ist
@@ -168,7 +168,7 @@ namespace bose_commserver
    */
   SingleAlertConfig &CommandSetHandler::findAlert( const QString &key )
   {
-    static SingleAlertConfig nope( NONE_AL );
+    static SingleAlertConfig nope( command::confAlertNONE );
 
     AlertListPtr alPtr = config->getAlConfigs();
 

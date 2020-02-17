@@ -15,6 +15,7 @@
 #include <QStandardPaths>
 #include <QString>
 #include <QTime>
+#include <QTimer>
 #include <QVector>
 #include <memory>
 
@@ -31,8 +32,9 @@ namespace bose_commserver
   using AlertListPtr = std::shared_ptr< AlertList >;
 
   //! Klasse beinhaltet die Konfiguration
-  class AlertAppConfig
+  class AlertAppConfig : public QObject
   {
+    Q_OBJECT
     protected:
     // statische defaults
     static constexpr const char *defaultLogFile{"alert_daemon.log"};
@@ -96,10 +98,13 @@ namespace bose_commserver
     //! und bearbeiten
     AlertListPtr alConfigs;
     QByteArray configHash;
+    QTimer configCheckTimer;
+    qint8 configTimerCounter;
+    qint8 configSaveTimeout;
 
     public:
     //! der Konstruktor
-    explicit AlertAppConfig();
+    explicit AlertAppConfig( QObject *parent = nullptr );
     //! Destruktor
     virtual ~AlertAppConfig();
     //! default logfilename
@@ -151,6 +156,7 @@ namespace bose_commserver
     void addAvailDevices( const QString &dev );
 
     private:
+    void onConfigCheckTimer();
     // Logeinstellungen
     //! erzeuge default Einträge für logging
     void makeDefaultLogSettings( QSettings &settings );
@@ -191,7 +197,8 @@ namespace bose_commserver
     bool alEnable;
     QString alNote;
     bool isHashValid;
-    QByteArray alertHash;
+    QByteArray alertHash;  // nicht in der config speichern
+    QDateTime runSince;    // nicht in der config speichern, nicht im hash
 
     public:
     explicit SingleAlertConfig( const QString &_name );
@@ -225,6 +232,8 @@ namespace bose_commserver
     void setAlEnable( bool value );
     QString getAlNote() const;
     void setAlNote( const QString &value );
+    QDateTime getRunSince() const;
+    void setRunSince( const QDateTime &value );
   };
 }  // namespace bose_commserver
 #endif  // ALERTCONFIG_HPP

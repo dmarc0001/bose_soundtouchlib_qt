@@ -13,6 +13,7 @@
 
 #include "config/alertconfig.hpp"
 #include "connectionhandler.hpp"
+#include "daemontimer.hpp"
 #include "logging/logger.hpp"
 
 namespace bose_commserver
@@ -28,7 +29,8 @@ namespace bose_commserver
     QList< std::shared_ptr< ConnectionHandler > > remoteConnections;  //! Liste mit verbundenen Sockets
     QWebSocket m_webSocket;                                           //! Client Socket zum BOSE Gerät
     std::shared_ptr< Logger > lg;                                     //! wenn ein logger erstellt wurde
-    QMutex qMutex;                                                    //! nurt einem Zugang gewähren
+    QMutex qMutex;                                                    //! nur einem Zugang gewähren
+    std::unique_ptr< DaemonTimer > dTimer;                            //! der Timer für alles
 
     public:
     explicit BoseCommServer( std::shared_ptr< AlertAppConfig > dconfig, QObject *parent = nullptr );  //! der Konstruktor
@@ -42,12 +44,11 @@ namespace bose_commserver
     void closed();  //! signalisiere alles geschlossen -> Ende TODO: brauch ich dann nicht mehr
 
     private slots:
-    void onNewConnection();    //! neue ankommende Kommandoverbindung
-    void onClosedListening();  //! serversocket geschlossen
-    void onClientClosed( const ConnectionHandler *handler );
-    // void remProcTextMessage( QString msg );       //! Kommando als text empfangen
-    // void remProcBinaryMessage( QByteArray msg );  //! Kommando binär empfangen
-    // void remSocketDisconnected();                 //! Kommandoverbindung beendet
+    void onNewConnection();                                   //! neue ankommende Kommandoverbindung
+    void onClosedListening();                                 //! serversocket geschlossen
+    void onClientClosed( const ConnectionHandler *handler );  //! wenn ein client die Verbindung beendet hat
+    void onStartAlert( SingleAlertConfig &alert );            //! Es soll ein Alarm gestartet werden
+    void onStopAlert( SingleAlertConfig &alert );             //! es soll ein alarm gestoppt werden
   };
 }  // namespace bose_commserver
 #endif  // BOSECOMMSERVER_HPP

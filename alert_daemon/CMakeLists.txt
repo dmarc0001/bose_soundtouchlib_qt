@@ -78,6 +78,7 @@ set(HEADERS
   daemon/connectionhandler.hpp
   daemon/commandgethandler.hpp
   daemon/commandsethandler.hpp
+  daemon/daemontimer.hpp
 )
 
 set(SOURCES
@@ -89,6 +90,7 @@ set(SOURCES
   daemon/connectionhandler.cpp
   daemon/commandgethandler.cpp
   daemon/commandsethandler.cpp
+  daemon/daemontimer.cpp
 )
 
 

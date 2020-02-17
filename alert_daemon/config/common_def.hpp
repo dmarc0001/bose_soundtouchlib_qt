@@ -19,6 +19,10 @@ namespace bose_commserver
   using JSonStringPtr = std::shared_ptr< QString >;
   using AppConfigPtr = std::shared_ptr< AlertAppConfig >;
   using LoggerPtr = std::shared_ptr< Logger >;
+  //
+  // der Timer, der alles steuert
+  //
+  constexpr int TIMER_INTERVAL = 1000;
 
   class command
   {
@@ -27,6 +31,7 @@ namespace bose_commserver
     static const constexpr char *setCmd{"set"};
     static const constexpr char *getCmd{"set"};
     static const constexpr char *deleteCmd{"delete"};
+
     // get subkommandos
     static const constexpr char *getConfigCmd{"config"};
     static const constexpr char *getConfigDaemon{"daemon"};
@@ -64,6 +69,7 @@ namespace bose_commserver
     static const constexpr char *confAlertType{"type"};
     static const constexpr char *confAlertEnabled{"enabled"};
     static const constexpr char *confAlertNote{"note"};
+    static const constexpr char *confAlertNONE{"not-a-alert"};
 
     // Wochentage in der config
     static char const *const weekdays[ 8 ];
