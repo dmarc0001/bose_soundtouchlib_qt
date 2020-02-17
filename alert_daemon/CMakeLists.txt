@@ -77,15 +77,18 @@ set(HEADERS
   daemon/bosecommserver.hpp
   daemon/connectionhandler.hpp
   daemon/commandgethandler.hpp
+  daemon/commandsethandler.hpp
 )
 
 set(SOURCES
   main.cpp
   config/alertconfig.cpp
+  daemon/common_def.cpp
   logging/logger.cpp
   daemon/bosecommserver.cpp
   daemon/connectionhandler.cpp
   daemon/commandgethandler.cpp
+  daemon/commandsethandler.cpp
 )
 
 

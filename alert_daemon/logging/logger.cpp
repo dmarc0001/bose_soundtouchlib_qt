@@ -315,4 +315,25 @@ namespace bose_commserver
     }
     return QString( "unknown" );
   }
+
+  /**
+   * @brief Logger::getThresholdFromString
+   * @param th
+   * @return
+   */
+  LgThreshold Logger::getThresholdFromString( const QString &th )
+  {
+    if ( th.toUpper().compare( Logger::NONE_STR.trimmed() ) == 0 )
+      return ( LG_NONE );
+    else if ( th.toUpper().compare( Logger::CRIT_STR.trimmed() ) == 0 )
+      return ( LG_CRIT );
+    else if ( th.toUpper().compare( Logger::WARN_STR.trimmed() ) == 0 )
+      return ( LG_WARN );
+    else if ( th.toUpper().compare( Logger::INFO_STR.trimmed() ) == 0 )
+      return ( LG_INFO );
+    else if ( th.toUpper().compare( Logger::DEBUG_STR.trimmed() ) == 0 )
+      return ( LG_DEBUG );
+    return ( LG_DEBUG );
+  }
+
 }  // namespace bose_commserver

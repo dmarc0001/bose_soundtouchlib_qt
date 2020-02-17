@@ -328,19 +328,19 @@ namespace bose_commserver
       QList< qint8 > lst;
       for ( QString day : days )
       {
-        if ( QString::compare( day.trimmed().toLower(), "mo" ) == 0 )
+        if ( QString::compare( day.trimmed().toLower(), command::weekdays[ 1 ] ) == 0 )
           lst << 1;
-        else if ( QString::compare( day.trimmed().toLower(), "tu" ) == 0 )
+        else if ( QString::compare( day.trimmed().toLower(), command::weekdays[ 2 ] ) == 0 )
           lst << 2;
-        else if ( QString::compare( day.trimmed().toLower(), "we" ) == 0 )
+        else if ( QString::compare( day.trimmed().toLower(), command::weekdays[ 3 ] ) == 0 )
           lst << 3;
-        else if ( QString::compare( day.trimmed().toLower(), "th" ) == 0 )
+        else if ( QString::compare( day.trimmed().toLower(), command::weekdays[ 4 ] ) == 0 )
           lst << 4;
-        else if ( QString::compare( day.trimmed().toLower(), "fr" ) == 0 )
+        else if ( QString::compare( day.trimmed().toLower(), command::weekdays[ 5 ] ) == 0 )
           lst << 5;
-        else if ( QString::compare( day.trimmed().toLower(), "sa" ) == 0 )
+        else if ( QString::compare( day.trimmed().toLower(), command::weekdays[ 6 ] ) == 0 )
           lst << 6;
-        else if ( QString::compare( day.trimmed().toLower(), "su" ) == 0 )
+        else if ( QString::compare( day.trimmed().toLower(), command::weekdays[ 7 ] ) == 0 )
           lst << 7;
       }
       //
@@ -623,36 +623,16 @@ namespace bose_commserver
     settings.setValue( AlertAppConfig::constAlertVolumeKey, currConfig.getAlVolume() );
     settings.setValue( AlertAppConfig::constAlertRaiseVolKey, currConfig.getAlRaiseVolume() );
     settings.setValue( AlertAppConfig::constAlertDurationKey, currConfig.getAlDuration() );
-    settings.setValue( AlertAppConfig::constAlertDateKey, currConfig.getAlDate().toString( "yyyy-MM-dd" ) );
-    settings.setValue( AlertAppConfig::constAlertTimeKey, currConfig.getAlTime().toString( "HH:mm" ) );
+    settings.setValue( AlertAppConfig::constAlertDateKey, currConfig.getAlDate().toString( command::dateFormatStr ) );
+    settings.setValue( AlertAppConfig::constAlertTimeKey, currConfig.getAlTime().toString( command::timeFormatStr ) );
     QList< qint8 > dlist( currConfig.getAlDays() );
     QStringList days;
     for ( qint8 daynum : dlist )
     {
-      switch ( daynum )
+      // weekdays ist ein array, daher geht das hier schnell
+      if ( daynum < 8 )
       {
-        case 1:
-          days << "mo";
-          break;
-        case 2:
-          days << "tu";
-          break;
-        case 3:
-          days << "we";
-          break;
-        case 4:
-          days << "th";
-          break;
-        case 5:
-          days << "fr";
-          break;
-        case 6:
-          days << "sa";
-          break;
-        case 7:
-        default:
-          days << "su";
-          break;
+        days << QString( command::weekdays[ daynum ] );
       }
     }
     settings.setValue( AlertAppConfig::constAlertDaysKey, days );
@@ -693,6 +673,11 @@ namespace bose_commserver
   {
     QRegularExpression re( AlertAppConfig::constAlertGroupPattern );
     return re;
+  }
+
+  QString AlertAppConfig::getAlertPatternStr()
+  {
+    return QString( AlertAppConfig::constAlertGroupPattern );
   }
 
   QString AlertAppConfig::getDefaultWsPort() const
@@ -778,7 +763,7 @@ namespace bose_commserver
     isHashValid = false;
   }
 
-  std::shared_ptr< AlertList > AlertAppConfig::getAlConfigs() const
+  AlertListPtr AlertAppConfig::getAlConfigs() const
   {
     return alConfigs;
   }
@@ -903,30 +888,10 @@ namespace bose_commserver
     QStringList days;
     for ( qint8 daynum : alDays )
     {
-      switch ( daynum )
+      // weekdays ist ein array, da geht das schnell
+      if ( daynum < 8 )
       {
-        case 1:
-          days << "mo";
-          break;
-        case 2:
-          days << "tu";
-          break;
-        case 3:
-          days << "we";
-          break;
-        case 4:
-          days << "th";
-          break;
-        case 5:
-          days << "fr";
-          break;
-        case 6:
-          days << "sa";
-          break;
-        case 7:
-        default:
-          days << "su";
-          break;
+        days << QString( command::weekdays[ daynum ] );
       }
     }
     return days;

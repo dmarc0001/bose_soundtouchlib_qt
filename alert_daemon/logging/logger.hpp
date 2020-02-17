@@ -90,6 +90,7 @@ namespace bose_commserver
     void shutdown();
     //! string zum level erfahren
     static const QString getThresholdString( LgThreshold th );
+    static LgThreshold getThresholdFromString( const QString &th );
 
     private:
     QString getDateString();  //! interne Funktion für den Datumsstring

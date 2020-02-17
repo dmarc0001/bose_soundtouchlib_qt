@@ -18,6 +18,7 @@
 #include <QVector>
 #include <memory>
 
+#include "daemon/common_def.hpp"
 #include "logging/logger.hpp"
 
 namespace bose_commserver
@@ -27,6 +28,7 @@ namespace bose_commserver
   //
   class SingleAlertConfig;
   using AlertList = QList< SingleAlertConfig >;
+  using AlertListPtr = std::shared_ptr< AlertList >;
 
   //! Klasse beinhaltet die Konfiguration
   class AlertAppConfig
@@ -92,7 +94,7 @@ namespace bose_commserver
     std::shared_ptr< Logger > lg;
     //! pointer auf Liste mit Alarmmeldungen zum weitergeben
     //! und bearbeiten
-    std::shared_ptr< AlertList > alConfigs;
+    AlertListPtr alConfigs;
     QByteArray configHash;
 
     public:
@@ -139,10 +141,11 @@ namespace bose_commserver
     void setThreshold( const LgThreshold &value );
     std::shared_ptr< Logger > getLogger() const;
     void setLogger( const std::shared_ptr< Logger > &value );
-    std::shared_ptr< AlertList > getAlConfigs() const;
+    AlertListPtr getAlConfigs() const;
     QString getDefaultWsPort() const;
     QString getDefaultHttpPort() const;
     QRegularExpression getAlertPattern();
+    QString getAlertPatternStr();
     QStringList getAvailDevices() const;
     void setAvailDevices( const QStringList &value );
     void addAvailDevices( const QString &dev );

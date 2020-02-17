@@ -36,7 +36,8 @@
     "get":
       {
         "alert-01",
-        "alert-03"
+        "alert-03" oder
+        "new-alert"
       }
   }
   {
@@ -54,12 +55,12 @@
       }
   }
   ############## antworten ##################
-  config, error, ack
+  config, error
 
   CONFIG Antwort
   {
-     "xxxx":{},
-     "yyyy": {}
+     "xxxx":{ergebnis},
+     "yyyy": {ergebnis}
   }
 
   {
@@ -67,10 +68,6 @@
     "error": {}....
   }
 
-  {
-    "ack": {},
-    "ack": {}....
-  }
 ******************************************************************************/
 
 #include "testclient.hpp"
@@ -172,6 +169,10 @@ namespace testclient
           m_webSocket.sendTextMessage( *getAllAlertJSONConfig() );
           break;
         case 9:
+          qDebug() << "set alert 22 to volume 30";
+          m_webSocket.sendTextMessage( *setAlertJSONVolumeConfig( 22, 40 ) );
+          break;
+        case 10:
           // debug umschalten
           // qDebug() << "send set loglevel to info";
           // m_webSocket.sendTextMessage( *setLoglevelJSONObject( LogLevel::LG_INFO ) );
@@ -203,7 +204,7 @@ namespace testclient
     JsonObjSPtr jsonObj = JsonObjSPtr( new QJsonObject() );
     // Das Objekt für SET Commandos
     QJsonObject setObj;
-    setObj.insert( "loglevel", TestClient::names[ static_cast< int >( level ) ] );
+    setObj.insert( "threshold", TestClient::names[ static_cast< int >( level ) ] );
     jsonObj->insert( "set", setObj );
     QJsonDocument doc( *jsonObj );
     JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( QJsonDocument::Indented ) ) );
@@ -250,4 +251,20 @@ namespace testclient
     JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( QJsonDocument::Indented ) ) );
     return strJson;
   }
+
+  JSonStringPtr TestClient::setAlertJSONVolumeConfig( int which, int vol )
+  {
+    // das Objekt zum Übergeben
+    JsonObjSPtr jsonObj = JsonObjSPtr( new QJsonObject() );
+    QJsonObject setObj;
+    QJsonObject paramObj;
+    paramObj.insert( "new-alert", "true" );
+    paramObj.insert( "volume", QString( "%1" ).arg( vol, 2, 10, QChar( '0' ) ) );
+    setObj.insert( QString( "alert-%1" ).arg( which, 2, 10, QChar( '0' ) ), paramObj );
+    jsonObj->insert( "set", setObj );
+    QJsonDocument doc( *jsonObj );
+    JSonStringPtr strJson = JSonStringPtr( new QString( doc.toJson( QJsonDocument::Indented ) ) );
+    return strJson;
+  }
+
 }  // namespace testclient

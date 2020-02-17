@@ -9,6 +9,9 @@
 
 namespace bose_commserver
 {
+  // vorabdeklaration
+  class AlertAppConfig;
+  class Logger;
   //
   // Hilfestellung für einfacheres lesen
   //
@@ -16,6 +19,59 @@ namespace bose_commserver
   using JSonStringPtr = std::shared_ptr< QString >;
   using AppConfigPtr = std::shared_ptr< AlertAppConfig >;
   using LoggerPtr = std::shared_ptr< Logger >;
+
+  class command
+  {
+    public:
+    // Kommandos
+    static const constexpr char *setCmd{"set"};
+    static const constexpr char *getCmd{"set"};
+    static const constexpr char *deleteCmd{"delete"};
+    // get subkommandos
+    static const constexpr char *getConfigCmd{"config"};
+    static const constexpr char *getConfigDaemon{"daemon"};
+    static const constexpr char *getCongigAllCmd{"all"};
+    static const constexpr char *getConfigDevCmd{"devices"};
+    static const constexpr char *getConfigNewAlCmd{"new-alert"};
+
+    // set subkommandos
+    static const constexpr char *setConfigCmd{"config"};
+    static const constexpr char *setConfigDaemon{"daemon"};
+    static const constexpr char *setConfigDevCmd{"devices"};
+    static const constexpr char *setConfigNewAlCmd{"new-alert"};
+
+    // app konfig json namen
+    static const constexpr char *confAppLogfile{"logfilename"};
+    static const constexpr char *confAppConfigFile{"configfilename"};
+    static const constexpr char *confAppBindAddr{"bindaddr"};
+    static const constexpr char *confAppBindPort{"bindport"};
+    static const constexpr char *confAppWsPort{"wsport"};
+    static const constexpr char *confAppHttpPort{"httpport"};
+    static const constexpr char *confAppThreshold{"threshold"};
+    static const constexpr char *confAppDebug{"debug"};
+
+    // alert config
+    static const constexpr char *confAlertVolume{"volume"};
+    static const constexpr char *confAlertDate{"date"};
+    static const constexpr char *confAlertTime{"time"};
+    static const constexpr char *confAlertLocation{"location"};
+    static const constexpr char *confAlertSource{"source"};
+    static const constexpr char *confAlertRaiseVol{"raise_vol"};
+    static const constexpr char *confAlertDuration{"duration"};
+    static const constexpr char *confAlertSourceAccount{"source_account"};
+    static const constexpr char *confAlertDays{"days"};
+    static const constexpr char *confAlertDevices{"devices"};
+    static const constexpr char *confAlertType{"type"};
+    static const constexpr char *confAlertEnabled{"enabled"};
+    static const constexpr char *confAlertNote{"note"};
+
+    // Wochentage in der config
+    static char const *const weekdays[ 8 ];
+
+    // Zeit oder Datumskonstanten
+    static const constexpr char *dateFormatStr{"yyyy-MM-dd"};
+    static const constexpr char *timeFormatStr{"HH:mm"};
+  };
 
 #ifdef DEBUG
   //

@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include "common_def.hpp"
 #include "config/alertconfig.hpp"
+#include "connectionhandler.hpp"
 
 namespace bose_commserver
 {
@@ -21,10 +22,10 @@ namespace bose_commserver
     JSonStringPtr getResponse();
 
     private:
-    JSonStringPtr getJSONErrorMessage( const QString &errormsg );
     void insertDaemonConfig( JsonObjSPtr jsonObj );
     void insertAlertConfig( JsonObjSPtr jsonObj, const SingleAlertConfig &alert );
     void insertAvailDevices( JsonObjSPtr jsonObj );
+    void insertNewAlertNum( JsonObjSPtr jsonObj, int num );
   };
 }  // namespace bose_commserver
 #endif  // COMMANDGETHANDLER_HPP

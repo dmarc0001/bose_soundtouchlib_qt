@@ -8,6 +8,7 @@
 #include <QWebSocket>
 #include <memory>
 #include "commandgethandler.hpp"
+#include "commandsethandler.hpp"
 #include "common_def.hpp"
 #include "config/alertconfig.hpp"
 
@@ -28,6 +29,7 @@ namespace bose_commserver
     public:
     explicit ConnectionHandler( AppConfigPtr dconfig, std::shared_ptr< QWebSocket > theSock, QObject *parent = nullptr );
     ConnectionHandler( const ConnectionHandler &cp );
+    static JSonStringPtr getJSONErrorMessage( const QString &errormsg );
     void init();
     ~ConnectionHandler();
     void disconnectWebsocket();              //! Verbindung trennen
@@ -35,8 +37,6 @@ namespace bose_commserver
     std::shared_ptr< QWebSocket > getNSock() const;
 
     private:
-    JSonStringPtr getJSONErrorMessage( const QString &errormsg );
-
     signals:
     void closed( const ConnectionHandler *handler );
 

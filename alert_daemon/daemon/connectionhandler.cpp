@@ -1,6 +1,6 @@
 #include "connectionhandler.hpp"
-
 #include <QDebug>
+#include "bosecommserver.hpp"
 
 namespace bose_commserver
 {
@@ -136,7 +136,7 @@ namespace bose_commserver
     // das jsonObject holen
     QJsonObject jObject = doc.object();
     QStringList keys = jObject.keys();
-    if ( keys.contains( "get" ) )
+    if ( keys.contains( command::getCmd ) )
     {
       //
       // get kommando an das richtige objekt übergeben
@@ -145,12 +145,13 @@ namespace bose_commserver
       CommandGetHandler getHandler( config, jObject );
       answer = getHandler.getResponse();
     }
-    else if ( keys.contains( "set" ) )
+    else if ( keys.contains( command::setCmd ) )
     {
       // set kommando
-      answer = getJSONErrorMessage( "set command" );
+      CommandSetHandler getHandler( config, jObject );
+      answer = getHandler.getResponse();
     }
-    else if ( keys.contains( "delete" ) )
+    else if ( keys.contains( command::deleteCmd ) )
     {
       // delete kommando
       answer = getJSONErrorMessage( "delete command" );

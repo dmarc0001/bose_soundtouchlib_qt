@@ -42,7 +42,7 @@ namespace testclient
     JSonStringPtr getDaemonJSONConfig();
     JSonStringPtr getAlertJSONConfig( int which );
     JSonStringPtr getAllAlertJSONConfig();
-
+    JSonStringPtr setAlertJSONVolumeConfig( int which, int vol );
     signals:
     void closed();
 
