@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(soundtouch_qt LANGUAGES CXX)
+project(soundtouch LANGUAGES CXX)
 
 ###############################################################################
 #                                                                             #
@@ -14,6 +14,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
 ###############################################################################
 # Projekt Definitionen                                                        #
 ###############################################################################
@@ -22,6 +27,13 @@ set(MAJOR 1) # major version number
 set(MINOR 0) # minor version number
 set(PATCH 5) # patch number
 set(BUILD 0) # win32: build number
+
+if (CMAKE_CROSSCOMPILING)
+    message("============= CROSSCOMPILER ========================")
+    set(CMAKE_PREFIX_PATH /home/dmarcini/raspi/rpi-dest)
+    set(QTDIR /home/dmarcini/raspi/qt-5-14-1-loc)
+endif()
+
 if (WIN32)
   # major.minor.patch.build
   set(VERSION $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD})
@@ -31,12 +43,12 @@ else()
 endif()
 
 if (CMAKE_BUILD_TYPE  STREQUAL "Debug")
-  set(lib_name soundtouch_debug_qt)
+  set(lib_name soundtouch_debug)
   message("create in debug mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(DEBUG)
 else()
   message("create in release mode (${CMAKE_BUILD_TYPE})")
-  set(lib_name soundtouch_qt)
+  set(lib_name soundtouch)
   add_compile_definitions(QT_NO_DEBUG_OUTPUT)
 endif()
 
@@ -165,7 +177,8 @@ install(TARGETS ${lib_name}
     DESTINATION ${EXPORT_LIB}
   RUNTIME
     DESTINATION ${EXPORT_LIB}
-
+  LIBRARY
+    DESTINATION ${EXPORT_LIB}
 )
 
 # die Header
@@ -180,11 +193,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 ###############################################################################
 # WAS EIGENES                                                                 #
 ###############################################################################
-#add_custom_command(TARGET ${lib_name}
-#  POST_BUILD
-#  COMMENT POST BUILD
-#  COMMAND cmake --build . --target install
-#)
 
 add_custom_target(installer
     DEPENDS ${lib_name} install
