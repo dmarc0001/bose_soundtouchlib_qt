@@ -72,17 +72,25 @@ link_directories(${IMPORT_LIB})
 set(HEADERS
   main.hpp
   config/alertconfig.hpp
+  config/common_def.hpp
   logging/logger.hpp
   daemon/bosecommserver.hpp
   daemon/connectionhandler.hpp
+  daemon/commandgethandler.hpp
+  daemon/commandsethandler.hpp
+  daemon/daemontimer.hpp
 )
 
 set(SOURCES
   main.cpp
   config/alertconfig.cpp
+  config/common_def.cpp
   logging/logger.cpp
   daemon/bosecommserver.cpp
   daemon/connectionhandler.cpp
+  daemon/commandgethandler.cpp
+  daemon/commandsethandler.cpp
+  daemon/daemontimer.cpp
 )
 
 
