@@ -74,9 +74,39 @@ int main( int argc, char *argv[] )
   //
   bose_commserver::BoseCommServer server( dConf );
   QObject::connect( &server, &bose_commserver::BoseCommServer::closed, &app, &QCoreApplication::quit );
+  // SIGNAL HANDLER INITIIEREN
+  setup_unix_signal_handlers();
   //
   // und ab dafür...
   // exec waret auf quit
   //
   return app.exec();
+}
+
+/**
+ * @brief setup_unix_signal_handlers
+ * @return
+ */
+static int setup_unix_signal_handlers()
+{
+  struct sigaction /*hup,*/ term;
+
+  /*
+  hup.sa_handler = MyDaemon::hupSignalHandler;
+  sigemptyset(&hup.sa_mask);
+  hup.sa_flags = 0;
+  hup.sa_flags |= SA_RESTART;
+
+  if (sigaction(SIGHUP, &hup, 0))
+    return 1;
+  */
+
+  term.sa_handler = bose_commserver::BoseCommServer::termSignalHandler;
+  sigemptyset( &term.sa_mask );
+  term.sa_flags |= SA_RESTART;
+
+  if ( sigaction( SIGTERM, &term, 0 ) )
+    return 2;
+
+  return 0;
 }

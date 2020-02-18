@@ -69,7 +69,7 @@ link_directories(${IMPORT_LIB})
 ###############################################################################
 # die Quellen des Programms definieren                                        #
 ###############################################################################
-set(HEADERS
+set( HEADERS
   main.hpp
   config/alertconfig.hpp
   config/common_def.hpp
@@ -81,7 +81,7 @@ set(HEADERS
   daemon/daemontimer.hpp
 )
 
-set(SOURCES
+set( SOURCES
   main.cpp
   config/alertconfig.cpp
   config/common_def.cpp
@@ -94,7 +94,7 @@ set(SOURCES
 )
 
 
-add_executable(${prog_name}
+add_executable( ${prog_name}
   ${HEADERS}
   ${SOURCES}
 )

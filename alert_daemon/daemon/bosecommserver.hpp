@@ -6,6 +6,7 @@
 #include <QList>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QSocketNotifier>
 #include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
 #include <QtWebSockets/QWebSocketServer>
@@ -31,10 +32,17 @@ namespace bose_commserver
     std::shared_ptr< Logger > lg;                                     //! wenn ein logger erstellt wurde
     QMutex qMutex;                                                    //! nur einem Zugang gewähren
     std::unique_ptr< DaemonTimer > dTimer;                            //! der Timer für alles
+    // static int sighupFd[ 2 ];
+    static int sigtermFd[ 2 ];
+    // QSocketNotifier *snHup;
+    std::unique_ptr< QSocketNotifier > snTerm;
 
     public:
     explicit BoseCommServer( std::shared_ptr< AlertAppConfig > dconfig, QObject *parent = nullptr );  //! der Konstruktor
     ~BoseCommServer();                                                                                //! Zerstörer
+    // Unix signal handlers.
+    // static void hupSignalHandler(int unused);
+    static void termSignalHandler( int unused );
 
     private:
     bool configServer();  //! erzeuge Einstellungen zum Kommandoserver
@@ -42,6 +50,11 @@ namespace bose_commserver
 
     signals:
     void closed();  //! signalisiere alles geschlossen -> Ende TODO: brauch ich dann nicht mehr
+
+    public slots:
+    // Qt signal handlers.
+    // void handleSigHup();
+    void onHandleSigTerm();
 
     private slots:
     void onNewConnection();                                   //! neue ankommende Kommandoverbindung
