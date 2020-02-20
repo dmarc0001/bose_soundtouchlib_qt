@@ -6,10 +6,6 @@
 // - kommunizieert zwischen dem Timermodul und den Geräten
 //
 #include "bosecommserver.hpp"
-
-#include <sys/socket.h>
-#include <unistd.h>
-
 #include <QtDebug>
 
 namespace bose_commserver
@@ -39,19 +35,6 @@ namespace bose_commserver
       lg->debug( "BoseCommServer::BoseCommServer: serversocket created..." );
       qDebug() << "create serversocket...OK";
     }
-    // if ( ::socketpair( AF_UNIX, SOCK_STREAM, 0, sighupFd ) )
-    //  qFatal( "Couldn't create HUP socketpair" );
-    if ( ::socketpair( AF_UNIX, SOCK_STREAM, 0, sigtermFd ) )
-    {
-      lg->crit( "Couldn't create TERM socketpair, cant castch SIG_TERM." );
-    }
-    lg->debug( "BoseCommServer::BoseCommServer: signalhandling init..." );
-    // snHup = new QSocketNotifier( sighupFd[ 1 ], QSocketNotifier::Read, this );
-    // connect( snHup, SIGNAL( activated( int ) ), this, SLOT( handleSigHup() ) );
-    snTerm = std::unique_ptr< QSocketNotifier >( new QSocketNotifier( sigtermFd[ 1 ], QSocketNotifier::Read, this ) );
-    connect( snTerm.get(), &QSocketNotifier::activated, this, &BoseCommServer::onHandleSigTerm );
-    lg->debug( "BoseCommServer::BoseCommServer: signalhandling init...OK" );
-    //
     lg->debug( "BoseCommServer::BoseCommServer: create timer..." );
     dTimer = std::unique_ptr< DaemonTimer >( new DaemonTimer( config, this ) );
     lg->debug( "BoseCommServer::BoseCommServer: connect timer events..." );
@@ -78,28 +61,24 @@ namespace bose_commserver
     lg->shutdown();
   }
 
-  /*
-  void BoseCommServer::hupSignalHandler( int )
+  void BoseCommServer::reciveAsyncSignal( int signal )
   {
-    char a = 1;
-    ::write( sighupFd[ 0 ], &a, sizeof( a ) );
-  }
-  */
-  void BoseCommServer::termSignalHandler( int )
-  {
-    char a = 1;
-    ::write( sigtermFd[ 0 ], &a, sizeof( a ) );
-  }
-
-  void BoseCommServer::onHandleSigTerm()
-  {
-    snTerm->setEnabled( false );
-    char tmp;
-    ::read( sigtermFd[ 1 ], &tmp, sizeof( tmp ) );
-
-    // do Qt stuff
-
-    snTerm->setEnabled( true );
+    switch ( signal )
+    {
+      case SIGINT:
+        lg->crit( "BoseCommServer::reciveAsyncSignal: recived SIGINT!" );
+        break;
+      case SIGTERM:
+        lg->crit( "BoseCommServer::reciveAsyncSignal: recived SIGTERM!" );
+        break;
+#ifdef UNIX
+      case SIGHUP:
+        lg->info( "BoseCommServer::reciveAsyncSignal: recived SIGNAL to reload config!" );
+        break;
+#endif
+      default:
+        lg->crit( QString( "BoseCommServer::reciveAsyncSignal: SIG Nr: %1" ).arg( signal ) );
+    }
   }
 
   /**

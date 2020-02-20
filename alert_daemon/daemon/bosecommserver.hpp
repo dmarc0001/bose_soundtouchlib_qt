@@ -1,6 +1,7 @@
 #ifndef BOSECOMMSERVER_HPP
 #define BOSECOMMSERVER_HPP
 
+#include <signal.h>
 #include <QDir>
 #include <QException>
 #include <QList>
@@ -43,6 +44,7 @@ namespace bose_commserver
     // Unix signal handlers.
     // static void hupSignalHandler(int unused);
     static void termSignalHandler( int unused );
+    void reciveAsyncSignal( int signal );                                                             //! empfange ein Systemsignal
 
     private:
     bool configServer();  //! erzeuge Einstellungen zum Kommandoserver

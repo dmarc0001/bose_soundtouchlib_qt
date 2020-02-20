@@ -70,12 +70,16 @@ int main( int argc, char *argv[] )
   if ( parser.isSet( portOption ) )
     dConf->setBindport( parser.value( portOption ) );
   //
+  // Signalhandling einschalten
+  //
+  previousINTHandler = signal( SIGINT, signalHandler );
+  previousTERMHandler = signal( SIGTERM, signalHandler );
+  //
   // erzeuge den Server mit der Config
   //
   bose_commserver::BoseCommServer server( dConf );
   QObject::connect( &server, &bose_commserver::BoseCommServer::closed, &app, &QCoreApplication::quit );
-  // SIGNAL HANDLER INITIIEREN
-  setup_unix_signal_handlers();
+  commInstance = &server;
   //
   // und ab dafür...
   // exec waret auf quit
@@ -84,29 +88,29 @@ int main( int argc, char *argv[] )
 }
 
 /**
- * @brief setup_unix_signal_handlers
- * @return
+ * @brief signalHandler
+ * @param signal
  */
-static int setup_unix_signal_handlers()
+void signalHandler( int signal )
 {
-  struct sigaction /*hup,*/ term;
-
-  /*
-  hup.sa_handler = MyDaemon::hupSignalHandler;
-  sigemptyset(&hup.sa_mask);
-  hup.sa_flags = 0;
-  hup.sa_flags |= SA_RESTART;
-
-  if (sigaction(SIGHUP, &hup, 0))
-    return 1;
-  */
-
-  term.sa_handler = bose_commserver::BoseCommServer::termSignalHandler;
-  sigemptyset( &term.sa_mask );
-  term.sa_flags |= SA_RESTART;
-
-  if ( sigaction( SIGTERM, &term, 0 ) )
-    return 2;
-
-  return 0;
+  if ( commInstance )
+  {
+    if ( signal == SIGINT )
+    {
+      // signal beackern
+      commInstance->reciveAsyncSignal( signal );
+    }
+    else if ( signal == SIGTERM )
+    {
+      // signal beackern
+      commInstance->reciveAsyncSignal( signal );
+    }
+#ifdef UNIX
+    else if ( signal == SIGHUP )
+    {
+      // signal beackern
+      commInstance->reciveAsyncSignal( signal );
+    }
+#endif
+  }
 }
