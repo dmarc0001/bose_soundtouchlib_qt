@@ -679,16 +679,23 @@ namespace bose_commserver
     settings.setValue( AlertAppConfig::constAlertDateKey, currConfig.getAlDate().toString( command::dateFormatStr ) );
     settings.setValue( AlertAppConfig::constAlertTimeKey, currConfig.getAlTime().toString( command::timeFormatStr ) );
     QList< qint8 > dlist( currConfig.getAlDays() );
-    QStringList days;
-    for ( qint8 daynum : dlist )
+    if ( dlist.size() > 0 )
     {
-      // weekdays ist ein array, daher geht das hier schnell
-      if ( daynum < 8 )
+      QStringList days;
+      for ( qint8 daynum : dlist )
       {
-        days << QString( command::weekdays[ daynum ] );
+        // weekdays ist ein array, daher geht das hier schnell
+        if ( daynum < 8 )
+        {
+          days << QString( command::weekdays[ daynum ] );
+        }
       }
+      settings.setValue( AlertAppConfig::constAlertDaysKey, days );
     }
-    settings.setValue( AlertAppConfig::constAlertDaysKey, days );
+    else
+    {
+      settings.setValue( AlertAppConfig::constAlertDaysKey, "" );
+    }
     settings.setValue( AlertAppConfig::constAlertSourceKey, currConfig.getAlSource() );
     settings.setValue( AlertAppConfig::constAlertAccountKey, currConfig.getAlSourceAccount() );
     settings.setValue( AlertAppConfig::constAlertTypeKey, currConfig.getAlType() );

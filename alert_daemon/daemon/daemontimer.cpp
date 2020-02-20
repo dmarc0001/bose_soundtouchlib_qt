@@ -18,6 +18,15 @@ namespace bose_commserver
   }
 
   /**
+   * @brief DaemonTimer::stopTimer
+   */
+  void DaemonTimer::stopTimer()
+  {
+    ticker.stop();
+    lg->debug( "DaemonTimer::stopTimer: timer stopped..." );
+  }
+
+  /**
    * @brief DaemonTimer::onTimerTimeout
    */
   void DaemonTimer::onTimerTimeout()
@@ -146,13 +155,19 @@ namespace bose_commserver
     // wenn der Alarm nicht läuft (NICHT isValid)
     // und der Zeitpunkt zwischen + 45 und - 15 Sekunden ist
     //
+    int distanceToAlert = currAl.getAlTime().secsTo( now );
+    int diffToZero = distanceToAlert - 45;
+    int maxDistance = 60;
 #ifdef DEBUG
     int alToNow = currAl.getAlTime().secsTo( now );
     int nowToAl = now.secsTo( currAl.getAlTime() );
-    lg->debug( QString( "DaemonTimer::startAlertIfTime: alert to now: <%1> now to alert: <%2>" ).arg( alToNow ).arg( nowToAl ) );
+    lg->debug( QString( "DaemonTimer::startAlertIfTime: alert to now: <%1> now to alert: <%2> distance <%3>" )
+                   .arg( alToNow )
+                   .arg( nowToAl )
+                   .arg( diffToZero ) );
 #endif
-
-    if ( !currAl.getRunSince().isValid() && ( currAl.getAlTime().secsTo( now ) < 15 || now.secsTo( currAl.getAlTime() ) > 45 ) )
+    //
+    if ( !currAl.getRunSince().isValid() && ( diffToZero >= 0 && diffToZero < maxDistance ) )
     {
       //
       // starte den Alarm!

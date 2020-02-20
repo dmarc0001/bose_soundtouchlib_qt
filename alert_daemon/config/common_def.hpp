@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QObject>
 #include <QString>
+
 #include "config/alertconfig.hpp"
 
 namespace bose_commserver

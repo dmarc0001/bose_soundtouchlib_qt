@@ -11,6 +11,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
+if(UNIX)
+  add_compile_definitions(UNIX)
+endif(UNIX)
+if(WIN32)
+    add_compile_definitions(WIN32)
+endif(WIN32)
+
 add_subdirectory(libsoundtouch)
 add_subdirectory(test_soundtouch)
 add_subdirectory(alert_daemon)

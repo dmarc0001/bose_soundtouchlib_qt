@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+
 #include "config/alertconfig.hpp"
 #include "config/common_def.hpp"
 
@@ -13,13 +14,14 @@ namespace bose_commserver
     Q_OBJECT
     private:
     AppConfigPtr config;
-    std::shared_ptr< Logger > lg;
+    LoggerPtr lg;
     AlertListPtr alList;
     QTimer ticker;
     qint8 timerCounter;
 
     public:
     explicit DaemonTimer( AppConfigPtr dconfig, QObject *parent = nullptr );
+    void stopTimer();
 
     private:
     void testIfAlertNeedStart( QDate &today, QTime &now, SingleAlertConfig &currAl );

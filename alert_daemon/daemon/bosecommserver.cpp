@@ -6,6 +6,7 @@
 // - kommunizieert zwischen dem Timermodul und den Geräten
 //
 #include "bosecommserver.hpp"
+
 #include <QtDebug>
 
 namespace bose_commserver
@@ -50,7 +51,7 @@ namespace bose_commserver
   {
     lg->info( "BoseCommServer::~BoseCommServer: destructor..." );
     cServer->close();
-    for ( std::shared_ptr< ConnectionHandler > handler : remoteConnections )
+    for ( auto handler : remoteConnections )
     {
       //
       // alle durchgehen, die Liste selber wird vom Destruktor gelöscht
@@ -66,10 +67,16 @@ namespace bose_commserver
     switch ( signal )
     {
       case SIGINT:
-        lg->crit( "BoseCommServer::reciveAsyncSignal: recived SIGINT!" );
-        break;
       case SIGTERM:
-        lg->crit( "BoseCommServer::reciveAsyncSignal: recived SIGTERM!" );
+        lg->crit( "BoseCommServer::reciveAsyncSignal: recived SIGINT/SIGTERM!" );
+        for ( auto currAlert : activeAlerts )
+        {
+          currAlert->cancelAlert();
+          activeAlerts.removeOne( currAlert );
+        }
+        dTimer->stopTimer();
+        // das ende signalisieren
+        emit closed();
         break;
 #ifdef UNIX
       case SIGHUP:
@@ -138,8 +145,7 @@ namespace bose_commserver
     // std::make_shared< ConnectionHandler > geht hier nicht, da er ein Objekt erzeugt und dann
     // kopiert. Das geht schief bei einem übergebenen Socket :-(
     //
-    std::shared_ptr< ConnectionHandler > handler =
-        std::shared_ptr< ConnectionHandler >( new ConnectionHandler( config, nSock, this ) );
+    auto handler = std::shared_ptr< ConnectionHandler >( new ConnectionHandler( config, nSock, this ) );
     lg->info( QString( "BoseCommServer::onNewConnection: commserver: new connection from: %1, id: %2" )
                   .arg( nSock->peerAddress().toString() )
                   .arg( handler->getCurrentHandlerNum(), 12, 10, QLatin1Char( '0' ) ) );
@@ -163,7 +169,7 @@ namespace bose_commserver
     lg->info( QString( "BoseCommServer::onClientClosed: commserver: closed connection from: %1, id: %2" )
                   .arg( handler->getNSock()->peerAddress().toString() )
                   .arg( toDeleteHandlerId, 12, 10, QLatin1Char( '0' ) ) );
-    for ( std::shared_ptr< ConnectionHandler > currHandler : remoteConnections )
+    for ( auto currHandler : remoteConnections )
     {
       if ( toDeleteHandlerId == currHandler->getCurrentHandlerNum() )
       {
@@ -196,6 +202,10 @@ namespace bose_commserver
     // TODO: emit commandClosedSignal
   }
 
+  /**
+   * @brief BoseCommServer::createLogger
+   * @return
+   */
   bool BoseCommServer::createLogger()
   {
     //
@@ -207,7 +217,7 @@ namespace bose_commserver
     // wg Copycontruktor eher nicht...
     // lg = std::make_shared< Logger >( Logger() );
     //
-    lg = std::shared_ptr< Logger >( new Logger() );
+    lg = LoggerPtr( new Logger() );
     if ( lg )
     {
       //
@@ -239,14 +249,70 @@ namespace bose_commserver
     return ( false );
   }
 
+  /**
+   * @brief BoseCommServer::onStartAlert
+   * @param alert
+   */
   void BoseCommServer::onStartAlert( SingleAlertConfig &alert )
   {
     lg->debug( QString( "BoseCommServer::onStartAlert: <%1>..." ).arg( alert.getName() ) );
+    if ( alert.getRunSince().isValid() )
+    {
+      lg->warn( QString( "BoseCommServer::onStartAlert: <%1> alredy running. Abort starting..." ).arg( alert.getName() ) );
+      return;
+    }
+    //
+    // markieren!
+    //
+    alert.setRunSince( QDateTime::currentDateTime() );
+    // BoseSoundAlertPtr currAlert = BoseSoundAlertPtr( new BoseSoundAlert(alert, lg, this));
+    //
+    // einen Alarm einfügen, der Konstruktor startet diesen gleich
+    //
+    BoseSoundAlertPtr currAlert = BoseSoundAlertPtr( new BoseSoundAlert( alert, lg, this ) );
+    //
+    // verbinde das finish Signal des alarms mit der slot funktion
+    //
+    connect( currAlert.get(), &BoseSoundAlert::sigAlertFinish, this, &BoseCommServer::onAlertFinish );
+    currAlert->start();
+    activeAlerts.append( currAlert );
   }
 
+  /**
+   * @brief BoseCommServer::onStopAlert
+   * @param alert
+   */
   void BoseCommServer::onStopAlert( SingleAlertConfig &alert )
   {
     lg->debug( QString( "BoseCommServer::onStopAlert: <%1>..." ).arg( alert.getName() ) );
+    for ( auto currAlert : activeAlerts )
+    {
+      if ( alert.getName().compare( currAlert->getAlertName() ) )
+      {
+        //
+        // diesen alarm beenden und loeschen
+        //
+        currAlert->cancelAlert();
+        // currAlert->deleteLater();
+        // activeAlerts.removeAll( currAlert );
+        break;
+      }
+    }
   }
 
+  void BoseCommServer::onAlertFinish( const QString &alName )
+  {
+    lg->debug( QString( "BoseCommServer::onAlertFinish: <%1>..." ).arg( alName ) );
+    for ( auto currAlert : activeAlerts )
+    {
+      if ( alName.compare( currAlert->getAlertName() ) )
+      {
+        //
+        // diesen alarm loeschen
+        //
+        activeAlerts.removeAll( currAlert );
+        break;
+      }
+    }
+  }
 }  // namespace bose_commserver

@@ -79,6 +79,7 @@ set( HEADERS
   daemon/commandgethandler.hpp
   daemon/commandsethandler.hpp
   daemon/daemontimer.hpp
+  daemon/bosesoundalert.hpp
 )
 
 set( SOURCES
@@ -91,6 +92,7 @@ set( SOURCES
   daemon/commandgethandler.cpp
   daemon/commandsethandler.cpp
   daemon/daemontimer.cpp
+  daemon/bosesoundalert.cpp
 )
 
 
