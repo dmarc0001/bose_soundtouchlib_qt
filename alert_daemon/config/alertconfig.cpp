@@ -36,6 +36,7 @@ namespace bose_commserver
   AlertAppConfig::~AlertAppConfig()
   {
     qDebug().noquote() << "AlertAppConfig::~AlertAppConfig()";
+    configCheckTimer.stop();
     saveSettings();
   }
 

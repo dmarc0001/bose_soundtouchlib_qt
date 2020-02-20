@@ -72,9 +72,13 @@ namespace bose_commserver
         for ( auto currAlert : activeAlerts )
         {
           currAlert->cancelAlert();
-          activeAlerts.removeOne( currAlert );
+          // gib ihm etwas zeit
+          // QThread::sleep( 250 );
+          // currAlert->exit();
+          // activeAlerts.removeOne( currAlert );
         }
         dTimer->stopTimer();
+        QThread::sleep( 250 );
         // das ende signalisieren
         emit closed();
         break;
@@ -310,6 +314,7 @@ namespace bose_commserver
         //
         // diesen alarm loeschen
         //
+        currAlert->deleteLater();
         activeAlerts.removeAll( currAlert );
         break;
       }

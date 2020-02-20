@@ -19,7 +19,6 @@ namespace bose_commserver
   {
     lg->debug( QString( "BoseSoundAlert::~BoseSoundAlert: Alert <%1> destroing..." ).arg( alConfig.getName() ) );
     // gib bescheid, damit der thread aus der Liste entfernt wird
-    emit sigAlertFinish( alConfig.getName() );
   }
 
   void BoseSoundAlert::run()
@@ -39,7 +38,7 @@ namespace bose_commserver
     // (durationCounter - raise time) wenn raise vol aktiv ist
     // TODO: wait
     while ( alertIsRunning )
-      msleep( 250 );
+      msleep( 150 );
     // mainTimer.stop();
     //
     // aufräumen
@@ -48,6 +47,7 @@ namespace bose_commserver
     // lautstärke restaurieren
     // verbindung(en) lösen
     lg->info( "BoseSoundAlert::run: thread end..." );
+    emit sigAlertFinish( alConfig.getName() );
   }
 
   /**
@@ -56,7 +56,11 @@ namespace bose_commserver
    */
   void BoseSoundAlert::timerEvent( QTimerEvent *event )
   {
-    lg->debug( QString( "BoseSoundAlert::timerEvent: timer event..." ).arg( event->timerId() ) );
+    lg->debug( QString( "BoseSoundAlert::timerEvent: timer event no %1..." ).arg( event->timerId() ) );
+    if ( !alertIsRunning )
+    {
+      killTimer( event->timerId() );
+    }
   }
 
   /**
@@ -78,5 +82,6 @@ namespace bose_commserver
     // Alarm beenden!
     //
     alertIsRunning = false;
+    killTimer( mainTimerId );
   }
 }  // namespace bose_commserver

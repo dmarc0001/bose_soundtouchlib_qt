@@ -152,22 +152,17 @@ namespace bose_commserver
   void DaemonTimer::startAlertIfTime( SingleAlertConfig &currAl, QTime &now )
   {
     //
-    // wenn der Alarm nicht läuft (NICHT isValid)
+    // wenn der Alarm nicht läuft (RunSinse ist NICHT isValid)
     // und der Zeitpunkt zwischen + 45 und - 15 Sekunden ist
     //
-    int distanceToAlert = currAl.getAlTime().secsTo( now );
-    int diffToZero = distanceToAlert - 45;
-    int maxDistance = 60;
+    int distanceToAlert = now.secsTo( currAl.getAlTime() );
+    // int distanceToAlert = currAl.getAlTime().secsTo( now );
+    int diffToZero = distanceToAlert - 30;
 #ifdef DEBUG
-    int alToNow = currAl.getAlTime().secsTo( now );
-    int nowToAl = now.secsTo( currAl.getAlTime() );
-    lg->debug( QString( "DaemonTimer::startAlertIfTime: alert to now: <%1> now to alert: <%2> distance <%3>" )
-                   .arg( alToNow )
-                   .arg( nowToAl )
-                   .arg( diffToZero ) );
+    lg->debug( QString( "DaemonTimer::startAlertIfTime: now to alert: <%1> distance <%2>" ).arg( distanceToAlert ).arg( diffToZero ) );
 #endif
     //
-    if ( !currAl.getRunSince().isValid() && ( diffToZero >= 0 && diffToZero < maxDistance ) )
+    if ( !currAl.getRunSince().isValid() && ( distanceToAlert < 60 && distanceToAlert > 0 ) )
     {
       //
       // starte den Alarm!
