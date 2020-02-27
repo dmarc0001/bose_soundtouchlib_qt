@@ -34,9 +34,9 @@ namespace bose_commserver
     timerCounter++;
     //
     // teste die Alarme
-    // immer alle 10 Ticks (sollte dann 10 Sekunden sein)
+    // immer alle x Ticks (sollte dann x Sekunden sein)
     //
-    if ( timerCounter % 10 == 0 )
+    if ( timerCounter % 8 == 0 )
     {
       lg->debug( "DaemonTimer::onTimerTimeout: check alerts..." );
       QDate today( QDate::currentDate() );
@@ -153,19 +153,22 @@ namespace bose_commserver
   {
     //
     // wenn der Alarm nicht läuft (RunSinse ist NICHT isValid)
-    // und der Zeitpunkt zwischen + 45 und - 15 Sekunden ist
+    // und der Zeitpunkt zwischen +/- 30 Sekunden ist
     //
     int distanceToAlert = now.secsTo( currAl.getAlTime() );
-    // int distanceToAlert = currAl.getAlTime().secsTo( now );
     int diffToZero = distanceToAlert - 30;
 #ifdef DEBUG
-    lg->debug( QString( "DaemonTimer::startAlertIfTime: now to alert: <%1> distance <%2>" ).arg( distanceToAlert ).arg( diffToZero ) );
+    lg->debug( QString( "DaemonTimer::startAlertIfTime: now: %3,  now to alert: <%1s> distance <%2s>" )
+                   .arg( distanceToAlert )
+                   .arg( diffToZero )
+                   .arg( now.toString( "HH:mm:ss" ) ) );
 #endif
     //
-    if ( !currAl.getRunSince().isValid() && ( distanceToAlert < 60 && distanceToAlert > 0 ) )
+    // if ( !currAl.getRunSince().isValid() && ( distanceToAlert < 60 && distanceToAlert > 0 ) )
+    if ( !currAl.getRunSince().isValid() && ( diffToZero < 60 && diffToZero > 0 ) )
     {
       //
-      // starte den Alarm!
+      // starte den Alarm! (wenn er nicht schon läuft)
       //
       lg->debug( QString( "DaemonTimer::startAlertIfTime: alert <%1> start now!" ).arg( currAl.getName() ) );
       emit sigStartAlert( currAl );

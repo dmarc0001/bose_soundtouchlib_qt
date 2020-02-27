@@ -37,7 +37,8 @@ namespace bose_commserver
   {
     qDebug().noquote() << "AlertAppConfig::~AlertAppConfig()";
     configCheckTimer.stop();
-    saveSettings();
+    if ( !isHashValid )
+      saveSettings();
   }
 
   /**
@@ -45,6 +46,7 @@ namespace bose_commserver
    */
   void AlertAppConfig::onConfigCheckTimer()
   {
+    static bool fence = false;  //! der Zaun ist damit sich die Ereignisse nicht überholen
     configTimerCounter++;
     //
     // wenn ich was sichern muss, ist der wert > 0
@@ -52,17 +54,20 @@ namespace bose_commserver
     if ( configSaveTimeout > 0 )
     {
       configSaveTimeout--;
-      if ( configSaveTimeout == 0 )
+      if ( configSaveTimeout <= 0 && !fence )
       {
+        fence = true;
         if ( lg )
         {
           lg->debug( "AlertAppConfig::onConfigCheckTimer: save changed config..." );
         }
         saveSettings();
+        configSaveTimeout = 0;
+        fence = false;
       }
     }
     //
-    // aller 10 Sekunden
+    // aller 12 Sekunden
     //
     if ( configTimerCounter % 12 == 0 )
     {
@@ -71,8 +76,9 @@ namespace bose_commserver
         lg->debug( "AlertAppConfig::onConfigCheckTimer: check config hashvalue..." );
       }
       // configHash prüfen
-      if ( !isHashValid )
+      if ( !isHashValid && !fence )
       {
+        fence = true;
         //
         // da muss ich was machen...
         //
@@ -82,6 +88,7 @@ namespace bose_commserver
         // immer bei einer Änderung 15 Sekunden zufügen
         //
         configSaveTimeout = 15;
+        fence = false;
       }
     }
   }

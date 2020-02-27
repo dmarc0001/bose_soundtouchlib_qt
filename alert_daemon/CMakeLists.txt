@@ -74,6 +74,7 @@ set( HEADERS
   config/alertconfig.hpp
   config/common_def.hpp
   logging/logger.hpp
+  support/nologgerexception.hpp
   daemon/bosecommserver.hpp
   daemon/connectionhandler.hpp
   daemon/commandgethandler.hpp

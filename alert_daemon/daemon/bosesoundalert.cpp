@@ -1,5 +1,7 @@
 #include "bosesoundalert.hpp"
 
+using namespace bose_soundtoch_lib;
+
 namespace bose_commserver
 {
   BoseSoundAlert::BoseSoundAlert( const SingleAlertConfig &alConf, LoggerPtr lgr, QObject *parent )
@@ -10,20 +12,33 @@ namespace bose_commserver
       , durationCounter( alConf.getAlDuration() )
       , alertIsRunning( true )
       , finishAlert( false )
+      , isVolumeRaising( alConf.getAlRaiseVolume() )
+      , alertVolume( alConf.getAlVolume() )
   {
     lg->debug( QString( "BoseSoundAlert::BoseSoundAlert: construct <%1> OK" ).arg( alConfig.getName() ) );
-    mainTimerId = startTimer( 1000 );
+    mainTimerId = startTimer( 100 );
   }
 
   BoseSoundAlert::~BoseSoundAlert()
   {
     lg->debug( QString( "BoseSoundAlert::~BoseSoundAlert: Alert <%1> destroing..." ).arg( alConfig.getName() ) );
-    // gib bescheid, damit der thread aus der Liste entfernt wird
   }
 
   void BoseSoundAlert::run()
   {
     lg->info( "BoseSoundAlert::run: thread start..." );
+    /*
+    QStringList devNames = alConfig.getAlDevices();
+    for ( const QString &name : devNames )
+    {
+      sDevicePtr sDevice =
+          sDevicePtr( new BSoundTouchDevice( host, wsPort, httpPort, this, threshold ) ) std::unique_ptr< BSoundTouchDevice > sDevice;
+    }
+    */
+    //
+    // wenn ansteigendes Volume gefordert war, einen wert für ticks per Lautstärkestufe
+    // irgendwie zusammenbauen
+    //
     //
     // Der Anfang...
     // TODO: initialisieren
@@ -47,19 +62,56 @@ namespace bose_commserver
     // lautstärke restaurieren
     // verbindung(en) lösen
     lg->info( "BoseSoundAlert::run: thread end..." );
-    emit sigAlertFinish( alConfig.getName() );
   }
 
   /**
    * @brief BoseSoundAlert::timerEvent
    * @param event
    */
-  void BoseSoundAlert::timerEvent( QTimerEvent *event )
+  void BoseSoundAlert::timerEvent( QTimerEvent * )
   {
-    lg->debug( QString( "BoseSoundAlert::timerEvent: timer event no %1..." ).arg( event->timerId() ) );
-    if ( !alertIsRunning )
+    //
+    if ( alertIsRunning )
     {
-      killTimer( event->timerId() );
+      if ( isVolumeRaising && alertVolume < currentVolume )
+      {
+        //
+        // steigere um stepWith
+        //
+        // setDeviceVolume(currentVolume + stepwith)
+      }
+      /*
+       * was schlaues zum ausblenden machen
+       *
+      else if ( isVolumeRaising && ( durationCounter - STEPS_TO_VOL ) < 0 )
+      {
+        //
+        // verringere volume
+        //
+        // setDeviceVolume(currentVolume - stepWith)
+      }
+      */
+      else
+      {
+        computeAlertNormal();
+      }
+    }
+    if ( durationCounter <= 0 )
+    {
+      alertIsRunning = false;
+    }
+  }
+
+  void BoseSoundAlert::computeAlertNormal()
+  {
+    static qint8 preCounter = 0;
+    if ( ++preCounter % 10 == 0 )
+    {
+      lg->debug( QString( "BoseSoundAlert::timerEvent: timer event %2..." ).arg( durationCounter, 3, 10, QChar( '0' ) ) );
+      durationCounter--;
+      //
+      // TODO: mach hier was
+      //
     }
   }
 
@@ -82,6 +134,5 @@ namespace bose_commserver
     // Alarm beenden!
     //
     alertIsRunning = false;
-    killTimer( mainTimerId );
   }
 }  // namespace bose_commserver
