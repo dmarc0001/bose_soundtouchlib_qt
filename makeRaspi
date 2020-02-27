@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+#
+export BUILDDIR=QT5141-RASPI-GCC-x32
+export DEBUGDIR=$BUILDDIR/Debug
+export RELEASEDIR=$BUILDDIR/Release
+mkdir -p $DEBUGDIR
+mkdir -p $RELEASEDIR
+
+pushd `pwd`
+echo "make debug version..."
+cd $DEBUGDIR
+cmake \
+  -DCMAKE_TOOLCHAIN_FILE=crossCompileToolchainFile.cmake \
+  -DCMAKE_PREFIX_PATH=home/dmarcini/raspi/qt-5.14.1-ext/lib/cmake/Qt5 \
+  -DCMAKE_BUILD_TYPE=Debug \
+  ../../ 
+# cmake --build .
+popd
+
+#pushd `pwd`
+#cd $RELEASEDIR
+#echo "make release version..."
+#cmake \
+#  -DCMAKE_TOOLCHAIN_FILE=~/raspi/tools/crossCompileToolchainFile.cmake \
+#  -DCMAKE_BUILD_TYPE=Release \
+#  ../../ 
+#cmake --build .
+#
+#popd
+

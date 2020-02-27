@@ -10,7 +10,7 @@ int main( int argc, char *argv[] )
   QCommandLineParser parser;
   QApplication a( argc, argv );
   //
-  parser.setApplicationDescription( "soundtouch_qt: Tests" );
+  parser.setApplicationDescription( "soundtouch: Tests" );
   parser.addHelpOption();
   //
   // debug an oder aus
