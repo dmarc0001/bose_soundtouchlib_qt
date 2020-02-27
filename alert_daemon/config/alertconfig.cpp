@@ -722,18 +722,12 @@ namespace bose_commserver
   //###########################################################################
   //###########################################################################
 
-  QStringList AlertAppConfig::getAvailDevices() const
+  SoundTouchDevicesList &AlertAppConfig::getAvailDevices()
   {
     return availDevices;
   }
 
-  void AlertAppConfig::setAvailDevices( const QStringList &value )
-  {
-    isHashValid = false;
-    availDevices = value;
-  }
-
-  void AlertAppConfig::addAvailDevices( const QString &dev )
+  void AlertAppConfig::addAvailDevices( const SoundTouchDevice &dev )
   {
     availDevices.append( dev );
   }

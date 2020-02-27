@@ -230,9 +230,9 @@ namespace bose_commserver
   {
     QJsonObject devices;
     // zusammentragen
-    for ( QString &dev : config->getAvailDevices() )
+    for ( SoundTouchDevice &dev : config->getAvailDevices() )
     {
-      devices.insert( dev, QLatin1String( "true" ) );
+      devices.insert( dev.getName(), QLatin1String( "true" ) );
     }
     // eintragen in das Objekt
     jsonObj->insert( "devices", devices );

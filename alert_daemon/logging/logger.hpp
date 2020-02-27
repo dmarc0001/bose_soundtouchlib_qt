@@ -22,11 +22,19 @@ namespace bose_commserver
     LG_DEBUG  // 4
   };
 
+  // um das schreiben abzukürzen
+  constexpr LgThreshold LNONE = LgThreshold::LG_NONE;
+  constexpr LgThreshold LDEBUG = LgThreshold::LG_DEBUG;
+  constexpr LgThreshold LINFO = LgThreshold::LG_INFO;
+  constexpr LgThreshold LWARN = LgThreshold::LG_WARN;
+  constexpr LgThreshold LCRIT = LgThreshold::LG_CRIT;
+
   class Logger
   {
     private:
     //! Logs level
     LgThreshold threshold;
+    LgThreshold currentThreshold;
     //! Zeiger auf das Logdateiobjekt
     std::unique_ptr< QFile > logFile;
     //! Zeiger auf einen Textstrom
@@ -56,9 +64,26 @@ namespace bose_commserver
     int startLogging( LgThreshold th = LG_DEBUG, const QString &fn = "logging.log" );  //! Loggen beginnen
     //! Setzte Loggingstufe
     void setThreshold( LgThreshold th );
+    //! für << flag setzten
+    inline void setCurrentThreshold( LgThreshold th )
+    {
+      currentThreshold = th;
+    };
+    inline LgThreshold getCurrentThreshold()
+    {
+      return currentThreshold;
+    }
     //! lese Loggingstufe
     LgThreshold getThreshold( void );
     //
+    // Operator überladen
+    //
+    //! << Ausgaben
+    friend Logger &operator<<( Logger &lg, const LgThreshold );       //! folgende << ausgaben mit diesem wert
+    friend Logger &operator<<( Logger &lg, const QString &msg );      //! qstring
+    friend Logger &operator<<( Logger &lg, const std::string &msg );  //! std:.string
+    friend Logger &operator<<( Logger &lg, const char *msg );         //! chat zueiger
+
     //! INFO Ausgaben
     void info( const QString &msg );
     //! INFO Ausgaben

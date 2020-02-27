@@ -12,11 +12,113 @@ namespace bose_commserver
   const QString Logger::WARN_STR{"WARN  "};
   const QString Logger::CRIT_STR{"CRIT  "};
 
+  //#######################################################################################
+  //#### operator überladen                                                            ####
+  //#######################################################################################
+
+  // TODO: template nutzen?
+  /**
+   * @brief operator <<
+   * @param lg
+   * @param th
+   * @return
+   */
+  Logger &operator<<( Logger &lg, const LgThreshold th )
+  {
+    lg.setCurrentThreshold( th );
+    return lg;
+  }
+
+  /**
+   * @brief operator <<
+   * @param lg
+   * @param msg
+   * @return
+   */
+  Logger &operator<<( Logger &lg, const QString &msg )
+  {
+    switch ( lg.getCurrentThreshold() )
+    {
+      case LNONE:
+        break;
+      case LCRIT:
+        lg.crit( msg );
+        break;
+      case LWARN:
+        lg.warn( msg );
+        break;
+      case LINFO:
+        lg.info( msg );
+        break;
+      case LDEBUG:
+        lg.debug( msg );
+    }
+    return lg;
+  }
+
+  /**
+   * @brief operator <<
+   * @param lg
+   * @param msg
+   * @return
+   */
+  Logger &operator<<( Logger &lg, const std::string &msg )
+  {
+    switch ( lg.getCurrentThreshold() )
+    {
+      case LNONE:
+        break;
+      case LCRIT:
+        lg.crit( msg );
+        break;
+      case LWARN:
+        lg.warn( msg );
+        break;
+      case LINFO:
+        lg.info( msg );
+        break;
+      case LDEBUG:
+        lg.debug( msg );
+    }
+    return lg;
+  }
+
+  /**
+   * @brief operator <<
+   * @param lg
+   * @param msg
+   * @return
+   */
+  Logger &operator<<( Logger &lg, const char *msg )
+  {
+    switch ( lg.getCurrentThreshold() )
+    {
+      case LNONE:
+        break;
+      case LCRIT:
+        lg.crit( msg );
+        break;
+      case LWARN:
+        lg.warn( msg );
+        break;
+      case LINFO:
+        lg.info( msg );
+        break;
+      case LDEBUG:
+        lg.debug( msg );
+    }
+    return lg;
+  }
+
+  //#######################################################################################
+  //#### der Logger                                                                    ####
+  //#######################################################################################
+
   /**
    * @brief Logger::Logger Konstruktor mit Konfigurationsdatei Übergabe
    * @param lFile
    */
-  Logger::Logger() : threshold( LG_DEBUG ), logFile( nullptr )
+  Logger::Logger() : threshold( LG_DEBUG ), currentThreshold( LG_DEBUG ), logFile( nullptr )
   {
   }
 

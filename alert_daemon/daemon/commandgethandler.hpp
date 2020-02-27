@@ -3,6 +3,7 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
+
 #include "config/alertconfig.hpp"
 #include "config/common_def.hpp"
 #include "connectionhandler.hpp"

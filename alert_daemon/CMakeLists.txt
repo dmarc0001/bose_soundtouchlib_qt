@@ -26,12 +26,16 @@ set(BUILD 0) # win32: build number
 if (WIN32)
   # major.minor.patch.build
   set(VERSION $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD})
+  # da noch was machen
+  set(ZEROCONF_LIB_DIR /opt/qt/5.14.1/gcc_64/lib )
 else()
   # major.minor.patch
   set(VERSION $${MAJOR}.$${MINOR}.$${PATCH})
+  set(ZEROCONF_LIB_DIR /opt/qt/5.14.1/gcc_64/lib )
 endif()
 set(IMPORT_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../libsoundtouch")
 set(IMPORT_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
+set(ZEROCONF_LIB QtZeroConf )
 
 ###############################################################################
 # DEBUG oder kein DEBUG                                                       #
@@ -58,13 +62,13 @@ add_compile_definitions(${qt_defs} ${prj_version})
 ###############################################################################
 # cmake definitionen für module finden                                        #
 ###############################################################################
-find_package(Qt5 COMPONENTS Core WebSockets Network REQUIRED)
+find_package(Qt5 COMPONENTS Core WebSockets Network Xml REQUIRED)
 
 ###############################################################################
 # Orte der Bibliothek bekannt geben                                           #
 ###############################################################################
 include_directories(${IMPORT_INCLUDE})
-link_directories(${IMPORT_LIB})
+link_directories(${IMPORT_LIB} ${ZEROCONF_LIB_DIR})
 
 ###############################################################################
 # die Quellen des Programms definieren                                        #
@@ -73,8 +77,10 @@ set( HEADERS
   main.hpp
   config/alertconfig.hpp
   config/common_def.hpp
+  config/soundtouchdevice.hpp
   logging/logger.hpp
   support/nologgerexception.hpp
+  discover/soundtouchdiscover.hpp
   daemon/bosecommserver.hpp
   daemon/connectionhandler.hpp
   daemon/commandgethandler.hpp
@@ -87,7 +93,9 @@ set( SOURCES
   main.cpp
   config/alertconfig.cpp
   config/common_def.cpp
+  config/soundtouchdevice.cpp
   logging/logger.cpp
+  discover/soundtouchdiscover.cpp
   daemon/bosecommserver.cpp
   daemon/connectionhandler.cpp
   daemon/commandgethandler.cpp
@@ -103,8 +111,8 @@ add_executable( ${prog_name}
 )
 
 #
-set(IMPORT_LIBS ${lib_name} )
-set(QT_CORELIBS Qt5::Core Qt5::Network Qt5::WebSockets)
+set(IMPORT_LIBS ${lib_name} ${ZEROCONF_LIB} )
+set(QT_CORELIBS Qt5::Core Qt5::Network Qt5::WebSockets Qt5::Xml )
 # und zusammenfassen zum Programm
 target_link_libraries(${prog_name} PRIVATE ${QT_CORELIBS} ${IMPORT_LIBS})
 
