@@ -4,9 +4,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLatin1Char>
+#include <QList>
 #include <QObject>
 #include <QWebSocket>
 #include <memory>
+
 #include "commandgethandler.hpp"
 #include "commandsethandler.hpp"
 #include "config/alertconfig.hpp"
@@ -14,6 +16,10 @@
 
 namespace bose_commserver
 {
+  class ConnectionHandler;
+
+  using ConnectionHandlerList = QList< std::shared_ptr< ConnectionHandler > >;
+
   class ConnectionHandler : public QObject
   {
     Q_OBJECT

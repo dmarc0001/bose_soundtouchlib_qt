@@ -69,7 +69,7 @@ link_directories(${IMPORT_LIB})
 ###############################################################################
 # die Quellen des Programms definieren                                        #
 ###############################################################################
-set(HEADERS
+set( HEADERS
   main.hpp
   config/alertconfig.hpp
   config/common_def.hpp
@@ -79,9 +79,10 @@ set(HEADERS
   daemon/commandgethandler.hpp
   daemon/commandsethandler.hpp
   daemon/daemontimer.hpp
+  daemon/bosesoundalert.hpp
 )
 
-set(SOURCES
+set( SOURCES
   main.cpp
   config/alertconfig.cpp
   config/common_def.cpp
@@ -91,10 +92,11 @@ set(SOURCES
   daemon/commandgethandler.cpp
   daemon/commandsethandler.cpp
   daemon/daemontimer.cpp
+  daemon/bosesoundalert.cpp
 )
 
 
-add_executable(${prog_name}
+add_executable( ${prog_name}
   ${HEADERS}
   ${SOURCES}
 )
