@@ -36,15 +36,15 @@ namespace bose_commserver
       lg->debug( "BoseCommServer::BoseCommServer: serversocket created..." );
       qDebug() << "create serversocket...OK";
     }
-    *lg << LDEBUG << "BoseCommServer::BoseCommServer: create timer...";
+    *lg << LDEBUG << "BoseCommServer::BoseCommServer: create timer..." << LgMod::endl;
     dTimer = std::unique_ptr< DaemonTimer >( new DaemonTimer( config, this ) );
-    *lg << "BoseCommServer::BoseCommServer: connect timer events...";
+    *lg << LgMod::currDate << "BoseCommServer::BoseCommServer: connect timer events..." << LgMod::endl;
     connect( dTimer.get(), &DaemonTimer::sigStartAlert, this, &BoseCommServer::onStartAlert );
     connect( dTimer.get(), &DaemonTimer::sigStopAlert, this, &BoseCommServer::onStopAlert );
-    *lg << "BoseCommServer::BoseCommServer: connect timer events...OK";
-    *lg << "BoseCommServer::BoseCommServer: create device discovering...";
+    *lg << "BoseCommServer::BoseCommServer: connect timer events...OK" << LgMod::endl;
+    *lg << "BoseCommServer::BoseCommServer: create device discovering..." << LgMod::endl;
     stDiscover = std::unique_ptr< SoundTouchDiscover >( new SoundTouchDiscover( config, this ) );
-    *lg << "BoseCommServer::BoseCommServer: create device discovering...OK";
+    *lg << "BoseCommServer::BoseCommServer: create device discovering...OK" << LgMod::endl;
   }
 
   /**
@@ -52,7 +52,7 @@ namespace bose_commserver
    */
   BoseCommServer::~BoseCommServer()
   {
-    *lg << LINFO << "BoseCommServer::~BoseCommServer: destructor...";
+    *lg << LINFO << "BoseCommServer::~BoseCommServer: destructor..." << LgMod::endl;
     stDiscover->cancel();
     dTimer->stopTimer();
     cServer->close();
@@ -72,13 +72,13 @@ namespace bose_commserver
       currAlert->cancelAlert();
       if ( currAlert->wait( 50000 ) )
       {
-        *lg << LCRIT << "BoseCommServer::~BoseCommServer: Thread was not finished, timeout!";
+        *lg << LCRIT << "BoseCommServer::~BoseCommServer: Thread was not finished, timeout!" << LgMod::endl;
         currAlert->exit();
       }
       currAlert->deleteLater();
       activeAlerts.removeOne( currAlert );
     }
-    *lg << LINFO << "BoseCommServer::~BoseCommServer: destructor...OK";
+    *lg << LINFO << "BoseCommServer::~BoseCommServer: destructor...OK" << LgMod::endl;
     lg->shutdown();
   }
 
@@ -94,28 +94,28 @@ namespace bose_commserver
       case SIGTERM:
         dTimer->stopTimer();
         // config->getConfigHash();
-        *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: recived SIGINT/SIGTERM!";
+        *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: recived SIGINT/SIGTERM!" << LgMod::endl;
         for ( auto &currAlert : activeAlerts )
         {
           currAlert->cancelAlert();
           if ( !currAlert->wait( 2500 ) )
           {
-            *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: Thread was not finished, timeout!";
+            *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: Thread was not finished, timeout!" << LgMod::endl;
           }
           QThread::msleep( 50 );
         }
         // das ende signalisieren
-        *lg << LINFO << "BoseCommServer::reciveAsyncSignal: emit close signal!";
+        *lg << LINFO << "BoseCommServer::reciveAsyncSignal: emit close signal!" << LgMod::endl;
         emit closed();
         deleteLater();
         break;
 #ifdef UNIX
       case SIGHUP:
-        *lg << LINFO << "BoseCommServer::reciveAsyncSignal: recived SIGNAL to reload config!";
+        *lg << LINFO << "BoseCommServer::reciveAsyncSignal: recived SIGNAL to reload config!" << endl;
         break;
 #endif
       default:
-        *lg << LCRIT << QString( "BoseCommServer::reciveAsyncSignal: SIG Nr: %1" ).arg( signal );
+        *lg << LCRIT << QString( "BoseCommServer::reciveAsyncSignal: SIG Nr: %1" ).arg( signal ) << LgMod::endl;
     }
   }
 
@@ -127,28 +127,28 @@ namespace bose_commserver
   {
     try
     {
-      *lg << LDEBUG << "BoseCommServer::configServer: commserver create server socket...";
+      *lg << LDEBUG << "BoseCommServer::configServer: commserver create server socket..." << LgMod::endl;
       cServer = std::make_unique< QWebSocketServer >( QStringLiteral( "command server" ), QWebSocketServer::NonSecureMode, this );
-      *lg << "BoseCommServer::configServer: commserver create server socket...OK";
+      *lg << "BoseCommServer::configServer: commserver create server socket...OK" << LgMod::endl;
       //
       // feststellen ob der Server gebunden wird
       //
-      *lg << "BoseCommServer::configServer: commserver try listen on socket...";
+      *lg << "BoseCommServer::configServer: commserver try listen on socket..." << LgMod::endl;
       if ( cServer->listen( QHostAddress( config->getBindaddr() ), static_cast< quint16 >( config->getBindport().toInt() ) ) )
       {
-        *lg << "BoseCommServer::configServer: commserver try listen on socket...OK";
-        *lg << LINFO << "commserver is ready for connections...";
+        *lg << "BoseCommServer::configServer: commserver try listen on socket...OK" << LgMod::endl;
+        *lg << LINFO << "commserver is ready for connections..." << LgMod::endl;
         //
         // signal für neue Verbindungen verbinden
         //
-        *lg << LDEBUG << "BoseCommServer::configServer: commserver connect socket to slots...";
+        *lg << LDEBUG << "BoseCommServer::configServer: commserver connect socket to slots..." << LgMod::endl;
         connect( cServer.get(), &QWebSocketServer::newConnection, this, &BoseCommServer::onNewConnection );
         connect( cServer.get(), &QWebSocketServer::closed, this, &BoseCommServer::onClosedListening );
-        *lg << "BoseCommServer::configServer: commserver connect socket to slots...OK";
+        *lg << "BoseCommServer::configServer: commserver connect socket to slots...OK" << LgMod::endl;
       }
       else
       {
-        *lg << LCRIT << "commserver can't start!";
+        *lg << LCRIT << "commserver can't start!" << LgMod::endl;
         // TODO: ALARM!
         return false;
       }
@@ -156,7 +156,7 @@ namespace bose_commserver
     catch ( QException &ex )
     {
       // TODO: mach was!
-      *lg << LCRIT << QString( "BoseCommServer::configServer" ).arg( ex.what() );
+      *lg << LCRIT << QString( "BoseCommServer::configServer" ).arg( ex.what() ) << LgMod::endl;
       return false;
     }
     return true;
@@ -180,13 +180,14 @@ namespace bose_commserver
     *lg << LINFO
         << QString( "BoseCommServer::onNewConnection: commserver: new connection from: %1, id: %2" )
                .arg( nSock->peerAddress().toString() )
-               .arg( handler->getCurrentHandlerNum(), 12, 10, QLatin1Char( '0' ) );
+               .arg( handler->getCurrentHandlerNum(), 12, 10, QLatin1Char( '0' ) )
+        << endl;
     //
     // connect close
     //
     connect( handler.get(), &ConnectionHandler::closed, this, &BoseCommServer::onClientClosed );
     // in die Liste
-    *lg << LDEBUG << "BoseCommServer::onNewConnection: commserver: new connection to list";
+    *lg << LDEBUG << "BoseCommServer::onNewConnection: commserver: new connection to list" << LgMod::endl;
     remoteConnections << handler;
   }
 
@@ -201,7 +202,8 @@ namespace bose_commserver
     *lg << LINFO
         << QString( "BoseCommServer::onClientClosed: commserver: closed connection from: %1, id: %2" )
                .arg( handler->getNSock()->peerAddress().toString() )
-               .arg( toDeleteHandlerId, 12, 10, QLatin1Char( '0' ) );
+               .arg( toDeleteHandlerId, 12, 10, QLatin1Char( '0' ) )
+        << LgMod::endl;
     for ( auto currHandler : remoteConnections )
     {
       if ( toDeleteHandlerId == currHandler->getCurrentHandlerNum() )
@@ -215,11 +217,13 @@ namespace bose_commserver
             << QString( "BoseCommServer::onClientClosed: commserver: closed connection from: %1, id: %2 deleted %3" )
                    .arg( handler->getNSock()->peerAddress().toString() )
                    .arg( toDeleteHandlerId, 12, 10, QLatin1Char( '0' ) )
-                   .arg( wasRemoved );
+                   .arg( wasRemoved )
+            << LgMod::endl;
         break;
       }
     }
-    *lg << LDEBUG << QString( "BoseCommServer::onClientClosed: commserver: open connections %1" ).arg( remoteConnections.count() );
+    *lg << LDEBUG << QString( "BoseCommServer::onClientClosed: commserver: open connections %1" ).arg( remoteConnections.count() )
+        << LgMod::endl;
   }
 
   /**
@@ -230,7 +234,7 @@ namespace bose_commserver
     //
     // alles schliessen, fertig
     //
-    *lg << LINFO << "BoseCommServer::onClosedListening: listening comserver socket closed.";
+    *lg << LINFO << "BoseCommServer::onClosedListening: listening comserver socket closed." << endl;
     // remoteConnections
     // TODO: bestehende sitzungen beednen/schiessen
     // TODO: emit commandClosedSignal
@@ -274,7 +278,7 @@ namespace bose_commserver
       // lg->startLogging( LgThreshold::LG_DEBUG, config->getLogfile() );
       lg->startLogging( static_cast< LgThreshold >( config->getThreshold() ), config->getLogfileName() );
       config->setLogger( lg );
-      *lg << LDEBUG << "BoseCommServer::createLogger: logger created...";
+      *lg << LDEBUG << "BoseCommServer::createLogger: logger created..." << LgMod::endl;
       return ( true );
     }
     //
@@ -289,10 +293,11 @@ namespace bose_commserver
    */
   void BoseCommServer::onStartAlert( SingleAlertConfig &alert )
   {
-    *lg << LDEBUG << QString( "BoseCommServer::onStartAlert: <%1>..." ).arg( alert.getName() );
+    *lg << LDEBUG << QString( "BoseCommServer::onStartAlert: <%1>..." ).arg( alert.getName() ) << LgMod::endl;
     if ( alert.getRunSince().isValid() )
     {
-      *lg << LWARN << QString( "BoseCommServer::onStartAlert: <%1> alredy running. Abort starting..." ).arg( alert.getName() );
+      *lg << LWARN << QString( "BoseCommServer::onStartAlert: <%1> alredy running. Abort starting..." ).arg( alert.getName() )
+          << LgMod::endl;
       return;
     }
     //
@@ -317,7 +322,7 @@ namespace bose_commserver
    */
   void BoseCommServer::onStopAlert( SingleAlertConfig &alert )
   {
-    *lg << LDEBUG << QString( "BoseCommServer::onStopAlert: <%1>..." ).arg( alert.getName() );
+    *lg << LDEBUG << QString( "BoseCommServer::onStopAlert: <%1>..." ).arg( alert.getName() ) << LgMod::endl;
     for ( auto currAlert : activeAlerts )
     {
       if ( alert.getName().compare( currAlert->getAlertName() ) )
@@ -338,7 +343,7 @@ namespace bose_commserver
   void BoseCommServer::onAlertFinish( BoseSoundAlert *alert )
   {
     QString alertName = alert->getAlertName();
-    *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1>..." ).arg( alertName );
+    *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1>..." ).arg( alertName ) << LgMod::endl;
     //
     // der normale weg den Alarm zu entsorgen.
     // bei Cancel via SIGNAL ist der dann schon aus der Liste
@@ -351,7 +356,7 @@ namespace bose_commserver
         //
         // diesen alarm loeschen
         //
-        *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1> delete..." ).arg( alertName );
+        *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1> delete..." ).arg( alertName ) << LgMod::endl;
         activeAlerts.removeOne( alert );
         alert->deleteLater();
         break;

@@ -26,16 +26,13 @@ set(BUILD 0) # win32: build number
 if (WIN32)
   # major.minor.patch.build
   set(VERSION $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD})
-  # da noch was machen
-  set(ZEROCONF_LIB_DIR /opt/qt/5.14.1/gcc_64/lib )
 else()
   # major.minor.patch
   set(VERSION $${MAJOR}.$${MINOR}.$${PATCH})
-  set(ZEROCONF_LIB_DIR /opt/qt/5.14.1/gcc_64/lib )
 endif()
+set(ZEROCONF_LIB_DIR ${CMAKE_PREFIX_PATH}/lib )
 set(IMPORT_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../libsoundtouch")
 set(IMPORT_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
-set(ZEROCONF_LIB QtZeroConf )
 
 ###############################################################################
 # DEBUG oder kein DEBUG                                                       #
@@ -43,11 +40,13 @@ set(ZEROCONF_LIB QtZeroConf )
 if (CMAKE_BUILD_TYPE  STREQUAL "Debug")
   set(prog_name alert_daemon_debug)
   set(lib_name soundtouch_debug)
+  set(ZEROCONF_LIB QtZeroConfd )
   message(" ==> create ${prog_name} in debug mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(DEBUG)
 else()
   set(prog_name alert_daemon)
   set(lib_name soundtouch)
+  set(ZEROCONF_LIB QtZeroConf )
   message(" ==> create  ${prog_name} in release mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(QT_NO_DEBUG_OUTPUT)
 endif()

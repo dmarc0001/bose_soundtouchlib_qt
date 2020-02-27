@@ -12,100 +12,23 @@ namespace bose_commserver
   const QString Logger::WARN_STR{"WARN  "};
   const QString Logger::CRIT_STR{"CRIT  "};
 
-  //#######################################################################################
-  //#### operator überladen                                                            ####
-  //#######################################################################################
-
-  // TODO: template nutzen?
-  /**
-   * @brief operator <<
-   * @param lg
-   * @param th
-   * @return
-   */
   Logger &operator<<( Logger &lg, const LgThreshold th )
   {
     lg.setCurrentThreshold( th );
     return lg;
   }
 
-  /**
-   * @brief operator <<
-   * @param lg
-   * @param msg
-   * @return
-   */
-  Logger &operator<<( Logger &lg, const QString &msg )
+  Logger &operator<<( Logger &lg, const LgMod mod )
   {
-    switch ( lg.getCurrentThreshold() )
+    qDebug() << "################ operator for LgMod #############################";
+    lg.debug( "################ operator for LgMod #############################" );
+    switch ( mod )
     {
-      case LNONE:
+      case LgMod::endl:
+        lg.lineEnd();
         break;
-      case LCRIT:
-        lg.crit( msg );
-        break;
-      case LWARN:
-        lg.warn( msg );
-        break;
-      case LINFO:
-        lg.info( msg );
-        break;
-      case LDEBUG:
-        lg.debug( msg );
-    }
-    return lg;
-  }
-
-  /**
-   * @brief operator <<
-   * @param lg
-   * @param msg
-   * @return
-   */
-  Logger &operator<<( Logger &lg, const std::string &msg )
-  {
-    switch ( lg.getCurrentThreshold() )
-    {
-      case LNONE:
-        break;
-      case LCRIT:
-        lg.crit( msg );
-        break;
-      case LWARN:
-        lg.warn( msg );
-        break;
-      case LINFO:
-        lg.info( msg );
-        break;
-      case LDEBUG:
-        lg.debug( msg );
-    }
-    return lg;
-  }
-
-  /**
-   * @brief operator <<
-   * @param lg
-   * @param msg
-   * @return
-   */
-  Logger &operator<<( Logger &lg, const char *msg )
-  {
-    switch ( lg.getCurrentThreshold() )
-    {
-      case LNONE:
-        break;
-      case LCRIT:
-        lg.crit( msg );
-        break;
-      case LWARN:
-        lg.warn( msg );
-        break;
-      case LINFO:
-        lg.info( msg );
-        break;
-      case LDEBUG:
-        lg.debug( msg );
+      case LgMod::currDate:
+        lg.printCurrDateStr();
     }
     return lg;
   }
@@ -167,6 +90,22 @@ namespace bose_commserver
     return ( 0 );
   }
 
+  void Logger::lineEnd()
+  {
+    // if ( textStream && threshold >= LG_CRIT )
+    {
+      *textStream << ::Qt::endl;
+      textStream->flush();
+    }
+  }
+
+  void Logger::printCurrDateStr()
+  {
+    // if ( textStream && threshold >= LG_CRIT )
+    {
+      *textStream << getDateString();
+    }
+  }
   /**
    * @brief Logger::setThreshold
    * @param th
@@ -183,186 +122,6 @@ namespace bose_commserver
   LgThreshold Logger::getThreshold()
   {
     return ( threshold );
-  }
-
-  /**
-   * @brief Logger::warn Ausgabe(n) für WARNUNG
-   * @param msg
-   */
-  void Logger::warn( const QString &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qWarning().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_WARN )
-    {
-      *textStream << getDateString() << WARN_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::warn
-   * @param msg
-   */
-  void Logger::warn( const char *msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qWarning().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_WARN )
-    {
-      *textStream << getDateString() << WARN_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::warn
-   * @param msg
-   */
-  void Logger::warn( const std::string &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qWarning().noquote().nospace() << msg.c_str();
-    if ( textStream && threshold >= LG_WARN )
-    {
-      *textStream << getDateString() << WARN_STR << msg.c_str() << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::info Ausgabe(n) für Info
-   * @param msg
-   */
-  void Logger::info( const QString &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qInfo().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_INFO )
-    {
-      *textStream << getDateString() << INFO_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::info
-   * @param msg
-   */
-  void Logger::info( const char *msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qInfo().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_INFO )
-    {
-      *textStream << getDateString() << INFO_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::info
-   * @param msg
-   */
-  void Logger::info( const std::string &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qInfo().noquote().nospace() << msg.c_str();
-    if ( textStream && threshold >= LG_INFO )
-    {
-      *textStream << getDateString() << INFO_STR << msg.c_str() << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::debug Ausgaben für Debugging
-   * @param msg
-   */
-  void Logger::debug( const QString &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qDebug().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_DEBUG )
-    {
-      *textStream << getDateString() << DEBUG_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::debug
-   * @param msg
-   */
-  void Logger::debug( const char *msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qDebug().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_DEBUG )
-    {
-      *textStream << getDateString() << DEBUG_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::debug
-   * @param msg
-   */
-  void Logger::debug( const std::string &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qDebug().noquote().nospace() << msg.c_str();
-    if ( textStream && threshold >= LG_DEBUG )
-    {
-      *textStream << getDateString() << DEBUG_STR << msg.c_str() << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::crit Ausgaben für Kritische Fehler
-   * @param msg
-   */
-  void Logger::crit( const QString &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qCritical().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_DEBUG )
-    {
-      *textStream << getDateString() << CRIT_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::crit
-   * @param msg
-   */
-  void Logger::crit( const char *msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qCritical().noquote().nospace() << msg;
-    if ( textStream && threshold >= LG_DEBUG )
-    {
-      *textStream << getDateString() << CRIT_STR << msg << endl;
-    }
-  }
-
-  /**
-   * @brief Logger::crit
-   * @param msg
-   */
-  void Logger::crit( const std::string &msg )
-  {
-    //! Serialisieren...
-    QMutexLocker locker( &logMutex );
-    qCritical().noquote().nospace() << msg.c_str();
-    if ( textStream && threshold >= LG_DEBUG )
-    {
-      *textStream << getDateString() << CRIT_STR << msg.c_str() << endl;
-    }
   }
 
   /**
