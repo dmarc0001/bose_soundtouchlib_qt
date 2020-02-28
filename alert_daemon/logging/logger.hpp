@@ -21,19 +21,13 @@ namespace bose_commserver
     LG_INFO,  // 3
     LG_DEBUG  // 4
   };
-
-  enum LgMod : qint8
-  {
-    endl = 0,
-    currDate
-  };
-
   // um das schreiben abzukürzen
   constexpr LgThreshold LNONE = LgThreshold::LG_NONE;
   constexpr LgThreshold LDEBUG = LgThreshold::LG_DEBUG;
   constexpr LgThreshold LINFO = LgThreshold::LG_INFO;
   constexpr LgThreshold LWARN = LgThreshold::LG_WARN;
   constexpr LgThreshold LCRIT = LgThreshold::LG_CRIT;
+  //
 
   class Logger
   {
@@ -41,10 +35,13 @@ namespace bose_commserver
     //! Logs level
     LgThreshold threshold;
     LgThreshold currentThreshold;
+    bool logToConsole;
+    bool wasNewline{true};
     //! Zeiger auf das Logdateiobjekt
     std::unique_ptr< QFile > logFile;
     //! Zeiger auf einen Textstrom
     std::unique_ptr< QTextStream > textStream;
+    std::unique_ptr< QTextStream > consoleStream;
     //! das lokale Datum/Zeit objekt
     QDateTime dateTime;
     //! Mutex zum locken der Queue
@@ -66,12 +63,10 @@ namespace bose_commserver
     explicit Logger();
     // Logger( const Logger &lg );
     virtual ~Logger();  //! Destruktor
-
-    int startLogging( LgThreshold th = LG_DEBUG, const QString &fn = "logging.log" );  //! Loggen beginnen
-    //! Setzte Loggingstufe
-    void setThreshold( LgThreshold th );
-    //! für << flag setzten
-    inline void setCurrentThreshold( LgThreshold th )
+    int startLogging( LgThreshold th = LG_DEBUG, const QString &fn = "logging.log",
+                      bool consoleLog = false );       //! Loggen beginnen
+    void setThreshold( LgThreshold th );               //! Setzte Loggingstufe
+    inline void setCurrentThreshold( LgThreshold th )  //! für << flag setzten
     {
       currentThreshold = th;
     };
@@ -79,112 +74,108 @@ namespace bose_commserver
     {
       return currentThreshold;
     }
-    //! lese Loggingstufe
-    LgThreshold getThreshold( void );
+    LgThreshold getThreshold( void );  //! lese Loggingstufe
 
     //
     // die Ausgaben als templates machen
     //
     template < typename T >
-    void debug( const T msg )
+    void debug_op( const T msg )
     {
       //! Serialisieren...
       QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << DEBUG_STR << msg;
-      // if ( textStream && threshold >= LG_DEBUG )
+      // qDebug() << "THRESHOLD: " << threshold << " CURRENT: " << currentThreshold;
+      if ( threshold >= currentThreshold )
       {
-        *textStream << getDateString() << DEBUG_STR << msg << endl;
-      }
-    }
-    template < typename T >
-    void debug2( const T msg )
-    {
-      //! Serialisieren...
-      QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << msg;
-      // if ( textStream && threshold >= LG_DEBUG )
-      {
-        *textStream << msg;
-        /*
-        Qt::endl()
-        */
-      }
-    }
-
-    template < typename T >
-    void info( const T msg )
-    {
-      //! Serialisieren...
-      QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << INFO_STR << msg;
-      // if ( textStream && threshold >= LG_INFO )
-      {
-        *textStream << getDateString() << INFO_STR << msg << endl;
-      }
-    }
-    template < typename T >
-    void info2( const T msg )
-    {
-      //! Serialisieren...
-      QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << msg;
-      // if ( textStream && threshold >= LG_INFO )
-      {
-        *textStream << msg;
+        if ( wasNewline )
+        {
+          *textStream << getDateString() << DEBUG_STR << msg;
+          if ( logToConsole )
+            *consoleStream << DEBUG_STR << msg;
+          wasNewline = false;
+        }
+        else
+        {
+          *textStream << msg;
+          if ( logToConsole )
+            *consoleStream << msg;
+        }
       }
     }
 
     template < typename T >
-    void warn( const T msg )
+    void info_op( const T msg )
     {
       //! Serialisieren...
       QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << WARN_STR << msg;
-      // if ( textStream && threshold >= LG_WARN )
+      if ( threshold >= currentThreshold )
       {
-        *textStream << getDateString() << WARN_STR << msg << endl;
-      }
-    }
-    template < typename T >
-    void warn2( const T msg )
-    {
-      //! Serialisieren...
-      QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << msg;
-      // if ( textStream && threshold >= LG_WARN )
-      {
-        *textStream << msg;
+        if ( wasNewline )
+        {
+          *textStream << getDateString() << INFO_STR << msg;
+          if ( logToConsole )
+            *consoleStream << INFO_STR << msg;
+          wasNewline = false;
+        }
+        else
+        {
+          *textStream << msg;
+          if ( logToConsole )
+            *consoleStream << msg;
+        }
       }
     }
 
     template < typename T >
-    void crit( const T msg )
+    void warn_op( const T msg )
     {
       //! Serialisieren...
       QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << CRIT_STR << msg;
-      // if ( textStream && threshold >= LG_CRIT )
+      if ( threshold >= currentThreshold )
       {
-        *textStream << getDateString() << CRIT_STR << msg << endl;
+        if ( wasNewline )
+        {
+          *textStream << getDateString() << WARN_STR << msg;
+          if ( logToConsole )
+            *consoleStream << WARN_STR << msg;
+          wasNewline = false;
+        }
+        else
+        {
+          *textStream << msg;
+          if ( logToConsole )
+            *consoleStream << msg;
+        }
       }
     }
+
     template < typename T >
-    void crit2( const T msg )
+    void crit_op( const T msg )
     {
       //! Serialisieren...
       QMutexLocker locker( &logMutex );
-      qDebug().noquote().nospace() << msg;
-      // if ( textStream && threshold >= LG_CRIT )
+      if ( threshold >= currentThreshold )
       {
-        *textStream << msg;
+        if ( wasNewline )
+        {
+          *textStream << getDateString() << CRIT_STR << msg;
+          if ( logToConsole )
+            *consoleStream << CRIT_STR << msg;
+          wasNewline = false;
+        }
+        else
+        {
+          *textStream << msg;
+          if ( logToConsole )
+            *consoleStream << msg;
+        }
       }
     }
 
     //! der Spezialfall
     friend Logger &operator<<( Logger &lg, const LgThreshold th );
-    friend Logger &operator<<( Logger &lg, const LgMod mod );
-    // friend Logger &operator<<( Logger &lg, typeof( Qt::endl ) a );
-    // Qt::endl
+    friend Logger &operator<<( Logger &lg, QTextStream &endl( QTextStream &s ) );
+    //
 
     template < typename T >
     friend Logger &operator<<( Logger &lg, const T msg )
@@ -194,22 +185,21 @@ namespace bose_commserver
         case LNONE:
           break;
         case LDEBUG:
-          lg.debug2( msg );
+          lg.debug_op( msg );
           break;
         case LINFO:
-          lg.info2( msg );
+          lg.info_op( msg );
           break;
         case LWARN:
-          lg.warn2( msg );
+          lg.warn_op( msg );
           break;
         case LCRIT:
-          lg.crit2( msg );
+          lg.crit_op( msg );
           break;
       }
       return lg;
     }
     void lineEnd();
-    void printCurrDateStr();
     //! Logger explizit herunterfahren
     void shutdown();
     //! string zum level erfahren

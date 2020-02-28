@@ -12,26 +12,34 @@ namespace bose_commserver
   const QString Logger::WARN_STR{"WARN  "};
   const QString Logger::CRIT_STR{"CRIT  "};
 
+  //#######################################################################################
+  //#### Spezialfälle des << Operators, die nicht per template gehen                   ####
+  //#######################################################################################
+
+  /**
+   * @brief operator <<
+   * @param lg
+   * @param th
+   * @return
+   */
   Logger &operator<<( Logger &lg, const LgThreshold th )
   {
     lg.setCurrentThreshold( th );
     return lg;
   }
 
-  Logger &operator<<( Logger &lg, const LgMod mod )
+  /**
+   * @brief operator <<
+   * @param lg
+   * @param endl
+   * @return
+   */
+  Logger &operator<<( Logger &lg, QTextStream &( QTextStream &s ) )
   {
-    qDebug() << "################ operator for LgMod #############################";
-    lg.debug( "################ operator for LgMod #############################" );
-    switch ( mod )
-    {
-      case LgMod::endl:
-        lg.lineEnd();
-        break;
-      case LgMod::currDate:
-        lg.printCurrDateStr();
-    }
+    lg.lineEnd();
     return lg;
   }
+  // Logger &operator<<( Logger &lg, QTextStream &endl( QTextStream &s ) )
 
   //#######################################################################################
   //#### der Logger                                                                    ####
@@ -41,7 +49,7 @@ namespace bose_commserver
    * @brief Logger::Logger Konstruktor mit Konfigurationsdatei Übergabe
    * @param lFile
    */
-  Logger::Logger() : threshold( LG_DEBUG ), currentThreshold( LG_DEBUG ), logFile( nullptr )
+  Logger::Logger() : threshold( LG_DEBUG ), currentThreshold( LG_DEBUG ), logToConsole( false ), logFile( nullptr )
   {
   }
 
@@ -60,9 +68,11 @@ namespace bose_commserver
    * @param fileName
    * @return
    */
-  int Logger::startLogging( LgThreshold th, const QString &fileName )
+  int Logger::startLogging( LgThreshold th, const QString &fileName, bool consoleLog )
   {
     threshold = th;
+    logToConsole = consoleLog;
+    consoleStream = std::unique_ptr< QTextStream >( new QTextStream( stdout ) );
     //
     // gibt es einen Lognamen
     //
@@ -70,15 +80,13 @@ namespace bose_commserver
     {
       if ( fileName.length() > 4 )
       {
-        // Super, das Logfile ist benannt!
-        qDebug().noquote().nospace() << "START LOGGING...(" << fileName << ")";
         logFile = std::unique_ptr< QFile >( new QFile( fileName ) );
         logFile->open( QIODevice::WriteOnly | QIODevice::Append );
         textStream = std::unique_ptr< QTextStream >( new QTextStream( logFile.get() ) );
-        *textStream << getDateString() << "START LOGGING" << endl;
-        if ( logFile && logFile->isOpen() && textStream )
+        if ( logFile && logFile->isOpen() && textStream && consoleStream )
         {
-          qDebug().noquote().nospace() << "START LOGGING...OK";
+          *consoleStream << "START CONSOLE LOGGING (" << fileName << "), console logging: " << consoleLog << endl;
+          *textStream << "START FILE LOGGING (" << fileName << ")" << endl;
           return ( 1 );
         }
       }
@@ -92,20 +100,19 @@ namespace bose_commserver
 
   void Logger::lineEnd()
   {
-    // if ( textStream && threshold >= LG_CRIT )
+    if ( threshold >= currentThreshold )
     {
-      *textStream << ::Qt::endl;
+      *textStream << endl;
       textStream->flush();
+      if ( logToConsole )
+      {
+        *consoleStream << endl;
+        // consoleStream->flush();
+      }
+      wasNewline = true;
     }
   }
 
-  void Logger::printCurrDateStr()
-  {
-    // if ( textStream && threshold >= LG_CRIT )
-    {
-      *textStream << getDateString();
-    }
-  }
   /**
    * @brief Logger::setThreshold
    * @param th

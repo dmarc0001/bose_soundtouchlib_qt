@@ -15,18 +15,18 @@ namespace bose_commserver
       , isVolumeRaising( alConf.getAlRaiseVolume() )
       , alertVolume( alConf.getAlVolume() )
   {
-    lg->debug( QString( "BoseSoundAlert::BoseSoundAlert: construct <%1> OK" ).arg( alConfig.getName() ) );
+    *lg << LDEBUG << "BoseSoundAlert::BoseSoundAlert: construct <" << alConfig.getName() << "> OK" << endl;
     mainTimerId = startTimer( 100 );
   }
 
   BoseSoundAlert::~BoseSoundAlert()
   {
-    lg->debug( QString( "BoseSoundAlert::~BoseSoundAlert: Alert <%1> destroing..." ).arg( alConfig.getName() ) );
+    *lg << LDEBUG << "BoseSoundAlert::~BoseSoundAlert: Alert <" << alConfig.getName() << "> destroing..." << endl;
   }
 
   void BoseSoundAlert::run()
   {
-    lg->info( "BoseSoundAlert::run: thread start..." );
+    *lg << LINFO << "BoseSoundAlert::run: thread start...";
     /*
     QStringList devNames = alConfig.getAlDevices();
     for ( const QString &name : devNames )
@@ -61,7 +61,7 @@ namespace bose_commserver
     // gruppe auflösen
     // lautstärke restaurieren
     // verbindung(en) lösen
-    lg->info( "BoseSoundAlert::run: thread end..." );
+    *lg << LINFO << "BoseSoundAlert::run: thread end..." << endl;
   }
 
   /**
@@ -107,7 +107,7 @@ namespace bose_commserver
     static qint8 preCounter = 0;
     if ( ++preCounter % 10 == 0 )
     {
-      lg->debug( QString( "BoseSoundAlert::timerEvent: timer event %2..." ).arg( durationCounter, 3, 10, QChar( '0' ) ) );
+      *lg << LDEBUG << QString( "BoseSoundAlert::timerEvent: timer event %2..." ).arg( durationCounter, 3, 10, QChar( '0' ) ) << endl;
       durationCounter--;
       //
       // TODO: mach hier was
@@ -129,7 +129,7 @@ namespace bose_commserver
    */
   void BoseSoundAlert::cancelAlert()
   {
-    lg->info( "BoseSoundAlert::cancelAlert: force to cancel Alert!" );
+    *lg << LINFO << "BoseSoundAlert::cancelAlert: force to cancel Alert!" << endl;
     //
     // Alarm beenden!
     //

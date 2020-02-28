@@ -5,7 +5,7 @@ namespace bose_commserver
   CommandSetHandler::CommandSetHandler( AppConfigPtr dconfig, QJsonObject request ) : config( dconfig ), gRequest( request )
   {
     lg = config->getLogger();
-    lg->debug( "CommandSetHandler::CommandSetHandler: create object..." );
+    *lg << LDEBUG << "CommandSetHandler::CommandSetHandler: create object...";
   }
 
   JSonStringPtr CommandSetHandler::getResponse()
@@ -14,7 +14,7 @@ namespace bose_commserver
     //
     // es ist ein set Kommando, wurde vor der Instanzierung geprüft
     //
-    lg->debug( "CommandSetHandler::getResponse: get answer..." );
+    *lg << LDEBUG << "CommandSetHandler::getResponse: get answer...";
     //
     // ist es ein Objekt und ist es ein SET Objekt?
     //
@@ -24,7 +24,7 @@ namespace bose_commserver
       //
       // gib ma das objekt mit den Anweisungen
       //
-      lg->debug( "CommandSetHandler::getResponse: set request is acknolowedged..." );
+      *lg << LDEBUG << "CommandSetHandler::getResponse: set request is acknolowedged...";
       //
       // eine map draus machen, die kann ich gut abarbeiten
       //
@@ -39,7 +39,7 @@ namespace bose_commserver
         //
         QString key = toSetIt.key();
         QJsonObject val = toSetIt.value().toJsonObject();
-        lg->debug( QString( "CommandSetHandler::getResponse: set type: <%1>..." ).arg( key ) );
+        *lg << LDEBUG << "CommandSetHandler::getResponse: set type: <" << key << ">..." << endl;
         //
         // daemon set Config anfrage?
         // TODO: evtl noch zugriff beschränken
@@ -62,7 +62,7 @@ namespace bose_commserver
 
               LgThreshold thr = Logger::getThresholdFromString( setVal );
               config->setThreshold( thr );
-              lg->debug( QString( "CommandSetHandler::getResponse: set daemon config to %1..." ).arg( setVal ) );
+              *lg << LDEBUG << "CommandSetHandler::getResponse: set daemon config to <" << setVal << ">..." << endl;
               config->setIsDebug( setVal.compare( "true" ) == 0 ? true : false );
               insertOkFor( jsonObj, daemonIter.key(), true );
             }
@@ -106,7 +106,7 @@ namespace bose_commserver
             else
             {
               // insertOkFor( jsonObj, key, false );
-              lg->warn( "CommandSetHandler::getResponse: trying to configure an not exist alert! ignore!" );
+              *lg << LWARN << "CommandSetHandler::getResponse: trying to configure an not exist alert! ignore!" << endl;
             }
           }
           else
@@ -124,7 +124,7 @@ namespace bose_commserver
           //
           // nix zum einstellen gefunden
           //
-          lg->crit( "CommandSetHandler::getResponse: unknown request, should be \"set\" with params" );
+          *lg << LCRIT << "CommandSetHandler::getResponse: unknown request, should be \"set\" with params" << endl;
           answer = ConnectionHandler::getJSONErrorMessage( "not a valid get json object recived" );
           return answer;
         }
@@ -134,7 +134,7 @@ namespace bose_commserver
         //
         // keine Antworten gefunden?
         //
-        lg->warn( "CommandSetHandler::getResponse: no parameters for answer includet!" );
+        *lg << LWARN << "CommandSetHandler::getResponse: no parameters for answer includet!" << endl;
         answer = ConnectionHandler::getJSONErrorMessage( "no answers for set request computed! call programmer!" );
         return answer;
       }
@@ -270,13 +270,12 @@ namespace bose_commserver
       }
       else if ( alertConfigKey.compare( command::setConfigNewAlCmd ) == 0 )
       {
-        lg->debug( "CommandSetHandler::updateSingleAlert: this is an new alert..." );
+        *lg << LDEBUG << "CommandSetHandler::updateSingleAlert: this is an new alert..." << endl;
       }
       else
       {
-        lg->warn( QString( "CommandSetHandler::updateSingleAlert: unknown set for %1 recived: %2" )
-                      .arg( sAlert.getName() )
-                      .arg( alertConfigKey ) );
+        *lg << LWARN << "CommandSetHandler::updateSingleAlert: unknown set for <" << sAlert.getName() << "> recived: <"
+            << alertConfigKey << ">" << endl;
       }
     }
   }

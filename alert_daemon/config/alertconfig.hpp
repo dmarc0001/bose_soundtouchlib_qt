@@ -52,6 +52,7 @@ namespace bose_commserver
     static constexpr const char *constKeyLogPath{"logpath"};
     static constexpr const char *constKeyLogFile{"logfile"};
     static constexpr const char *constLogThresholdKey{"threshold"};
+    static constexpr const char *constLogToConsoleKey{"consolelog"};
     // app einstellungen
     static constexpr const char *constAppGroupName{"application"};
     static constexpr const char *constBindAddrKey{"bindaddr"};
@@ -92,6 +93,7 @@ namespace bose_commserver
     bool isBindAddrManual;
     bool isBindPortManual;
     bool haveToCreateConfigFile;
+    bool logToConsole;
     bool isHashValid;
     std::shared_ptr< Logger > lg;
     //! pointer auf Liste mit Alarmmeldungen zum weitergeben
@@ -154,6 +156,8 @@ namespace bose_commserver
     QString getAlertPatternStr();
     SoundTouchDevicesList &getAvailDevices();
     void addAvailDevices( const SoundTouchDevice &dev );
+    bool getLogToConsole() const;
+    void setLogToConsole( bool value );
 
     private:
     void onConfigCheckTimer();

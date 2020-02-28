@@ -41,15 +41,18 @@ if (CMAKE_BUILD_TYPE  STREQUAL "Debug")
   set(prog_name alert_daemon_debug)
   set(lib_name soundtouch_debug)
   set(ZEROCONF_LIB QtZeroConfd )
-  message(" ==> create ${prog_name} in debug mode (${CMAKE_BUILD_TYPE})")
+  message("create ${prog_name} in debug mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(DEBUG)
 else()
   set(prog_name alert_daemon)
   set(lib_name soundtouch)
   set(ZEROCONF_LIB QtZeroConf )
-  message(" ==> create  ${prog_name} in release mode (${CMAKE_BUILD_TYPE})")
+  message("create  ${prog_name} in release mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(QT_NO_DEBUG_OUTPUT)
 endif()
+
+message("ZEROCONF Lib : ${ZEROCONF_LIB}")
+message("ZEROCONF Path: ${ZEROCONF_LIB_DIR}")
 
 ###############################################################################
 # Defines für den Compiler                                                    #

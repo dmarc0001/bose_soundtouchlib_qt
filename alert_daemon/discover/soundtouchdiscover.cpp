@@ -2,85 +2,102 @@
 
 namespace bose_commserver
 {
+  /**
+   * @brief SoundTouchDiscover::SoundTouchDiscover
+   * @param dconfig
+   * @param parent
+   */
   SoundTouchDiscover::SoundTouchDiscover( std::shared_ptr< AlertAppConfig > dconfig, QObject *parent )
       : QObject( parent ), lg( dconfig->getLogger() ), config( dconfig ), zConfPtr( std::unique_ptr< QZeroConf >( new QZeroConf ) )
 
   {
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: create discover object..." );
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: connect signal for errors..." );
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: create discover object..." << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signal for errors..." << endl;
     connect( zConfPtr.get(), &QZeroConf::error, this, &SoundTouchDiscover::onError );
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: connect signals for services..." );
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signals for services..." << endl;
     connect( zConfPtr.get(), &QZeroConf::serviceAdded, this, &SoundTouchDiscover::onServiceAdded );
     connect( zConfPtr.get(), &QZeroConf::serviceRemoved, this, &SoundTouchDiscover::onServiceRemoved );
     connect( zConfPtr.get(), &QZeroConf::serviceUpdated, this, &SoundTouchDiscover::onServiceUpdated );
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: connect signals for services...OK" );
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: start browser..." );
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signals for services...OK" << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser..." << endl;
     zConfPtr->startBrowser( SOUNDTOUCH_TCP, QAbstractSocket::IPv4Protocol );
     // zConfPtr->startBrowser( "_soundtouch._tcp.local" );
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: start browser...OK" );
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: create discover object...OK" );
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser...OK" << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: create discover object...OK" << endl;
   }
 
+  /**
+   * @brief SoundTouchDiscover::~SoundTouchDiscover
+   */
   SoundTouchDiscover::~SoundTouchDiscover()
   {
-    lg->debug( "SoundTouchDiscover::SoundTouchDiscover: destroy object..." );
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: destroy object...";
     cancel();
   }
 
+  /**
+   * @brief SoundTouchDiscover::cancel
+   */
   void SoundTouchDiscover::cancel()
   {
-    lg->info( "SoundTouchDiscover::cancel: cancel discover devices..." );
+    *lg << LINFO << "SoundTouchDiscover::cancel: cancel discover devices...";
     if ( zConfPtr->browserExists() )
       zConfPtr->stopBrowser();
   }
-  /*
-  void SoundTouchDiscover::run()
-  {
-    qDebug() << "SoundTouchDiscover::run: connect signal for errors...";
-    connect( zConfPtr.get(), &QZeroConf::error, this, &SoundTouchDiscover::onError );
-    qDebug() << "SoundTouchDiscover::run: connect signals for services...";
-    connect( zConfPtr.get(), &QZeroConf::serviceAdded, this, &SoundTouchDiscover::onServiceAdded );
-    connect( zConfPtr.get(), &QZeroConf::serviceRemoved, this, &SoundTouchDiscover::onServiceRemoved );
-    connect( zConfPtr.get(), &QZeroConf::serviceUpdated, this, &SoundTouchDiscover::onServiceUpdated );
-    qDebug() << "SoundTouchDiscover::run: connect signals for services...OK";
-    qDebug() << "SoundTouchDiscover::run: start browser...";
-    zConfPtr->startBrowser( SOUNDTOUCH_TCP, QAbstractSocket::IPv4Protocol );
-    // zConfPtr->startBrowser( "_soundtouch._tcp.local" );
-    qDebug() << "SoundTouchDiscover::run: start browser...OK";
-  }
-  */
+
+  /**
+   * @brief SoundTouchDiscover::onServiceAdded
+   * @param servicePtr
+   */
   void SoundTouchDiscover::onServiceAdded( QZeroConfService servicePtr )
   {
-    qDebug() << "SoundTouchDiscover::onServiceAdded: ..." << servicePtr->name() << "on host: " << servicePtr->host()
-             << "domain: " << servicePtr->domain() << " type " << servicePtr->type() << "port: " << servicePtr->port()
-             << servicePtr->ip() << "text: " << servicePtr->txt();
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded: ..." << servicePtr->name() << "on host: " << servicePtr->host()
+        << "domain: " << servicePtr->domain() << " type " << servicePtr->type() << "port: " << servicePtr->port()
+        << servicePtr->ip().toString() << endl
+        << "text: " << endl;
+    for ( auto key : servicePtr->txt() )
+    {
+      *lg << "key: " << QString( key ) << "val: " << QString( servicePtr->txt().take( key ) ) << endl;
+    }
   }
 
+  /**
+   * @brief SoundTouchDiscover::onServiceRemoved
+   * @param servicePtr
+   */
   void SoundTouchDiscover::onServiceRemoved( QZeroConfService servicePtr )
   {
-    qDebug() << "SoundTouchDiscover::onServiceRemoved: ..." << servicePtr->name() << "on host: " << servicePtr->host();
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceRemoved: ..." << servicePtr->name() << "on host: " << servicePtr->host() << endl;
   }
 
+  /**
+   * @brief SoundTouchDiscover::onServiceUpdated
+   * @param servicePtr
+   */
   void SoundTouchDiscover::onServiceUpdated( QZeroConfService servicePtr )
   {
-    qDebug() << "SoundTouchDiscover::onServiceUpdated: ..." << servicePtr->name() << "on host: " << servicePtr->host();
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceUpdated: ..." << servicePtr->name() << "on host: " << servicePtr->host() << endl;
   }
 
+  /**
+   * @brief SoundTouchDiscover::onError
+   * @param err
+   */
   void SoundTouchDiscover::onError( QZeroConf::error_t err )
   {
     switch ( err )
     {
       case QZeroConf::error_t::noError:
-        qDebug() << "NO error, all right";
+        *lg << LDEBUG << "NO error, all right";
         break;
       case QZeroConf::error_t::serviceRegistrationFailed:
-        qDebug() << "service registration error!";
+        *lg << LCRIT << "service registration error!";
         break;
       case QZeroConf::error_t::serviceNameCollision:
-        qDebug() << "service name collision!";
+        *lg << LCRIT << "service name collision!";
         break;
       case QZeroConf::error_t::browserFailed:
-        qDebug() << "browser failed!";
+        *lg << LCRIT << "browser failed!";
         break;
     }
   }

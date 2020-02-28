@@ -10,7 +10,7 @@ namespace bose_commserver
   CommandGetHandler::CommandGetHandler( AppConfigPtr dconfig, QJsonObject request ) : config( dconfig ), gRequest( request )
   {
     lg = config->getLogger();
-    lg->debug( "CommandGetHandler::CommandGetHandler: create object..." );
+    *lg << LINFO << "CommandGetHandler::CommandGetHandler: create object..." << endl;
   }
 
   /**
@@ -23,7 +23,7 @@ namespace bose_commserver
     //
     // es ist ein get Kommando, wurde vor der Instanzierung geprüft
     //
-    lg->debug( "CommandGetHandler::getResponse: get answer..." );
+    *lg << LDEBUG << "CommandGetHandler::getResponse: get answer..." << endl;
     //
     // ist es ein Objekt und ist es ein GET Objekt?
     //
@@ -33,7 +33,7 @@ namespace bose_commserver
       //
       // gib mal das anforderungsobjekt (da objekt mit den get-Anforderungen)
       //
-      lg->debug( "CommandGetHandler::getResponse: get request is acknolowedged..." );
+      *lg << LDEBUG << "CommandGetHandler::getResponse: get request is acknolowedged...";
       //
       // eine map draus machen, die kann ich gut abarbeiten
       //
@@ -48,7 +48,7 @@ namespace bose_commserver
         //
         QString key = it.key();
         QString val = it.value().toString();
-        lg->debug( QString( "CommandGetHandler::getResponse: get params: <%1> <%2>..." ).arg( key ).arg( val ) );
+        *lg << LDEBUG << "CommandGetHandler::getResponse: get params: <" << key << "> <" << val << ">..." << endl;
         //
         // Config anfrage?
         //
@@ -63,9 +63,9 @@ namespace bose_commserver
             // config des Daemons
             // evtl noch zugriff beschränken
             //
-            lg->debug( "CommandGetHandler::getResponse: read daemon config..." );
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read daemon config..." << endl;
             insertDaemonConfig( jsonObj );
-            lg->debug( "CommandGetHandler::getResponse: read daemon config...OK" );
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read daemon config...OK" << endl;
           }
           //
           // alle Alermeinstellungen
@@ -75,13 +75,13 @@ namespace bose_commserver
             //
             // alle alarme
             //
-            lg->debug( "CommandGetHandler::getResponse: read all alert config..." );
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read all alert config...";
             for ( const auto &alert : *( config->getAlConfigs() ) )
             {
-              lg->debug( QString( "CommandGetHandler::getResponse: read alert %1 config..." ).arg( alert.getName() ) );
+              *lg << LDEBUG << "CommandGetHandler::getResponse: read alert <" << alert.getName() << "> config..." << endl;
               insertAlertConfig( jsonObj, alert );
             }
-            lg->debug( "CommandGetHandler::getResponse: read all alert config...OK" );
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read all alert config...OK";
           }
           //
           // verfügbare sound devices
@@ -91,7 +91,7 @@ namespace bose_commserver
             //
             // alle Geräte ausgeben
             //
-            lg->debug( "CommandGetHandler::getResponse: read all availible devices..." );
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read all availible devices...";
             insertAvailDevices( jsonObj );
           }
           //
@@ -99,7 +99,7 @@ namespace bose_commserver
           //
           else if ( val.compare( command::getConfigNewAlCmd ) == 0 )
           {
-            lg->debug( "CommandGetHandler::getResponse: new alert requested..." );
+            *lg << LDEBUG << "CommandGetHandler::getResponse: new alert requested...";
             AlertListPtr alPtr = config->getAlConfigs();
             QList< int > alNum;
             // was ist schon da?
@@ -127,12 +127,12 @@ namespace bose_commserver
             //
             // eine konfig eines alarmes soll ausgegeben werden
             //
-            lg->debug( QString( "CommandGetHandler::getResponse: read config for alert %1..." ).arg( val ) );
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read config for alert <" << val << ">..." << endl;
             for ( const auto &alert : *( config->getAlConfigs() ) )
             {
               if ( val.compare( alert.getName() ) == 0 )
               {
-                lg->debug( QString( "CommandGetHandler::getResponse: read config for alert %1...OK" ).arg( val ) );
+                *lg << LDEBUG << "CommandGetHandler::getResponse: read config for alert <" << val << ">...OK" << endl;
                 insertAlertConfig( jsonObj, alert );
                 break;
               }
@@ -143,21 +143,21 @@ namespace bose_commserver
           //
           else
           {
-            lg->warn( QString( "CommandGetHandler::getResponse: unknown get request: %1" ).arg( val ) );
+            *lg << LWARN << "CommandGetHandler::getResponse: unknown get request: <" << val << ">" << endl;
           }
         }
         else
         {
           // TODO: ganz böse, was melden oder so
           // ist es ein Objekt und ist es ein GET Objekt? ==> NEIN!
-          lg->crit( "CommandGetHandler::getResponse: unknown request, should be \"get\" with params" );
+          *lg << LCRIT << "CommandGetHandler::getResponse: unknown request, should be \"get\" with params" << endl;
           answer = ConnectionHandler::getJSONErrorMessage( "not a valid get json object recived" );
           return answer;
         }
       }
       if ( jsonObj->isEmpty() )
       {
-        lg->warn( "CommandGetHandler::getResponse: no parameters for answer includet!" );
+        *lg << LWARN << "CommandGetHandler::getResponse: no parameters for answer includet!";
         answer = ConnectionHandler::getJSONErrorMessage( "no answers for question computed! call programmer!" );
         return answer;
       }
