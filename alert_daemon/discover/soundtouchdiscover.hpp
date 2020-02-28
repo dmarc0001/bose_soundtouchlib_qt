@@ -2,10 +2,10 @@
 #define SOUNDBARBROWSER_HPP
 
 #include <QtZeroConf/qzeroconf.h>
-
+#include <QMutex>
+#include <QMutexLocker>
 #include <QObject>
 #include <memory>
-
 #include "config/common_def.hpp"
 #include "config/soundtouchdevice.hpp"
 #include "logging/logger.hpp"
@@ -22,6 +22,7 @@ namespace bose_commserver
     LoggerPtr lg;                              //! wenn ein logger erstellt wurde
     std::shared_ptr< AlertAppConfig > config;  //! das Konfigurationsobjekt
     std::unique_ptr< QZeroConf > zConfPtr;     //! Objekt zum suchen von Geräten
+    QMutex logMutex;                           //! ein paar Sachen serialisieren
 
     public:
     explicit SoundTouchDiscover( std::shared_ptr< AlertAppConfig > dconfig, QObject *parent = nullptr );
