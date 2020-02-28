@@ -6,7 +6,11 @@ namespace bose_commserver
   {
   }
 
-  SoundTouchDevice::SoundTouchDevice( const QString &_name, const QHostAddress _ip, qint16 _port, qint16 _wsPort, const QString &_id )
+  SoundTouchDevice::SoundTouchDevice( const QString &_name,
+                                      const QHostAddress _ip,
+                                      quint16 _port,
+                                      quint16 _wsPort,
+                                      const QString &_id )
       : name( _name ), ip( _ip ), port( _port ), wsPort( _wsPort ), id( _id )
   {
   }
@@ -41,22 +45,22 @@ namespace bose_commserver
     hostName = value;
   }
 
-  qint16 SoundTouchDevice::getPort() const
+  quint16 SoundTouchDevice::getPort() const
   {
     return port;
   }
 
-  void SoundTouchDevice::setPort( const qint16 &value )
+  void SoundTouchDevice::setPort( const quint16 &value )
   {
     port = value;
   }
 
-  qint16 SoundTouchDevice::getWsPort() const
+  quint16 SoundTouchDevice::getWsPort() const
   {
     return wsPort;
   }
 
-  void SoundTouchDevice::setWsPort( const qint16 &value )
+  void SoundTouchDevice::setWsPort( const quint16 &value )
   {
     wsPort = value;
   }
