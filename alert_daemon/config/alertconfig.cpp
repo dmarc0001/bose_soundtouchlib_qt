@@ -20,6 +20,7 @@ namespace bose_commserver
       , isBindAddrManual( false )
       , isBindPortManual( false )
       , haveToCreateConfigFile( false )
+      , logToConsole( false )
       , isHashValid( false )
       , lg( nullptr )
       , alConfigs( std::shared_ptr< AlertList >( new AlertList() ) )
@@ -37,7 +38,8 @@ namespace bose_commserver
   {
     qDebug().noquote() << "AlertAppConfig::~AlertAppConfig()";
     configCheckTimer.stop();
-    saveSettings();
+    if ( !isHashValid )
+      saveSettings();
   }
 
   /**
@@ -45,6 +47,7 @@ namespace bose_commserver
    */
   void AlertAppConfig::onConfigCheckTimer()
   {
+    static bool fence = false;  //! der Zaun ist damit sich die Ereignisse nicht überholen
     configTimerCounter++;
     //
     // wenn ich was sichern muss, ist der wert > 0
@@ -52,27 +55,31 @@ namespace bose_commserver
     if ( configSaveTimeout > 0 )
     {
       configSaveTimeout--;
-      if ( configSaveTimeout == 0 )
+      if ( configSaveTimeout <= 0 && !fence )
       {
+        fence = true;
         if ( lg )
         {
-          lg->debug( "AlertAppConfig::onConfigCheckTimer: save changed config..." );
+          *lg << LDEBUG << "AlertAppConfig::onConfigCheckTimer: save changed config...";
         }
         saveSettings();
+        configSaveTimeout = 0;
+        fence = false;
       }
     }
     //
-    // aller 10 Sekunden
+    // aller 12 Sekunden
     //
     if ( configTimerCounter % 12 == 0 )
     {
       if ( lg )
       {
-        lg->debug( "AlertAppConfig::onConfigCheckTimer: check config hashvalue..." );
+        *lg << LDEBUG << "AlertAppConfig::onConfigCheckTimer: check config hashvalue...";
       }
       // configHash prüfen
-      if ( !isHashValid )
+      if ( !isHashValid && !fence )
       {
+        fence = true;
         //
         // da muss ich was machen...
         //
@@ -82,6 +89,7 @@ namespace bose_commserver
         // immer bei einer Änderung 15 Sekunden zufügen
         //
         configSaveTimeout = 15;
+        fence = false;
       }
     }
   }
@@ -108,6 +116,7 @@ namespace bose_commserver
     allHashObj.addData( logPath.toUtf8() );
     allHashObj.addData( QString( "%1" ).arg( static_cast< int >( threshold ) ).toUtf8() );
     allHashObj.addData( configFileName.toUtf8() );
+    allHashObj.addData( logToConsole ? "true" : "false" );
     // allHashObj.addData( availDevices.join( ',' ).toUtf8() );
     allHashObj.addData( QString( "%1" ).arg( isDebug ).toUtf8() );
     allHashObj.addData( QString( "%1" ).arg( isDebugManual ).toUtf8() );
@@ -252,6 +261,11 @@ namespace bose_commserver
     }
     qDebug().noquote().nospace() << "AlertAppConfig::loadLogSettings(): loglevel: <" << Logger::getThresholdString( threshold ) << ">";
     //
+    // lese log to console (true/false)
+    //
+    logToConsole = settings.value( AlertAppConfig::constLogToConsoleKey, false ).toBool();
+    qDebug().noquote().nospace() << "AlertAppConfig::loadLogSettings(): logToConsole: <" << logToConsole << ">";
+    //
     // Ende der Gruppe
     //
     settings.endGroup();
@@ -282,6 +296,7 @@ namespace bose_commserver
     settings.setValue( AlertAppConfig::constKeyLogFile, logFileName );
     threshold = AlertAppConfig::defaultThreshold;
     settings.setValue( AlertAppConfig::constLogThresholdKey, static_cast< int >( threshold ) );
+    settings.setValue( AlertAppConfig::constLogToConsoleKey, false );
     //
     // Ende der Gruppe
     //
@@ -626,6 +641,7 @@ namespace bose_commserver
     settings.setValue( AlertAppConfig::constKeyLogPath, logPath );
     settings.setValue( AlertAppConfig::constKeyLogFile, logFileName );
     settings.setValue( AlertAppConfig::constLogThresholdKey, static_cast< int >( threshold ) );
+    settings.setValue( AlertAppConfig::constLogToConsoleKey, logToConsole );
     //
     // Ende der Gruppe
     //
@@ -715,18 +731,12 @@ namespace bose_commserver
   //###########################################################################
   //###########################################################################
 
-  QStringList AlertAppConfig::getAvailDevices() const
+  SoundTouchDevicesList &AlertAppConfig::getAvailDevices()
   {
     return availDevices;
   }
 
-  void AlertAppConfig::setAvailDevices( const QStringList &value )
-  {
-    isHashValid = false;
-    availDevices = value;
-  }
-
-  void AlertAppConfig::addAvailDevices( const QString &dev )
+  void AlertAppConfig::addAvailDevices( const SoundTouchDevice &dev )
   {
     availDevices.append( dev );
   }
@@ -777,6 +787,16 @@ namespace bose_commserver
     logFileName = value;
     isHashValid = false;
     isLogfileManual = true;
+  }
+
+  bool AlertAppConfig::getLogToConsole() const
+  {
+    return logToConsole;
+  }
+
+  void AlertAppConfig::setLogToConsole( bool value )
+  {
+    logToConsole = value;
   }
 
   QString AlertAppConfig::getBindaddr() const

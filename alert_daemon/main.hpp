@@ -1,14 +1,15 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
+#include <signal.h>
 #include <QtCore/QCommandLineOption>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCoreApplication>
+#include <iostream>
 #include <memory>
-
-#include <signal.h>
 #include "config/alertconfig.hpp"
 #include "daemon/bosecommserver.hpp"
+#include "support/nologgerexception.hpp"
 
 typedef void ( *SignalHandlerPointer )( int );
 // typedef void ( *CommServerPointer )( *bose_commserver::BoseCommServer::reciveAsyncSignal( int ) );

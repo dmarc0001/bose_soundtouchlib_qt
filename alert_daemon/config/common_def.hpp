@@ -43,7 +43,6 @@ namespace bose_commserver
     // set subkommandos
     static const constexpr char *setConfigCmd{"config"};
     static const constexpr char *setConfigDaemon{"daemon"};
-    static const constexpr char *setConfigDevCmd{"devices"};
     static const constexpr char *setConfigNewAlCmd{"new-alert"};
 
     // app konfig json namen
