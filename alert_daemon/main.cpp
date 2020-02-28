@@ -72,11 +72,56 @@ int main( int argc, char *argv[] )
   //
   // erzeuge den Server mit der Config
   //
-  bose_commserver::BoseCommServer server( dConf );
-  QObject::connect( &server, &bose_commserver::BoseCommServer::closed, &app, &QCoreApplication::quit );
-  //
-  // und ab dafür...
-  // exec waret auf quit
-  //
-  return app.exec();
+  try
+  {
+    bose_commserver::BoseCommServer server( dConf );
+    QObject::connect( &server, &bose_commserver::BoseCommServer::closed, &app, &QCoreApplication::quit );
+    //
+    // Signalhandling einschalten
+    //
+    previousINTHandler = signal( SIGINT, signalHandler );
+    previousTERMHandler = signal( SIGTERM, signalHandler );
+    //
+    // Server instanz vermerken
+    //
+    commInstance = &server;
+    //
+    // und ab dafür...
+    // exec waret auf quit
+    //
+    return app.exec();
+  }
+  catch ( NoLoggerException &ex )
+  {
+    std::cerr << "ERROR: " << ex.what() << std::endl;
+    exit( -1 );
+  }
+}
+
+/**
+ * @brief signalHandler
+ * @param signal
+ */
+void signalHandler( int signal )
+{
+  if ( commInstance )
+  {
+    if ( signal == SIGINT )
+    {
+      // signal beackern
+      commInstance->reciveSignal( signal );
+    }
+    else if ( signal == SIGTERM )
+    {
+      // signal beackern
+      commInstance->reciveSignal( signal );
+    }
+#ifdef UNIX
+    else if ( signal == SIGHUP )
+    {
+      // signal beackern
+      commInstance->reciveSignal( signal );
+    }
+#endif
+  }
 }

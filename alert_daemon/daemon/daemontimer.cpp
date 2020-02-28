@@ -8,13 +8,22 @@ namespace bose_commserver
     //
     // initialisiere und starte den Timer des Objektes
     //
-    lg->debug( "DaemonTimer::DaemonTimer: set timer..." );
+    *lg << LDEBUG << "DaemonTimer::DaemonTimer: set timer..." << endl;
     ticker.setInterval( TIMER_INTERVAL );
-    lg->debug( "DaemonTimer::DaemonTimer: connect signals..." );
+    *lg << LDEBUG << "DaemonTimer::DaemonTimer: connect signals..." << endl;
     connect( &ticker, &QTimer::timeout, this, &DaemonTimer::onTimerTimeout );
-    lg->debug( "DaemonTimer::DaemonTimer: connect signals...OK" );
+    *lg << LDEBUG << "DaemonTimer::DaemonTimer: connect signals...OK" << endl;
     ticker.start();
-    lg->debug( "DaemonTimer::DaemonTimer: timer started..." );
+    *lg << LDEBUG << "DaemonTimer::DaemonTimer: timer started..." << endl;
+  }
+
+  /**
+   * @brief DaemonTimer::stopTimer
+   */
+  void DaemonTimer::stopTimer()
+  {
+    ticker.stop();
+    *lg << LDEBUG << "DaemonTimer::stopTimer: timer stopped..." << endl;
   }
 
   /**
@@ -25,11 +34,11 @@ namespace bose_commserver
     timerCounter++;
     //
     // teste die Alarme
-    // immer alle 10 Ticks (sollte dann 10 Sekunden sein)
+    // immer alle x Ticks (sollte dann x Sekunden sein)
     //
-    if ( timerCounter % 10 == 0 )
+    if ( timerCounter % 8 == 0 )
     {
-      lg->debug( "DaemonTimer::onTimerTimeout: check alerts..." );
+      *lg << LDEBUG << "DaemonTimer::onTimerTimeout: check alerts..." << endl;
       QDate today( QDate::currentDate() );
       QTime now( QTime::currentTime() );
       QDateTime toDayNow( QDateTime::currentDateTime() );
@@ -39,7 +48,7 @@ namespace bose_commserver
       for ( auto &currAl : *alList )
       {
 #ifdef DEBUG
-        lg->debug( QString( "DaemonTimer::onTimerTimeout: check alert <%1>" ).arg( currAl.getName() ) );
+        *lg << LDEBUG << "DaemonTimer::onTimerTimeout: check alert <" << currAl.getName() << ">" << endl;
 #endif
         //
         // starte Alarm, wenn er an der reihe ist
@@ -54,7 +63,7 @@ namespace bose_commserver
           //
           // der ist länger als eine Sekunde aktiv!
           //
-          lg->info( QString( "DaemonTimer::onTimerTimeout: emit signale for stop alert <%1>" ).arg( currAl.getName() ) );
+          *lg << LINFO << "DaemonTimer::onTimerTimeout: emit signale for stop alert <" << currAl.getName() << ">" << endl;
           emit sigStopAlert( currAl );
         }
       }  // ende schleife über alle Alarme
@@ -86,9 +95,11 @@ namespace bose_commserver
       //
       if ( currAl.getAlDate() == today )
       {
-        lg->debug( QString( "DaemonTimer::onTimerTimeout: alert <%1> is today! (at %2)" )
-                       .arg( currAl.getName() )
-                       .arg( currAl.getAlDate().toString( command::dateFormatStr ) ) );
+        *lg << LDEBUG
+            << QString( "DaemonTimer::onTimerTimeout: alert <%1> is today! (at %2)" )
+                   .arg( currAl.getName() )
+                   .arg( currAl.getAlDate().toString( command::dateFormatStr ) )
+            << endl;
         //
         // wenn der Alarm nicht läuft (NICHT isValid)
         // und der Zeitpunkt zwischen + 45 und - 15 Sekunden ist
@@ -113,8 +124,8 @@ namespace bose_commserver
         //
         if ( currAl.getAlDays().contains( static_cast< qint8 >( today.dayOfWeek() ) ) )
         {
-          lg->debug( QString( "DaemonTimer::onTimerTimeout: alert <%1> weekday is today! Now check time to start..." )
-                         .arg( currAl.getName() ) );
+          *lg << LDEBUG << "DaemonTimer::onTimerTimeout: alert <" << currAl.getName()
+              << "> weekday is today! Now check time to start..." << endl;
           //
           // wenn der Alarm nicht läuft (NICHT isValid)
           // und der Zeitpunkt zwischen + 45 und - 15 Sekunden ist
@@ -124,7 +135,7 @@ namespace bose_commserver
       }
       else
       {
-        lg->debug( QString( "DaemonTimer::onTimerTimeout: alert <%1> -> Now check time to start..." ).arg( currAl.getName() ) );
+        *lg << LDEBUG << "DaemonTimer::onTimerTimeout: alert <" << currAl.getName() << "> -> Now check time to start..." << endl;
         //
         // keine Wochentage eingetragen, kein Datum, warscheinlich taegliche Ausführung
         // wenn der Alarm nicht läuft (NICHT isValid)
@@ -143,21 +154,23 @@ namespace bose_commserver
   void DaemonTimer::startAlertIfTime( SingleAlertConfig &currAl, QTime &now )
   {
     //
-    // wenn der Alarm nicht läuft (NICHT isValid)
-    // und der Zeitpunkt zwischen + 45 und - 15 Sekunden ist
+    // wenn der Alarm nicht läuft (RunSinse ist NICHT isValid)
+    // und der Zeitpunkt zwischen +/- 30 Sekunden ist
     //
+    int distanceToAlert = now.secsTo( currAl.getAlTime() );
+    int diffToZero = distanceToAlert - 30;
 #ifdef DEBUG
-    int alToNow = currAl.getAlTime().secsTo( now );
-    int nowToAl = now.secsTo( currAl.getAlTime() );
-    lg->debug( QString( "DaemonTimer::startAlertIfTime: alert to now: <%1> now to alert: <%2>" ).arg( alToNow ).arg( nowToAl ) );
+    *lg << LDEBUG << "DaemonTimer::startAlertIfTime: now: " << now.toString( "HH:mm:ss" ) << ",  now to alert: <" << distanceToAlert
+        << "s> distance <" << diffToZero << "s>" << endl;
 #endif
-
-    if ( !currAl.getRunSince().isValid() && ( currAl.getAlTime().secsTo( now ) < 15 || now.secsTo( currAl.getAlTime() ) > 45 ) )
+    //
+    // if ( !currAl.getRunSince().isValid() && ( distanceToAlert < 60 && distanceToAlert > 0 ) )
+    if ( !currAl.getRunSince().isValid() && ( diffToZero < 60 && diffToZero > 0 ) )
     {
       //
-      // starte den Alarm!
+      // starte den Alarm! (wenn er nicht schon läuft)
       //
-      lg->debug( QString( "DaemonTimer::startAlertIfTime: alert <%1> start now!" ).arg( currAl.getName() ) );
+      *lg << LDEBUG << "DaemonTimer::startAlertIfTime: alert <" << currAl.getName() << "> start now!" << endl;
       emit sigStartAlert( currAl );
     }
   }
