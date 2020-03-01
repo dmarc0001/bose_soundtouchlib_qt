@@ -93,13 +93,15 @@ namespace bose_soundtoch_lib
   void LibraryTestWindow::slotOnHostnameLineEditFinished( void )
   {
     qDebug() << "editet hostname: " << ui->hostnameLineEdit->text();
+    host = ui->hostnameLineEdit->text();
     sDevice->setHostname( host );
   }
 
   void LibraryTestWindow::slotOnConnectWsButton( void )
   {
     qDebug() << "...";
-    sDevice->addVolumeListener();
+    sDevice->connectWs();
+    // sDevice->addVolumeListener();
   }
 
   void LibraryTestWindow::slotOnDisconnectWsButton( void )

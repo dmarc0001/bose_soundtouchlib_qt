@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ###############################################################################
 set(KIT QT5141)
 set(MAJOR 0) # major version number
-set(MINOR 1) # minor version number
+set(MINOR 2) # minor version number
 set(PATCH 0) # patch number
 set(BUILD 0) # win32: build number
 if (WIN32)

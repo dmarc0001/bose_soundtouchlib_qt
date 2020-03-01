@@ -74,8 +74,10 @@ namespace bose_soundtoch_lib
 
     private:
     QString hostname;
-    qint16 wsPort;
-    qint16 httpPort;
+    quint16 wsPort;
+    quint16 httpPort;
+    QString id;
+    QString ip;
     std::unique_ptr< BWebsocket > webSocket;
     QtMsgType threshold;
     QUrl url;
@@ -90,14 +92,14 @@ namespace bose_soundtoch_lib
 
     public:
     explicit BSoundTouchDevice( QString &stHost,
-                                qint16 stWSPort,
-                                qint16 stHttpPort,
+                                quint16 stWSPort,
+                                quint16 stHttpPort,
                                 QObject *parent = nullptr,
                                 QtMsgType sth = QtMsgType::QtFatalMsg );
     ~BSoundTouchDevice();
     void setHostname( const QString &stHost );
-    void setWSPort( qint16 stWSPort );
-    void setHttpPort( qint16 stHttpPort );
+    void setWSPort( quint16 stWSPort );
+    void setHttpPort( quint16 stHttpPort );
     void getSources( void );
     void getBassCapabilities( void );
     void getBass( void );
@@ -121,6 +123,10 @@ namespace bose_soundtoch_lib
     void addZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList );     // POST
     void removeZoneSlave( const QString &masterId, const SoundTouchMemberList &memberList );  // POST
     void setDeviceName( QString &name );                                                      // POST
+    QString getId() const;                                                                    //! ID des Gerätes (optional)
+    void setId( const QString &value );                                                       //! ID des Gerätes (optional)
+    QString getIpString() const;                                                              //! IP des Gerätes (optional)
+    void setIpString( const QString &value );                                                 //! IP des Gerätes (optional)
     // websocket überwachung
     void addVolumeListener( void );
     QString getVersion() const;

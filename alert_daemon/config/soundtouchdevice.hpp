@@ -23,19 +23,19 @@ namespace bose_commserver
     public:
     SoundTouchDevice();
     SoundTouchDevice( const QString &_name, const QHostAddress _ip, quint16 _port, quint16 _wsPort, const QString &id );
-    QString getName() const;
+    QString &getName();
     void setName( const QString &value );
-    QHostAddress getIp() const;
+    QHostAddress &getIp();
     void setIp( const QHostAddress &value );
-    QString getHostName() const;
+    QString &getHostName();
     void setHostName( const QString &value );
     quint16 getPort() const;
     void setPort( const quint16 &value );
     quint16 getWsPort() const;
     void setWsPort( const quint16 &value );
-    QString getModel() const;
+    QString &getModel();
     void setModel( const QString &value );
-    QString getId() const;
+    QString &getId();
     void setId( const QString &value );
   };
 }  // namespace bose_commserver

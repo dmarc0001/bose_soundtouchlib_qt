@@ -304,7 +304,7 @@ namespace bose_commserver
     //
     // einen Alarm einfügen, der Konstruktor startet diesen gleich
     //
-    BoseSoundAlert *currAlert = new BoseSoundAlert( alert, lg, this );
+    BoseSoundAlert *currAlert = new BoseSoundAlert( config, alert, lg, this );
     //
     // verbinde das finish Signal des alarms mit der slot funktion via lambda Funktion
     //

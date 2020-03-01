@@ -15,7 +15,7 @@ namespace bose_commserver
   {
   }
 
-  QString SoundTouchDevice::getName() const
+  QString &SoundTouchDevice::getName()
   {
     return name;
   }
@@ -25,7 +25,7 @@ namespace bose_commserver
     name = value;
   }
 
-  QHostAddress SoundTouchDevice::getIp() const
+  QHostAddress &SoundTouchDevice::getIp()
   {
     return ip;
   }
@@ -35,7 +35,7 @@ namespace bose_commserver
     ip = value;
   }
 
-  QString SoundTouchDevice::getHostName() const
+  QString &SoundTouchDevice::getHostName()
   {
     return hostName;
   }
@@ -65,7 +65,7 @@ namespace bose_commserver
     wsPort = value;
   }
 
-  QString SoundTouchDevice::getModel() const
+  QString &SoundTouchDevice::getModel()
   {
     return model;
   }
@@ -75,7 +75,7 @@ namespace bose_commserver
     model = value;
   }
 
-  QString SoundTouchDevice::getId() const
+  QString &SoundTouchDevice::getId()
   {
     return id;
   }
