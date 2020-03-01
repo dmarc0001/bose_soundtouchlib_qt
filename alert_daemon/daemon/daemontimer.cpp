@@ -3,7 +3,7 @@
 namespace bose_commserver
 {
   DaemonTimer::DaemonTimer( AppConfigPtr dconfig, QObject *parent )
-      : QObject( parent ), config( dconfig ), lg( dconfig->getLogger() ), alList( dconfig->getAlConfigs() ), timerCounter( 0 )
+      : QObject( parent ), config( dconfig ), lg( dconfig->getLogger() ), alList( dconfig->getAlConfigs() )
   {
     //
     // initialisiere und starte den Timer des Objektes
@@ -22,7 +22,11 @@ namespace bose_commserver
    */
   void DaemonTimer::stopTimer()
   {
-    ticker.stop();
+    //
+    // da ich den Timer aus einem anderen Thread nicht einfach stoppen kann
+    // dan kann ich wenigstens die ausführung der Routine stoppen
+    //
+    ignoreTimer = true;
     *lg << LDEBUG << "DaemonTimer::stopTimer: timer stopped..." << endl;
   }
 
@@ -31,6 +35,11 @@ namespace bose_commserver
    */
   void DaemonTimer::onTimerTimeout()
   {
+    //
+    // wen der Timer "aus" sein soll
+    //
+    if ( ignoreTimer )
+      return;
     timerCounter++;
     //
     // teste die Alarme

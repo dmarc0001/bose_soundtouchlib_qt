@@ -26,8 +26,8 @@ namespace bose_soundtoch_lib
     Q_OBJECT
     private:
     QString host;
-    int wsPort;
-    int httpPort;
+    quint16 wsPort;
+    quint16 httpPort;
     bool isDebug;
     QtMsgType threshold;
     std::unique_ptr< Ui::LibraryTestWindow > ui;
