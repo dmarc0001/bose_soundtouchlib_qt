@@ -24,6 +24,7 @@ cmake -GNinja \
   -DCMAKE_TOOLCHAIN_FILE=~/raspi/tools/crossCompileToolchainFile.cmake \
   -DCMAKE_BUILD_TYPE=Debug \
   ../../ 
+export LD_LIBRARY_PATH=/home/dmarcini/raspi/sysroot/usr/lib:/home/dmarcini/raspi/sysroot/usr  
 cmake --build . --target all
 popd
 

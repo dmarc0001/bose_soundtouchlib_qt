@@ -110,7 +110,6 @@ if (CMAKE_CROSSCOMPILING)
         /home/dmarcini/raspi/sysroot/usr/lib/arm-linux-gnueabihf
         /home/dmarcini/raspi/sysroot/lib/arm-linux-gnueabihf
         )
-    #find_library(AVAHICLIENT avahi-client PATHS /home/dmarcini/raspi/sysroot/usr/lib/arm-linux-gnueabihf  DOC "AVAHI Funktionalitaet" ONLY_CMAKE_FIND_ROOT_PATH )
     set( AVAHILIB
         avahi-client
         avahi-common
