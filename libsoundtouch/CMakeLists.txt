@@ -11,7 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
@@ -30,8 +30,6 @@ set(BUILD 0) # win32: build number
 
 if (CMAKE_CROSSCOMPILING)
     message("============= CROSSCOMPILER ========================")
-    set(CMAKE_PREFIX_PATH /home/dmarcini/raspi/rpi-dest)
-    set(QTDIR /home/dmarcini/raspi/qt-5-14-1-loc)
 endif()
 
 if (WIN32)

@@ -8,7 +8,7 @@ namespace bose_soundtoch_lib
    * @param stWSPort
    * @param parent
    */
-  BWebsocket::BWebsocket( QString &stHost, qint16 stWSPort, QObject *parent )
+  BWebsocket::BWebsocket( QString &stHost, quint16 stWSPort, QObject *parent )
       : QObject( parent ), hostname( stHost ), wsPort( stWSPort )
   {
     qDebug() << "...";

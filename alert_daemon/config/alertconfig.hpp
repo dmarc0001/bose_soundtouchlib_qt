@@ -21,6 +21,7 @@
 
 #include "config/common_def.hpp"
 #include "logging/logger.hpp"
+#include "soundtouchdevice.hpp"
 
 namespace bose_commserver
 {
@@ -51,6 +52,7 @@ namespace bose_commserver
     static constexpr const char *constKeyLogPath{"logpath"};
     static constexpr const char *constKeyLogFile{"logfile"};
     static constexpr const char *constLogThresholdKey{"threshold"};
+    static constexpr const char *constLogToConsoleKey{"consolelog"};
     // app einstellungen
     static constexpr const char *constAppGroupName{"application"};
     static constexpr const char *constBindAddrKey{"bindaddr"};
@@ -85,13 +87,13 @@ namespace bose_commserver
     QString logPath;
     LgThreshold threshold;
     QString configFileName;
-    QStringList availDevices;
     bool isDebug;
     bool isDebugManual;
     bool isLogfileManual;
     bool isBindAddrManual;
     bool isBindPortManual;
     bool haveToCreateConfigFile;
+    bool logToConsole;
     bool isHashValid;
     std::shared_ptr< Logger > lg;
     //! pointer auf Liste mit Alarmmeldungen zum weitergeben
@@ -101,6 +103,7 @@ namespace bose_commserver
     QTimer configCheckTimer;
     qint8 configTimerCounter;
     qint8 configSaveTimeout;
+    SoundTouchDevicesList availDevices;
 
     public:
     //! der Konstruktor
@@ -151,9 +154,10 @@ namespace bose_commserver
     QString getDefaultHttpPort() const;
     QRegularExpression getAlertPattern();
     QString getAlertPatternStr();
-    QStringList getAvailDevices() const;
-    void setAvailDevices( const QStringList &value );
-    void addAvailDevices( const QString &dev );
+    SoundTouchDevicesList &getAvailDevices();
+    void addAvailDevices( const SoundTouchDevice &dev );
+    bool getLogToConsole() const;
+    void setLogToConsole( bool value );
 
     private:
     void onConfigCheckTimer();
