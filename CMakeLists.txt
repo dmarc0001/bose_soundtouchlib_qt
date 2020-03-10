@@ -18,8 +18,18 @@ if(WIN32)
     add_compile_definitions(WIN32)
 endif(WIN32)
 
+if (CMAKE_CROSSCOMPILING)
+    message("############### SOUNDTOUCH CROSS COMPILER ###################")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rpilib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rpilib)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rpilib)
+else()
+    message("############### SOUNDTOUCH NATIVE COMPILER ###################")
+endif()
+
+
 add_subdirectory(libsoundtouch)
-add_subdirectory(test_soundtouch)
+#add_subdirectory(test_soundtouch)
 add_subdirectory(alert_daemon)
 add_subdirectory(testclient)
 

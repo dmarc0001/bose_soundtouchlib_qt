@@ -30,8 +30,6 @@ set(BUILD 0) # win32: build number
 
 if (CMAKE_CROSSCOMPILING)
     message("============= CROSSCOMPILER ========================")
-    set(CMAKE_PREFIX_PATH /home/dmarcini/raspi/rpi-dest)
-    set(QTDIR /home/dmarcini/raspi/qt-5-14-1-loc)
 endif()
 
 if (WIN32)

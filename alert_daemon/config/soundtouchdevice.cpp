@@ -6,12 +6,16 @@ namespace bose_commserver
   {
   }
 
-  SoundTouchDevice::SoundTouchDevice( const QString &_name, const QHostAddress _ip, qint16 _port, qint16 _wsPort, const QString &_id )
+  SoundTouchDevice::SoundTouchDevice( const QString &_name,
+                                      const QHostAddress _ip,
+                                      quint16 _port,
+                                      quint16 _wsPort,
+                                      const QString &_id )
       : name( _name ), ip( _ip ), port( _port ), wsPort( _wsPort ), id( _id )
   {
   }
 
-  QString SoundTouchDevice::getName() const
+  QString &SoundTouchDevice::getName()
   {
     return name;
   }
@@ -21,7 +25,7 @@ namespace bose_commserver
     name = value;
   }
 
-  QHostAddress SoundTouchDevice::getIp() const
+  QHostAddress &SoundTouchDevice::getIp()
   {
     return ip;
   }
@@ -31,7 +35,7 @@ namespace bose_commserver
     ip = value;
   }
 
-  QString SoundTouchDevice::getHostName() const
+  QString &SoundTouchDevice::getHostName()
   {
     return hostName;
   }
@@ -41,27 +45,27 @@ namespace bose_commserver
     hostName = value;
   }
 
-  qint16 SoundTouchDevice::getPort() const
+  quint16 SoundTouchDevice::getPort() const
   {
     return port;
   }
 
-  void SoundTouchDevice::setPort( const qint16 &value )
+  void SoundTouchDevice::setPort( const quint16 &value )
   {
     port = value;
   }
 
-  qint16 SoundTouchDevice::getWsPort() const
+  quint16 SoundTouchDevice::getWsPort() const
   {
     return wsPort;
   }
 
-  void SoundTouchDevice::setWsPort( const qint16 &value )
+  void SoundTouchDevice::setWsPort( const quint16 &value )
   {
     wsPort = value;
   }
 
-  QString SoundTouchDevice::getModel() const
+  QString &SoundTouchDevice::getModel()
   {
     return model;
   }
@@ -71,7 +75,7 @@ namespace bose_commserver
     model = value;
   }
 
-  QString SoundTouchDevice::getId() const
+  QString &SoundTouchDevice::getId()
   {
     return id;
   }

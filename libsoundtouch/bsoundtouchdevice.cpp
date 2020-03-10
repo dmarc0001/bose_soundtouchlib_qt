@@ -73,8 +73,15 @@ namespace bose_soundtoch_lib
    * @param stHttpPort
    * @param parent
    */
-  BSoundTouchDevice::BSoundTouchDevice( QString &stHost, qint16 stWSPort, qint16 stHttpPort, QObject *parent, QtMsgType sth )
-      : QObject( parent ), hostname( stHost ), wsPort( stWSPort ), httpPort( stHttpPort ), webSocket( nullptr ), threshold( sth )
+  BSoundTouchDevice::BSoundTouchDevice( QString &stHost, quint16 stWSPort, quint16 stHttpPort, QObject *parent, QtMsgType sth )
+      : QObject( parent )
+      , hostname( stHost )
+      , wsPort( stWSPort )
+      , httpPort( stHttpPort )
+      , id( "" )
+      , ip( "" )
+      , webSocket( nullptr )
+      , threshold( sth )
   {
     //
     // Logging, eigenes logging nur wenn mehr als kritische meldungen ausgegeben werden sollen
@@ -100,14 +107,24 @@ namespace bose_soundtoch_lib
     hostname = stHost;
   }
 
-  void BSoundTouchDevice::setHttpPort( qint16 stHttpPort )
+  void BSoundTouchDevice::setHttpPort( quint16 stHttpPort )
   {
     httpPort = stHttpPort;
   }
 
-  void BSoundTouchDevice::setWSPort( qint16 stWSPort )
+  void BSoundTouchDevice::setWSPort( quint16 stWSPort )
   {
     wsPort = stWSPort;
+  }
+
+  QString BSoundTouchDevice::getIpString() const
+  {
+    return ip;
+  }
+
+  void BSoundTouchDevice::setIpString( const QString &value )
+  {
+    ip = value;
   }
 
   //###########################################################################
@@ -346,6 +363,16 @@ namespace bose_soundtoch_lib
     startPostRequest( data );
   }
 
+  QString BSoundTouchDevice::getId() const
+  {
+    return id;
+  }
+
+  void BSoundTouchDevice::setId( const QString &value )
+  {
+    id = value;
+  }
+
   //###########################################################################
   // Hilfsfuntionen                                                        ####
   //###########################################################################
@@ -527,7 +554,6 @@ namespace bose_soundtoch_lib
       }
     }
     reply->deleteLater();
-    reply = nullptr;
   }
 
   void BSoundTouchDevice::slotOnHttpReadyToRead( QNetworkReply * )
@@ -560,9 +586,9 @@ namespace bose_soundtoch_lib
   void BSoundTouchDevice::connectWs( void )
   {
     qDebug() << "...";
-    if ( webSocket.get() == nullptr || !webSocket->isValid() )
+    if ( !webSocket || !webSocket->isValid() )
     {
-      if ( webSocket.get() == nullptr )
+      if ( !webSocket )
       {
         qDebug() << "create new BWebSocklet object...";
         webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, this ) );
@@ -584,6 +610,7 @@ namespace bose_soundtoch_lib
   {
     qDebug() << "...";
     webSocket->close();
+    disconnect( webSocket.get() );
   }
 
   void BSoundTouchDevice::slotOnWSConnected( void )
@@ -625,57 +652,57 @@ namespace bose_soundtoch_lib
         //
         switch ( static_cast< qint8 >( response->getResultType() ) )
         {
-          case ( qint8 ) ResultobjectType::U_PRESETS:
+          case static_cast< qint8 >( ResultobjectType::U_PRESETS ):
             emit sigOnPresetsUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_NOWPLAYING:
+          case static_cast< qint8 >( ResultobjectType::U_NOWPLAYING ):
             emit sigOnNowPlayingUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_SELECTION:
+          case static_cast< qint8 >( ResultobjectType::U_SELECTION ):
             emit sigOnPresetSelectionUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_VOLUME:
+          case static_cast< qint8 >( ResultobjectType::U_VOLUME ):
             emit sigOnVolumeUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_BASS:
+          case static_cast< qint8 >( ResultobjectType::U_BASS ):
             emit sigOnBassUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_ZONE:
+          case static_cast< qint8 >( ResultobjectType::U_ZONE ):
             emit sigOnZoneUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_INFO:
+          case static_cast< qint8 >( ResultobjectType::U_INFO ):
             emit sigOnInfoUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_NAME:
+          case static_cast< qint8 >( ResultobjectType::U_NAME ):
             emit sigOnNameUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_ERROR:
+          case static_cast< qint8 >( ResultobjectType::U_ERROR ):
             emit sigOnErrorUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_GROUP:
+          case static_cast< qint8 >( ResultobjectType::U_GROUP ):
             emit sigOnGroupUpdated( response );
             break;
 
-          case ( qint8 ) ResultobjectType::U_SDKINFO:
-          case ( qint8 ) ResultobjectType::U_BROWSE_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_RECENTS_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_SOURCES_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_LANGUAGE_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED:
-          case ( qint8 ) ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED:
+          case static_cast< qint8 >( ResultobjectType::U_SDKINFO ):
+          case static_cast< qint8 >( ResultobjectType::U_BROWSE_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_RECENTS_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_SOURCES_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_LANGUAGE_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED ):
+          case static_cast< qint8 >( ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED ):
             qDebug() << "unsupported events. ignore...";
             break;
 

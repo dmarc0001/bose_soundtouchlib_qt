@@ -21,6 +21,10 @@ namespace bose_commserver
     *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signals for services...OK" << endl;
     *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser..." << endl;
     zConfPtr->startBrowser( SOUNDTOUCH_TCP, QAbstractSocket::IPv4Protocol );
+    if ( zConfPtr->browserExists() )
+    {
+      *lg << LINFO << "SoundTouch discovering for devices started..." << endl;
+    }
     // zConfPtr->startBrowser( "_soundtouch._tcp.local" );
     *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser...OK" << endl;
     *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: create discover object...OK" << endl;
@@ -40,7 +44,7 @@ namespace bose_commserver
    */
   void SoundTouchDiscover::cancel()
   {
-    *lg << LINFO << "SoundTouchDiscover::cancel: cancel discover devices...";
+    *lg << LINFO << "SoundTouch cancel discover devices...";
     if ( zConfPtr->browserExists() )
       zConfPtr->stopBrowser();
   }
@@ -51,13 +55,53 @@ namespace bose_commserver
    */
   void SoundTouchDiscover::onServiceAdded( QZeroConfService servicePtr )
   {
-    *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded: ..." << servicePtr->name() << "on host: " << servicePtr->host()
-        << "domain: " << servicePtr->domain() << " type " << servicePtr->type() << "port: " << servicePtr->port()
-        << servicePtr->ip().toString() << endl
-        << "text: " << endl;
-    for ( auto key : servicePtr->txt() )
+    QMutexLocker locker( &logMutex );
+    bool isNewDevice = true;
+    //
+    // etwas zum lesen
+    //
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded: " << servicePtr->name() << " on host: " << servicePtr->host()
+        << " domain: " << servicePtr->domain() << " port: " << servicePtr->port() << " IP: " << servicePtr->ip().toString() << endl;
+    /*
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded: " << servicePtr->name() << " on host: " << servicePtr->host()
+        << " domain: " << servicePtr->domain() << " type " << servicePtr->type() << " port: " << servicePtr->port()
+        << " IP: " << servicePtr->ip().toString() << endl
+        << " text: " << endl;
+    //
+    // die empfangenen Werte zeigen
+    //
+    for ( auto key : servicePtr->txt().keys() )
     {
-      *lg << "key: " << QString( key ) << "val: " << QString( servicePtr->txt().take( key ) ) << endl;
+      *lg << " key: <" << QString( key ) << "> val: <" << QString( ( servicePtr->txt() ).take( key ) ) << ">" << endl;
+    }
+    */
+    //
+    // in der config schauen, ob das Teil schon gespeichert war
+    //
+    SoundTouchDevicesList &dList = config->getAvailDevices();
+    for ( auto &currDev : dList )
+    {
+      if ( currDev.getName().compare( servicePtr->name() ) == 0 )
+      {
+        *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded:: device is in the list, ignore..." << endl;
+        //
+        // schon gefunden, ignorieren
+        //
+        isNewDevice = false;
+        break;
+      }
+    }
+    //
+    // war das Gerät neu in der Liste
+    //
+    if ( isNewDevice )
+    {
+      SoundTouchDevice newDev( servicePtr->name(), servicePtr->ip(), servicePtr->port(),
+                               static_cast< quint16 >( config->getDefaultWsPort().toInt() ), servicePtr->txt().take( "MAC" ) );
+      newDev.setHostName( servicePtr->host() );
+      newDev.setModel( servicePtr->txt().take( "MODEL" ) );
+      *lg << LINFO << "new service for device <" << servicePtr->name() << "> addet to config." << endl;
+      dList.append( newDev );
     }
   }
 
@@ -67,7 +111,27 @@ namespace bose_commserver
    */
   void SoundTouchDiscover::onServiceRemoved( QZeroConfService servicePtr )
   {
-    *lg << LDEBUG << "SoundTouchDiscover::onServiceRemoved: ..." << servicePtr->name() << "on host: " << servicePtr->host() << endl;
+    QMutexLocker locker( &logMutex );
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceRemoved: " << servicePtr->name() << " on host: " << servicePtr->host() << endl;
+    //
+    // in der config schauen, ob das Teil schon gespeichert war
+    //
+    SoundTouchDevicesList &dList = config->getAvailDevices();
+    for ( auto it = dList.begin(); it != dList.end(); it++ )
+    {
+      //
+      // iteriere über die Liste
+      //
+      if ( it->getName().compare( servicePtr->name() ) == 0 )
+      {
+        //
+        // wenn das Gerät gefunden wurde
+        // entferne es
+        //
+        it = dList.erase( it );
+        *lg << LINFO << "device <" << servicePtr->name() << "> on host: " << servicePtr->host() << " was removed from config." << endl;
+      }
+    }
   }
 
   /**
@@ -76,7 +140,30 @@ namespace bose_commserver
    */
   void SoundTouchDiscover::onServiceUpdated( QZeroConfService servicePtr )
   {
-    *lg << LDEBUG << "SoundTouchDiscover::onServiceUpdated: ..." << servicePtr->name() << "on host: " << servicePtr->host() << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceUpdated: ..." << servicePtr->name() << " on host: " << servicePtr->host() << endl;
+    //
+    // gucke mal, ob das in der Liste ist...
+    //
+    SoundTouchDevicesList &dList = config->getAvailDevices();
+    for ( auto it = dList.begin(); it != dList.end(); it++ )
+    {
+      //
+      // iteriere über die Liste
+      //
+      if ( it->getName().compare( servicePtr->name() ) == 0 )
+      {
+        //
+        // wenn das Gerät geunden wurde
+        // UPDATE
+        //
+        it->setIp( servicePtr->ip() );
+        it->setPort( servicePtr->port() );
+        it->setId( servicePtr->txt().take( "MAC" ) );
+        *lg << LINFO << "device <" << servicePtr->name() << "> on host: " << servicePtr->host() << " was updated in the config."
+            << endl;
+        break;
+      }
+    }
   }
 
   /**

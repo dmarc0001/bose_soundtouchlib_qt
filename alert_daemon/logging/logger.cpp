@@ -71,8 +71,19 @@ namespace bose_commserver
   int Logger::startLogging( LgThreshold th, const QString &fileName, bool consoleLog )
   {
     threshold = th;
+    bool consoleOk = true;
     logToConsole = consoleLog;
     consoleStream = std::unique_ptr< QTextStream >( new QTextStream( stdout ) );
+    if ( !consoleStream || consoleStream->status() != QTextStream::Ok )
+    {
+      //
+      // das geht nicht auf der Knsole!
+      // Loggen in Datei wäre noch machbar
+      //
+      qCritical() << "can't open log stream to console!";
+      logToConsole = false;
+      consoleOk = false;
+    }
     //
     // gibt es einen Lognamen
     //
@@ -85,10 +96,30 @@ namespace bose_commserver
         textStream = std::unique_ptr< QTextStream >( new QTextStream( logFile.get() ) );
         if ( logFile && logFile->isOpen() && textStream && consoleStream )
         {
-          *consoleStream << "START CONSOLE LOGGING (" << fileName << "), console logging: " << consoleLog << endl;
+          if ( consoleOk )
+            *consoleStream << "START CONSOLE LOGGING (" << fileName << "), console logging: " << consoleLog << endl;
           *textStream << "START FILE LOGGING (" << fileName << ")" << endl;
           return ( 1 );
         }
+      }
+    }
+    else
+    {
+      //
+      // es gib keinen Namen fürs Logging,also keine Logdatei
+      //
+      qCritical() << "there is no log file name, no file logging!";
+      //
+      // Konsole auch nicht?
+      //
+      if ( !consoleOk )
+      {
+        qCritical() << "FAIL! No log to console an no file logging possible!";
+        return 0;
+      }
+      else
+      {
+        logToConsole = true;
       }
     }
     //
@@ -98,16 +129,27 @@ namespace bose_commserver
     return ( 0 );
   }
 
+  /**
+   * @brief Logger::lineEnd
+   */
   void Logger::lineEnd()
   {
+    //
+    // nur innerhalb der logstufen loggen
+    //
     if ( threshold >= currentThreshold )
     {
+      //
+      // Zeilenende ausgeben und Ausgabe flushen
+      //
       *textStream << endl;
       textStream->flush();
+      //
+      // ist log zur Konsole aktiv, auch da neue Zeile
+      //
       if ( logToConsole )
       {
         *consoleStream << endl;
-        // consoleStream->flush();
       }
       wasNewline = true;
     }
@@ -136,18 +178,24 @@ namespace bose_commserver
    */
   void Logger::shutdown()
   {
-    if ( textStream != nullptr )
+    //
+    // Logen stoppen
+    //
+    if ( textStream )
     {
       textStream->flush();
-      // delete(textStream);
-      // textStream = nullptr;
     }
+    if ( consoleStream )
+    {
+      consoleStream->flush();
+    }
+    //
+    // Das logfile dann auch schliessen
+    //
     if ( logFile != nullptr )
     {
       logFile->flush();
       logFile->close();
-      // delete( logFile );
-      // logFile = nullptr;
     }
   }
 

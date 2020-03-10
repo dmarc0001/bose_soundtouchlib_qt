@@ -19,7 +19,6 @@ namespace bose_commserver
   BoseCommServer::BoseCommServer( std::shared_ptr< AlertAppConfig > dconfig, QObject *parent ) : QObject( parent ), config( dconfig )
   {
     qDebug() << "commserver object created...";
-    qDebug() << "create serversocket...";
     qDebug() << "config hash <" << dconfig->getConfigHash() << ">";
     if ( !createLogger() )
     {
@@ -32,9 +31,8 @@ namespace bose_commserver
     else
     {
       configServer();
-      qDebug() << "LOGFILE" << config->getLogfileName();
+      qDebug() << "BoseCommServer::BoseCommServer: LOGFILE" << config->getLogfileName();
       *lg << LDEBUG << "BoseCommServer::BoseCommServer: serversocket created...";
-      qDebug() << "create serversocket...OK";
     }
     *lg << LDEBUG << "BoseCommServer::BoseCommServer: create timer..." << endl;
     dTimer = std::unique_ptr< DaemonTimer >( new DaemonTimer( config, this ) );
@@ -52,7 +50,7 @@ namespace bose_commserver
    */
   BoseCommServer::~BoseCommServer()
   {
-    *lg << LINFO << "BoseCommServer::~BoseCommServer: destructor..." << endl;
+    *lg << LDEBUG << "BoseCommServer::~BoseCommServer: destructor..." << endl;
     stDiscover->cancel();
     dTimer->stopTimer();
     cServer->close();
@@ -306,7 +304,7 @@ namespace bose_commserver
     //
     // einen Alarm einfügen, der Konstruktor startet diesen gleich
     //
-    BoseSoundAlert *currAlert = new BoseSoundAlert( alert, lg, this );
+    BoseSoundAlert *currAlert = new BoseSoundAlert( config, alert, lg, this );
     //
     // verbinde das finish Signal des alarms mit der slot funktion via lambda Funktion
     //
