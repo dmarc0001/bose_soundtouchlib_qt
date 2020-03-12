@@ -33,6 +33,7 @@ namespace bose_commserver
     connect( &alTimer, &QTimer::timeout, this, &BoseSoundAlert::onTimeout );
     alTimer.start( timerValue );
     alertStatus = AL_PREPARE1;
+    prepareAlert();
   }
 
   /**
@@ -61,7 +62,7 @@ namespace bose_commserver
         break;
       case AL_PREPARE1:
         // Geräte vorbereiten
-        prepareAlert();
+        // prepareAlert();
         break;
       case AL_PREPARE2:
         // Standby erfragen

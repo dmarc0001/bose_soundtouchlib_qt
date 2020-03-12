@@ -9,6 +9,7 @@
 #include <QtWebSockets/QWebSocketServer>
 #include <bsoundtouchdevice.hpp>
 #include <memory>
+
 #include "config/alertconfig.hpp"
 #include "config/common_def.hpp"
 #include "logging/logger.hpp"
