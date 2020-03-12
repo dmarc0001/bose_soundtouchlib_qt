@@ -39,9 +39,22 @@ set(MAJOR 0) # major version number
 set(MINOR 2) # minor version number
 set(PATCH 0) # patch number
 set(BUILD 0) # win32: build number
+
+###############################################################################
+# Systemspezifisches                                                          #
+###############################################################################
 if (WIN32)
   # major.minor.patch.build
   set(VERSION $${MAJOR}.$${MINOR}.$${PATCH}.$${BUILD})
+  add_compile_definitions(WIN32)
+  set(ZEROCONF_LIB_DIR ${CMAKE_PREFIX_PATH}/lib )
+  if (CMAKE_BUILD_TYPE  STREQUAL "Debug")
+    set(ZEROCONF_LIB QtZeroConfd )
+  else()
+    set(ZEROCONF_LIB QtZeroConf )
+  endif()
+  message("ZEROCONF Lib : ${ZEROCONF_LIB}")
+  message("ZEROCONF Path: ${ZEROCONF_LIB_DIR}")
 else(WIN32)
   # major.minor.patch
   set(VERSION $${MAJOR}.$${MINOR}.$${PATCH})
@@ -51,14 +64,6 @@ if(UNIX)
   add_compile_definitions(UNIX)
   set(ZC_EXTRA_LIBS avahi-client avahi-common)
 endif(UNIX)
-
-if(WIN32)
-  if (CMAKE_BUILD_TYPE  STREQUAL "Debug")
-    add_compile_definitions(WIN32)
-    set(ZEROCONF_LIB_DIR ${CMAKE_PREFIX_PATH}/lib )
-  endif()
-endif(WIN32)
-
 
 ###############################################################################
 # Einstellungen für die soundtouch library                                    #
@@ -72,40 +77,31 @@ set(IMPORT_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
 ###############################################################################
 
 if (CMAKE_BUILD_TYPE  STREQUAL "Debug")
-  set(prog_name alert_daemon_debug)
-  set(lib_name soundtouch_debug)
-  message("create ${prog_name} in debug mode (${CMAKE_BUILD_TYPE})")
+  set(PROG_NAME alert_daemon_debug)
+  #set(SOUNDTOUCH_LIB_NAME soundtouch)
+  set(SOUNDTOUCH_LIB_NAME soundtouch_debug)
+  message("create ${PROG_NAME} in debug mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(DEBUG)
-  if (WIN32)
-    set(ZEROCONF_LIB QtZeroConfd )
-  endif(WIN32)
 else()
-  set(prog_name alert_daemon)
-  set(lib_name soundtouch)
-  message("create  ${prog_name} in release mode (${CMAKE_BUILD_TYPE})")
+  set(PROG_NAME alert_daemon)
+  set(SOUNDTOUCH_LIB_NAME soundtouch)
+  message("create  ${PROG_NAME} in release mode (${CMAKE_BUILD_TYPE})")
   add_compile_definitions(QT_NO_DEBUG_OUTPUT)
-  if (WIN32)
-    set(ZEROCONF_LIB QtZeroConf )
-  endif(WIN32)
 endif()
-
-if(WIN32)
-  message("ZEROCONF Lib : ${ZEROCONF_LIB}")
-  message("ZEROCONF Path: ${ZEROCONF_LIB_DIR}")
-endif(WIN32)
 
 ###############################################################################
 # Defines für den Compiler                                                    #
 ###############################################################################
-set(qt_defs SOUNDTOUCH_QT_LIB_IMPORT QT_DEPRECATED_WARNINGS)
-set(prj_version VMAJOR=${MAJOR} VMINOR=${MINOR} VPATCH=${PATCH})
-add_compile_definitions(${qt_defs} ${prj_version})
+set(QT_DEFS SOUNDTOUCH_QT_LIB_IMPORT QT_DEPRECATED_WARNINGS)
+set(PROG_VERSION VMAJOR=${MAJOR} VMINOR=${MINOR} VPATCH=${PATCH})
+add_compile_definitions(${QT_DEFS} ${PROG_VERSION})
 
 ###############################################################################
 # librarys finden                                                             #
 ###############################################################################
 find_package(Qt5 COMPONENTS Core WebSockets Network Xml REQUIRED)
 
+# fuer den RASPI ein paar extras machen
 if (CMAKE_CROSSCOMPILING)
     link_directories( ${IMPORT_LIB_DIR}
         /home/dmarcini/raspi/sysroot/usr/lib/arm-linux-gnueabihf
@@ -123,6 +119,7 @@ if (CMAKE_CROSSCOMPILING)
        )
     set( EXTERNAL_LIBS ${AVAHILIB} ${LIBSYSTEMD})
 else(CMAKE_CROSSCOMPILING)
+  # kein crosscompiler, dann wieder windows oder unix
   if(WIN32)
     set( EXTERNAL_LIBS ${ZEROCONF_LIB})
     link_directories(${IMPORT_LIB_DIR} ${ZEROCONF_LIB_DIR})
@@ -131,7 +128,7 @@ else(CMAKE_CROSSCOMPILING)
     link_directories(${IMPORT_LIB_DIR})
   endif(WIN32)
 endif()
-set(IMPORT_LIBS ${lib_name} ${ZEROCONF_LIB} )
+set(IMPORT_LIBS ${SOUNDTOUCH_LIB_NAME} ${ZEROCONF_LIB} )
 set(QT_CORELIBS Qt5::Core Qt5::Network Qt5::WebSockets Qt5::Xml )
 
 ###############################################################################
@@ -139,8 +136,9 @@ set(QT_CORELIBS Qt5::Core Qt5::Network Qt5::WebSockets Qt5::Xml )
 ###############################################################################
 
 if(WIN32)
-  #
+  # bei windows die DLL (Lib) nutzen
 else(WIN32)
+  # sonst direkt einbinden
   set (HEADERS_Z
     qtzeroconf/qzeroconf.h
     qtzeroconf/avahi-qt/qt-watch.h
@@ -169,8 +167,9 @@ set( HEADERS
 )
 
 if(WIN32)
-  #
+  # bei windows die DLL (Lib) nutzen
 else(WIN32)
+  # sonst direkt einbinden
   set( SOURCES_Z
     qtzeroconf/avahiclient.cpp
     qtzeroconf/avahi-qt/qt-watch.cpp
@@ -196,13 +195,13 @@ set( SOURCES
   ${EXTRA_ZC_SOURCES}
 )
 
-add_executable( ${prog_name}
+add_executable( ${PROG_NAME}
   ${HEADERS}
   ${SOURCES}
 )
 
 # und zusammenfassen zum Programm
-target_link_libraries(${prog_name} PRIVATE ${QT_CORELIBS} ${IMPORT_LIBS} ${EXTERNAL_LIBS})
+target_link_libraries(${PROG_NAME} PRIVATE ${QT_CORELIBS} ${IMPORT_LIBS} ${EXTERNAL_LIBS})
 
 
 
