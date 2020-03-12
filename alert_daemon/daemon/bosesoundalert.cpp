@@ -19,7 +19,7 @@ namespace bose_commserver
    * @param parent
    */
   BoseSoundAlert::BoseSoundAlert( AppConfigPtr appconfig, const SingleAlertConfig &alConf, LoggerPtr lgr, QObject *parent )
-      : QThread( parent )
+      : QObject( parent )
       , alConfig( alConf )
       , config( appconfig )
       , lg( lgr )
@@ -30,7 +30,8 @@ namespace bose_commserver
     ++BoseSoundAlert::alertCount;
     *lg << LDEBUG << "BoseSoundAlert::BoseSoundAlert: construct <" << alConfig.getName() << ">, No: <" << BoseSoundAlert::alertCount
         << "> OK" << endl;
-    mainTimerId = startTimer( timerValue );
+    connect( &alTimer, &QTimer::timeout, this, &BoseSoundAlert::onTimeout );
+    alTimer.start( timerValue );
     alertStatus = AL_PREPARE1;
   }
 
@@ -45,31 +46,10 @@ namespace bose_commserver
   }
 
   /**
-   * @brief BoseSoundAlert::run Hauptschleife des Threads
-   */
-  void BoseSoundAlert::run()
-  {
-    *lg << LINFO << "BoseSoundAlert::run: thread start..." << endl;
-    //
-    // warte bis der Thread beendet werden soll
-    //
-    while ( alertIsRunning )
-    {
-      // hier blockiert run...
-      mutex.tryLock( 20 );
-      yieldCurrentThread();
-    }
-    //
-    //  this->msleep( 80 );
-    //
-    *lg << LINFO << "BoseSoundAlert::run: thread end..." << endl;
-  }
-
-  /**
    * @brief BoseSoundAlert::timerEvent
    * @param event
    */
-  void BoseSoundAlert::timerEvent( QTimerEvent * )
+  void BoseSoundAlert::onTimeout()
   {
     //
     // verzweige in die richtige Routine für den jeweiligen Status des Automaten
@@ -122,8 +102,11 @@ namespace bose_commserver
         postpareAlert();
         break;
       case AL_FINISHED:
-        // thread beenden
-        alertIsRunning = false;
+        // alert beenden
+        alTimer.stop();
+        disconnect( &alTimer );
+        disconnect( masterDevice.get() );
+        emit onFinish();
         break;
       default:
         // ist größer als 0x80 warte ich auf etwas
@@ -133,11 +116,6 @@ namespace bose_commserver
         // TODO: ist das erwartete Ereignis eingetreten oder timeout
         break;
     }
-    //
-    // wenn in run() der mutex blockiert ist, entsperre den
-    //
-    if ( !mutex.tryLock( 5 ) )
-      mutex.unlock();
   }
 
   /**
@@ -166,28 +144,8 @@ namespace bose_commserver
           // das geforderte Gerät ist tatsächlich da!
           // ein Objekt für den Alarm erstellen und in die Liste einbringen
           //
-          QString ipStr( avlDevice.getIp().toString() );
-          sDevicePtr sDevice = sDevicePtr( new BSoundTouchDevice(
-              ipStr /*avlDevice.getHostName()*/, avlDevice.getWsPort(), avlDevice.getPort(), this,
-              config->getThreshold() == LgThreshold::LG_DEBUG ? QtMsgType::QtDebugMsg : QtMsgType::QtCriticalMsg ) );
-          sDevice->setId( avlDevice.getId() );
-          sDevice->setIpString( avlDevice.getIp().toString() );
-          //
-          // Das Gerät erst mal mit allen Slots verbinden
-          //
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnPresetsUpdated, this, &BoseSoundAlert::slotOnPresetsUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnNowPlayingUpdated, this, &BoseSoundAlert::slotOnNowPlayingUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnPresetSelectionUpdated, this,
-                   &BoseSoundAlert::slotOnPresetSelectionUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnVolumeUpdated, this, &BoseSoundAlert::slotOnVolumeUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnBassUpdated, this, &BoseSoundAlert::slotOnBassUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnZoneUpdated, this, &BoseSoundAlert::slotOnZoneUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnInfoUpdated, this, &BoseSoundAlert::slotOnInfoUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnNameUpdated, this, &BoseSoundAlert::slotOnNameUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnErrorUpdated, this, &BoseSoundAlert::slotOnErrorUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnGroupUpdated, this, &BoseSoundAlert::slotOnGroupUpdated );
           // in die Liste
-          devices.append( sDevice );
+          devices.append( avlDevice );
         }
       }  // for availDevices
     }    // for devnames
@@ -204,29 +162,50 @@ namespace bose_commserver
       isWorking = false;
       return;
     }
-    if ( countDevices > 1 )
-    {
-      if ( !buildGroup() )
-      {
-        alertStatus = AL_FINISHED;
-        *lg << LWARN << "can't create playgroup for alert! try single on master device..." << endl;
-        // single versuchen?
-        // master device wir ja trotzdem gesetzt
-        // return;
-      }
-    }
-    else
-    {
-      //
-      // genau ein Gerät
-      //
-      masterDevice = devices.first();
-    }
+    //
+    // Master Device machen
+    //
+    auto firstDev = devices.first();
+    QString ipStr( firstDev.getIp().toString() );
+    masterDevice = sDevicePtr(
+        new BSoundTouchDevice( ipStr /*avlDevice.getHostName()*/, firstDev.getWsPort(), firstDev.getPort(), this,
+                               config->getThreshold() == LgThreshold::LG_DEBUG ? QtMsgType::QtDebugMsg : QtMsgType::QtCriticalMsg ) );
+    masterDevice->setId( firstDev.getId() );
+    masterDevice->setIpString( firstDev.getIp().toString() );
+    //
+    // Das Gerät erst mal mit allen Slots verbinden
+    //
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnPresetsUpdated, this, &BoseSoundAlert::slotOnPresetsUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnNowPlayingUpdated, this, &BoseSoundAlert::slotOnNowPlayingUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnPresetSelectionUpdated, this,
+             &BoseSoundAlert::slotOnPresetSelectionUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnVolumeUpdated, this, &BoseSoundAlert::slotOnVolumeUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnBassUpdated, this, &BoseSoundAlert::slotOnBassUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnZoneUpdated, this, &BoseSoundAlert::slotOnZoneUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnInfoUpdated, this, &BoseSoundAlert::slotOnInfoUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnNameUpdated, this, &BoseSoundAlert::slotOnNameUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnErrorUpdated, this, &BoseSoundAlert::slotOnErrorUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnGroupUpdated, this, &BoseSoundAlert::slotOnGroupUpdated );
     //
     // verbinde das Master Gerät
     //
     *lg << LDEBUG << "BoseSoundAlert::prepareAlert: connect Device..." << endl;
     masterDevice->connectWs();
+    //
+    // sind noch mehr da?
+    //
+    if ( countDevices > 1 )
+    {
+      // TODO:
+      // if ( !buildGroup() )
+      // {
+      //  alertStatus = AL_FINISHED;
+      //  *lg << LWARN << "can't create playgroup for alert! try single on master device..." << endl;
+      // single versuchen?
+      // master device wir ja trotzdem gesetzt
+      // return;
+      // }
+    }
     //
     // teste ob das Gerät im Standby ist
     //
@@ -587,6 +566,7 @@ namespace bose_commserver
 
   bool BoseSoundAlert::buildGroup()
   {
+    /*
     *lg << LDEBUG << "BoseSoundAlert::buildGroup: found <" << devices.count() << ">, build an group..." << endl;
     //
     // mehr als ein Gerät: ich muss eine Gruppe bilden
@@ -606,11 +586,13 @@ namespace bose_commserver
     }
     masterDevice->setZone( masterDevice->getId(), memberList );
     // TODO: warte auf Bestätigung mit Timeout
+*/
     return ( true );
   }
 
   void BoseSoundAlert::slotOnPresetsUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnPresetsUpdated ####################################" << endl;
     WsPresetUpdateObject *pres = static_cast< WsPresetUpdateObject * >( response.get() );
     *lg << LINFO << "on device " << pres->getDeviceId() << " pressed " << pres->getDevicePresets().first().id << " alert aborting"
         << endl;
@@ -619,8 +601,7 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnNowPlayingUpdated( ResponseObjPtr response )
   {
-    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnNowPlayingUpdated ####################################"
-        << endl;
+    *lg << LDEBUG << "######################## BoseSoundAlert::slotOnNowPlayingUpdated ###################################" << endl;
     WsNowPlayingUpdate *npl = static_cast< WsNowPlayingUpdate * >( response.get() );
     //
     // wartet jemand auf Senderwechsel
@@ -679,6 +660,7 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnPresetSelectionUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "######################### BoseSoundAlert::slotOnPresetSelectionUpdated ############################" << endl;
     WsNowSelectionUpdated *nsu = static_cast< WsNowSelectionUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnPresetSelectionUpdated: preset on device : " << nsu->getDeviceId()
         << " switched to: " << nsu->getDevicePresets().id << endl;
@@ -687,6 +669,7 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnVolumeUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnVolumeUpdated ####################################" << endl;
     WsVolumeUpdated *vol = static_cast< WsVolumeUpdated * >( response.get() );
     //
     // aktuelle Lautstärke speuchern
@@ -708,6 +691,7 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnBassUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnBassUpdated ####################################" << endl;
     WsBassUpdated *bu = static_cast< WsBassUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnBassUpdated: bass updatet on device: " << bu->getDeviceId()
         << " to value: " << bu->getUpdatet() << endl;
@@ -716,6 +700,7 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnZoneUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnZoneUpdated ####################################" << endl;
     WsZoneUpdated *zu = static_cast< WsZoneUpdated * >( response.get() );
     *lg << LINFO << "zone update on device: " << zu->getDeviceId() << endl;
     // TODO: zur überwachung der Kommandos
@@ -723,6 +708,7 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnInfoUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnInfoUpdated ####################################" << endl;
     WsInfoUpdated *iu = static_cast< WsInfoUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnInfoUpdated: on device: " << iu->getDeviceId() << " info update..." << endl;
     // Nur info
@@ -730,12 +716,14 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnNameUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnNameUpdated ####################################" << endl;
     WsNameUpdated *nu = static_cast< WsNameUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnNameUpdated: device changed name to: " << nu->getDeviceId() << endl;
   }
 
   void BoseSoundAlert::slotOnErrorUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnErrorUpdated ####################################" << endl;
     WsErrorUpdated *eu = static_cast< WsErrorUpdated * >( response.get() );
     *lg << LCRIT << "error update on device: " << eu->getError().text << "on device" << eu->getDeviceId();
     // TODO: was machen
@@ -743,6 +731,7 @@ namespace bose_commserver
 
   void BoseSoundAlert::slotOnGroupUpdated( ResponseObjPtr response )
   {
+    *lg << LDEBUG << "########################### BoseSoundAlert::slotOnGroupUpdated ####################################" << endl;
     WsGroupUpdated *gu = static_cast< WsGroupUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnGroupUpdated: group update on device: " << gu->getDeviceId();
   }
@@ -768,7 +757,16 @@ namespace bose_commserver
     //
     // wenn in run() der mutex blockiert ist, entsperre den
     //
-    alertIsRunning = false;
+    alertStatus = AL_POSTPARE;
+  }
+
+  /**
+   * @brief BoseSoundAlert::isFinished
+   * @return
+   */
+  bool BoseSoundAlert::isFinished()
+  {
+    return alertStatus == AL_INACTIVE ? true : false;
   }
 
   /**

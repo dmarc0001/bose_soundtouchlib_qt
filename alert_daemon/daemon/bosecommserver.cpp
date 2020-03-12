@@ -68,10 +68,20 @@ namespace bose_commserver
     for ( auto &currAlert : activeAlerts )
     {
       currAlert->cancelAlert();
-      if ( currAlert->wait( 50000 ) )
+      // etwas zeit geben
+      for ( quint8 i = 0; i < 30; i++ )
       {
-        *lg << LCRIT << "BoseCommServer::~BoseCommServer: Thread was not finished, timeout!" << endl;
-        currAlert->exit();
+        QThread::msleep( 100 );
+        // ist das erledigt?
+        if ( currAlert->isFinished() )
+          break;
+      }
+      //
+      // wenn der Alarm noch nicht erledigt ist, warnen
+      //
+      if ( !currAlert->isFinished() )
+      {
+        *lg << LCRIT << "BoseCommServer::~BoseCommServer: alert was not finished, timeout!" << endl;
       }
       currAlert->deleteLater();
       activeAlerts.removeOne( currAlert );
@@ -98,11 +108,19 @@ namespace bose_commserver
         //
         for ( auto &currAlert : activeAlerts )
         {
-          currAlert->cancelAlert();
           *lg << LINFO << "Cancel running alert <" << currAlert->getAlertName() << ">..." << endl;
-          if ( !currAlert->wait( 2500 ) )
+          currAlert->cancelAlert();
+          // etwas zeit geben
+          for ( quint8 i = 0; i < 30; i++ )
           {
-            *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: Thread was not finished, timeout!" << endl;
+            QThread::msleep( 100 );
+            // ist das erledigt?
+            if ( currAlert->isFinished() )
+              break;
+          }
+          if ( !currAlert->isFinished() )
+          {
+            *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: alert was not finished, timeout!" << endl;
           }
           *lg << LINFO << "Canceled running alert <" << currAlert->getAlertName() << ">...OK" << endl;
           QThread::msleep( 50 );
@@ -315,8 +333,7 @@ namespace bose_commserver
     //
     // verbinde das finish Signal des alarms mit der slot funktion via lambda Funktion
     //
-    connect( currAlert, &BoseSoundAlert::finished, [this, currAlert]() { this->onAlertFinish( currAlert ); } );
-    currAlert->start();
+    connect( currAlert, &BoseSoundAlert::onFinish, [this, currAlert]() { this->onAlertFinish( currAlert ); } );
     activeAlerts.append( currAlert );
     *lg << LDEBUG << "BoseCommServer::onStartAlert: active alerts now <" << BoseSoundAlert::getAlertCount() << ">" << endl;
   }

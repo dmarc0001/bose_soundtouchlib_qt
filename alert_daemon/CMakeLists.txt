@@ -92,9 +92,9 @@ endif()
 ###############################################################################
 # Defines für den Compiler                                                    #
 ###############################################################################
-set(QT_DEFS SOUNDTOUCH_QT_LIB_IMPORT QT_DEPRECATED_WARNINGS)
+set(QT_PRJ_DEFS SOUNDTOUCH_QT_LIB_IMPORT QT_DEPRECATED_WARNINGS)
 set(PROG_VERSION VMAJOR=${MAJOR} VMINOR=${MINOR} VPATCH=${PATCH})
-add_compile_definitions(${QT_DEFS} ${PROG_VERSION})
+add_compile_definitions(${QT_PRJ_DEFS} ${PROG_VERSION})
 
 ###############################################################################
 # librarys finden                                                             #

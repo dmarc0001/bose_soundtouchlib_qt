@@ -12,6 +12,7 @@
 #include <QVector>
 #include <QtDebug>
 #include <memory>
+#include "libsoundtouch_global.hpp"
 #include "websocket/bwebsocket.hpp"
 #include "xmlparser/bsoundtouch_global.hpp"
 #include "xmlparser/iresponseobject.hpp"

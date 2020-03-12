@@ -29,7 +29,10 @@ endif()
 
 
 add_subdirectory(libsoundtouch)
-#add_subdirectory(test_soundtouch)
+if (CMAKE_CROSSCOMPILING)
+else()
+add_subdirectory(test_soundtouch)
+endif()
 add_subdirectory(alert_daemon)
 add_subdirectory(testclient)
 

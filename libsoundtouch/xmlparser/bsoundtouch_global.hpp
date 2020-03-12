@@ -11,7 +11,9 @@
 #include <QVector>
 #include <QtDebug>
 #include <memory>
+#include "../libsoundtouch_global.hpp"
 
+/*
 #ifdef SOUNDTOUCH_QT_LIB_IMPORT
 #define SOUNDTOUCH_QT_LIBSHARED_EXPORT Q_DECL_IMPORT
 #else
@@ -21,6 +23,7 @@
 #define SOUNDTOUCH_QT_LIBSHARED_EXPORT
 #endif
 #endif
+*/
 
 namespace bose_soundtoch_lib
 {

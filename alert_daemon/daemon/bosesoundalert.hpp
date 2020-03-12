@@ -2,10 +2,8 @@
 #define BOSESOUNDALERT_HPP
 
 #include <QList>
-#include <QMutex>
 #include <QObject>
 #include <QRegExp>
-#include <QThread>
 #include <QTimer>
 #include <QtWebSockets/QWebSocket>
 #include <QtWebSockets/QWebSocketServer>
@@ -21,13 +19,14 @@ namespace bose_commserver
   class BoseSoundAlert;
 
   using AlertTaskList = QList< bose_commserver::BoseSoundAlert * >;
-  using sDevicePtr = std::shared_ptr< bose_soundtoch_lib::BSoundTouchDevice >;
+  // using sDevicePtr = std::shared_ptr< bose_soundtoch_lib::BSoundTouchDevice >;
+  using sDevicePtr = std::unique_ptr< bose_soundtoch_lib::BSoundTouchDevice >;
   using ResponseObjPtr = std::shared_ptr< bose_soundtoch_lib::IResponseObject >;
   constexpr int timerValue = 100;                                  //! Timer 100 ms
   constexpr quint32 factorTo1Sec = 10;                             //! Faktor für timervalue * factor = 1000 ms
   constexpr quint32 timeoutValue = quint32( 10000 / timerValue );  //! 2.5 Sekunden Timeout
 
-  class BoseSoundAlert : public QThread
+  class BoseSoundAlert : public QObject
   {
     Q_OBJECT
     private:
@@ -60,41 +59,36 @@ namespace bose_commserver
       WS_SUCCESS,  //! warten ohne timeout
       WS_TIMEOUT   //! warten mit Timeout
     };
-    static const QRegExp rePreset;     //! Regulärer Ausdruck zum finden der PRESET Source
-    static const QRegExp rePresetNum;  //! Regulärer Ausdruck zum finden der PRESET Source Nummer
-    static const QRegExp reInet;       //! Regulärer Ausdruck zum finden der INGTERNET Source
-    static const QRegExp reAmazon;     //! Regulärer Ausdruck zum finden der AMAZON Source
-    static const QRegExp reStandby;    //! Regulärer Ausdruck zum finden des STANDBY Status
-    static quint16 alertCount;         //! Anzahl aktiver alarme
-    SingleAlertConfig alConfig;        //! Kopie der Alarmkonfiguration
-    AppConfigPtr config;               //! Globale Konfiguration
-    LoggerPtr lg;                      //! der systemlogger
-    quint16 duration;                  //! der Startwert aus der config
-    quint32 durationCounter;           //! wenn der auf 0 runter gezählt wird ist ENDE
-    int mainTimerId{-1};               //! id des haupttimers
-    int alertVolume{0};                //! wenn vol raising dann hier für speed cachen
-    int currentVolume{0};              //! wenn vol raising dann hier für speed cachen
-    QString currentSource{""};         //! was spielt die Kiste gerade
-    QString currentPlaystate{""};      //! welcher Status? (PLAYING, BUFFERING, STANDBY)
-    int bevorVolume{0};                //! Lautstärke vor dem Alarm
-    int alertRaiseStep{1};             //! wie viel soll die Lautstärke per Tick erhöht werden?
-    QList< sDevicePtr > devices;       //! Geräte im Alarm, die Instanzen löschen sich selber
-    sDevicePtr masterDevice;           //! das Gerät ist MASTER / oder das Einzige
-    bool alertIsRunning{true};         //! solange der Thread laufen soll
-    QMutex mutex;
-    QVector< waitForType > waitForList;           //! Auf was warte ich alles
-    alertStatusType alertStatus{AL_INACTIVE};     //! in welchem Status ist der Automat
-    alertStatusType alertOldStatus{AL_FINISHED};  //! in welchem Status war der Automat vor WAIT
-
-    protected:
-    void timerEvent( QTimerEvent *event ) override;
+    static const QRegExp rePreset;             //! Regulärer Ausdruck zum finden der PRESET Source
+    static const QRegExp rePresetNum;          //! Regulärer Ausdruck zum finden der PRESET Source Nummer
+    static const QRegExp reInet;               //! Regulärer Ausdruck zum finden der INGTERNET Source
+    static const QRegExp reAmazon;             //! Regulärer Ausdruck zum finden der AMAZON Source
+    static const QRegExp reStandby;            //! Regulärer Ausdruck zum finden des STANDBY Status
+    static quint16 alertCount;                 //! Anzahl aktiver alarme
+    SingleAlertConfig alConfig;                //! Kopie der Alarmkonfiguration
+    AppConfigPtr config;                       //! Globale Konfiguration
+    LoggerPtr lg;                              //! der systemlogger
+    QTimer alTimer;                            //! der Timer für den alarm
+    quint16 duration;                          //! der Startwert aus der config
+    quint32 durationCounter;                   //! wenn der auf 0 runter gezählt wird ist ENDE
+    int alertVolume{0};                        //! wenn vol raising dann hier für speed cachen
+    int currentVolume{0};                      //! wenn vol raising dann hier für speed cachen
+    QString currentSource{""};                 //! was spielt die Kiste gerade
+    QString currentPlaystate{""};              //! welcher Status? (PLAYING, BUFFERING, STANDBY)
+    int bevorVolume{0};                        //! Lautstärke vor dem Alarm
+    int alertRaiseStep{1};                     //! wie viel soll die Lautstärke per Tick erhöht werden?
+    SoundTouchDevicesList devices;             //! Geräte im Alarm
+    sDevicePtr masterDevice;                   //! das Gerät ist MASTER / oder das Einzige
+    QVector< waitForType > waitForList;        //! Auf was warte ich alles
+    alertStatusType alertStatus{AL_INACTIVE};  //! in welchem Status ist der Automat
+    void onTimeout();                          //! der Timer schlägt zu
 
     public:
     explicit BoseSoundAlert( AppConfigPtr appconfig, const SingleAlertConfig &alConf, LoggerPtr lgr, QObject *parent = nullptr );
     ~BoseSoundAlert() override;    //! der Zerstörer
-    void run() override;           //! hier findet sann alles statt
     QString getAlertName() const;  //! drt Name des alarms
     void cancelAlert();            //! breche den Alarm ab (von extern oder intern)
+    bool isFinished();             //! alles beendet?
     inline static quint16 getAlertCount()
     {
       return alertCount;
@@ -119,7 +113,9 @@ namespace bose_commserver
     bool askForVolume();        //! blockierend, wartet auf Lautstärke
     bool setVolume( int vol );  //! blockierend, setze Lautstärke
     bool setTunerChannel();     //! stelle den gewählten Sender (aus der config) ein
+
     signals:
+    void onFinish();  //! wenn der Alarm fertig ist
 
     private slots:
     // Asynchrone Nachrichten der Geräte

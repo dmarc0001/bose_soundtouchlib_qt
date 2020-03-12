@@ -9,11 +9,11 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QSocketNotifier>
+#include <QThread>
 #include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
 #include <QtWebSockets/QWebSocketServer>
 #include <memory>
-
 #include "bosesoundalert.hpp"
 #include "config/alertconfig.hpp"
 #include "config/common_def.hpp"
