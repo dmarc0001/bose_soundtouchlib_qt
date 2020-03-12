@@ -93,16 +93,23 @@ namespace bose_commserver
         dTimer->stopTimer();
         // config->getConfigHash();
         *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: recived SIGINT/SIGTERM!" << endl;
+        //
+        // alle Alarme beenden
+        //
         for ( auto &currAlert : activeAlerts )
         {
           currAlert->cancelAlert();
+          *lg << LINFO << "Cancel running alert <" << currAlert->getAlertName() << ">..." << endl;
           if ( !currAlert->wait( 2500 ) )
           {
             *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: Thread was not finished, timeout!" << endl;
           }
+          *lg << LINFO << "Canceled running alert <" << currAlert->getAlertName() << ">...OK" << endl;
           QThread::msleep( 50 );
         }
+        //
         // das ende signalisieren
+        //
         *lg << LINFO << "BoseCommServer::reciveAsyncSignal: emit close signal!" << endl;
         emit closed();
         deleteLater();
@@ -311,6 +318,7 @@ namespace bose_commserver
     connect( currAlert, &BoseSoundAlert::finished, [this, currAlert]() { this->onAlertFinish( currAlert ); } );
     currAlert->start();
     activeAlerts.append( currAlert );
+    *lg << LDEBUG << "BoseCommServer::onStartAlert: active alerts now <" << BoseSoundAlert::getAlertCount() << ">" << endl;
   }
 
   /**
@@ -374,5 +382,6 @@ namespace bose_commserver
         break;
       }
     }
+    *lg << LDEBUG << "BoseCommServer::onAlertFinish: active alerts now <" << BoseSoundAlert::getAlertCount() << ">" << endl;
   }
 }  // namespace bose_commserver
