@@ -353,7 +353,9 @@ namespace bose_commserver
         // diesen alarm beenden
         //
         currAlert->cancelAlert();
-        break;
+        // ist QLIST, iterator bleibt gültig
+        activeAlerts.removeOne( currAlert );
+        return;
       }
     }
   }
@@ -366,24 +368,6 @@ namespace bose_commserver
   {
     QString alertName = alert->getAlertName();
     *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1>..." ).arg( alertName ) << endl;
-    //
-    // der normale weg den Alarm zu entsorgen.
-    // bei Cancel via SIGNAL ist der dann schon aus der Liste
-    // und es passiert hier nix
-    //
-    for ( auto currAlert : activeAlerts )
-    {
-      if ( alert == currAlert )
-      {
-        //
-        // diesen alarm loeschen
-        //
-        *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1> delete..." ).arg( alertName ) << endl;
-        activeAlerts.removeOne( alert );
-        alert->deleteLater();
-        break;
-      }
-    }
     //
     // die Markierung in der Config wieder entfernen
     //

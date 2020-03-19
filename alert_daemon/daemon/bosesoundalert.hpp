@@ -9,23 +9,21 @@
 #include <QtWebSockets/QWebSocketServer>
 #include <bsoundtouchdevice.hpp>
 #include <memory>
-
 #include "config/alertconfig.hpp"
 #include "config/common_def.hpp"
 #include "logging/logger.hpp"
+#include "xmlparser/xmlresultparser.hpp"
 #include "xmlparser/xmlupdateparser.hpp"
 
 namespace bose_commserver
 {
   class BoseSoundAlert;
 
-  using AlertTaskList = QList< bose_commserver::BoseSoundAlert * >;
-  // using sDevicePtr = std::shared_ptr< bose_soundtoch_lib::BSoundTouchDevice >;
-  using sDevicePtr = std::unique_ptr< bose_soundtoch_lib::BSoundTouchDevice >;
-  using ResponseObjPtr = std::shared_ptr< bose_soundtoch_lib::IResponseObject >;
-  constexpr int timerValue = 100;                                  //! Timer 100 ms
-  constexpr quint32 factorTo1Sec = 10;                             //! Faktor für timervalue * factor = 1000 ms
-  constexpr quint32 timeoutValue = quint32( 10000 / timerValue );  //! 2.5 Sekunden Timeout
+  using AlertTaskList = QList< bose_commserver::BoseSoundAlert * >;             //! Definition für Liste mit Alarmen
+  using sDevicePtr = std::unique_ptr< bose_soundtoch_lib::BSoundTouchDevice >;  //! Bezeichnugn für Zeigerobjekt auf Device
+  constexpr int timerValue = 100;                                               //! Timer 100 ms
+  constexpr quint32 factorTo1Sec = 10;                                          //! Faktor für timervalue * factor = 1000 ms
+  constexpr quint32 timeoutValue = quint32( 10000 / timerValue );               //! 2.5 Sekunden Timeout
 
   class BoseSoundAlert : public QObject
   {
@@ -93,7 +91,7 @@ namespace bose_commserver
     inline static quint16 getAlertCount()
     {
       return alertCount;
-    };  //! erfrage die Anzahl aktiver Alarme
+    }  //! erfrage die Anzahl aktiver Alarme
 
     private:
     void prepareAlert();               //! Bereite Alarm vor AL_PREPARE1 VORBEREITUNG
@@ -120,16 +118,21 @@ namespace bose_commserver
 
     private slots:
     // Asynchrone Nachrichten der Geräte
-    void slotOnPresetsUpdated( ResponseObjPtr response );
-    void slotOnNowPlayingUpdated( ResponseObjPtr response );
-    void slotOnPresetSelectionUpdated( ResponseObjPtr response );
-    void slotOnVolumeUpdated( ResponseObjPtr response );
-    void slotOnBassUpdated( ResponseObjPtr response );
-    void slotOnZoneUpdated( ResponseObjPtr response );
-    void slotOnInfoUpdated( ResponseObjPtr response );
-    void slotOnNameUpdated( ResponseObjPtr response );
-    void slotOnErrorUpdated( ResponseObjPtr response );
-    void slotOnGroupUpdated( ResponseObjPtr response );
+    void slotOnPresetsUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnNowPlayingUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnNowPlayingResult( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnPresetSelectionUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnVolumeUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnVolumeResult( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnBassUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnZoneUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnZonesResult( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnInfoUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnNameUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnErrorUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+    void slotOnGroupUpdated( bose_soundtoch_lib::IResponseObjPtr response );
+
+    // sigOnRequestAnswer
   };
 }  // namespace bose_commserver
 #endif  // BOSESOUNDALERT_HPP
