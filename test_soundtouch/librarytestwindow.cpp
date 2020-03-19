@@ -5,8 +5,8 @@ namespace bose_soundtoch_lib
   LibraryTestWindow::LibraryTestWindow( QString hostname, int wsPortnum, int httpPortnum, bool isDebug, QWidget *parent )
       : QMainWindow( parent )
       , host( hostname )
-      , wsPort( wsPortnum )
-      , httpPort( httpPortnum )
+      , wsPort( static_cast< quint16 >( wsPortnum ) )
+      , httpPort( static_cast< quint16 >( httpPortnum ) )
       , isDebug( isDebug )
       , threshold( QtMsgType::QtInfoMsg )
       , ui( new Ui::LibraryTestWindow() )
@@ -87,7 +87,7 @@ namespace bose_soundtoch_lib
 
   LibraryTestWindow::~LibraryTestWindow()
   {
-    qDebug() << "...";
+    qDebug() << "...LibraryTestWindow::~LibraryTestWindow...";
   }
 
   void LibraryTestWindow::slotOnHostnameLineEditFinished( void )
@@ -303,61 +303,66 @@ namespace bose_soundtoch_lib
   void LibraryTestWindow::slotOnPresetsUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsPresetUpdateObject *pres = static_cast< WsPresetUpdateObject * >( response.get() );
-    qInfo() << "Preset's first id: " << pres->getDevicePresets().first().id << "on device " << pres->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnPresetsUpdated: Preset's first id: " << pres->getDevicePresets().first().id << "on device "
+            << pres->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnNowPlayingUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsNowPlayingUpdate *npl = static_cast< WsNowPlayingUpdate * >( response.get() );
-    qInfo() << "now playing status: " << npl->getPlayStatus() << "on device " << npl->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnNowPlayingUpdated: now playing status: " << npl->getPlayStatus() << "on device "
+            << npl->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnPresetSelectionUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsNowSelectionUpdated *nsu = static_cast< WsNowSelectionUpdated * >( response.get() );
-    qInfo() << "switch to preset id: " << nsu->getDevicePresets().id << "on device " << nsu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnPresetSelectionUpdated: switch to preset id: " << nsu->getDevicePresets().id << "on device "
+            << nsu->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnVolumeUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsVolumeUpdated *vol = static_cast< WsVolumeUpdated * >( response.get() );
-    qInfo() << "Volume set to: " << vol->getActualVolume() << "on device " << vol->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnVolumeUpdated: Volume set to: " << vol->getActualVolume() << "on device "
+            << vol->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnBassUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsBassUpdated *bu = static_cast< WsBassUpdated * >( response.get() );
-    qInfo() << "bass updated, value" << bu->getUpdatet() << "on device " << bu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnBassUpdated: bass updated, value" << bu->getUpdatet() << "on device " << bu->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnZoneUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsZoneUpdated *zu = static_cast< WsZoneUpdated * >( response.get() );
-    qInfo() << "zone update on device: " << zu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnZoneUpdated: zone update on device: " << zu->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnInfoUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsInfoUpdated *iu = static_cast< WsInfoUpdated * >( response.get() );
-    qInfo() << "info update on device: " << iu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnInfoUpdated: info update on device: " << iu->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnNameUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsNameUpdated *nu = static_cast< WsNameUpdated * >( response.get() );
-    qInfo() << "name update on device: " << nu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnNameUpdated: name update on device: " << nu->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnErrorUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsErrorUpdated *eu = static_cast< WsErrorUpdated * >( response.get() );
-    qInfo() << "error update on device: " << eu->getError().text << "on device" << eu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnErrorUpdated: error update on device: " << eu->getError().text << "on device"
+            << eu->getDeviceId();
   }
 
   void LibraryTestWindow::slotOnGroupUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsGroupUpdated *gu = static_cast< WsGroupUpdated * >( response.get() );
-    qInfo() << "group update on device: " << gu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnGroupUpdated: group update on device: " << gu->getDeviceId();
   }
 
   /*
