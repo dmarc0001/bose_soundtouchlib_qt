@@ -74,7 +74,7 @@ int main( int argc, char *argv[] )
   //
   try
   {
-    bose_commserver::BoseCommServer server( dConf );
+    bose_commserver::BoseCommServer server( dConf, &app );
     QObject::connect( &server, &bose_commserver::BoseCommServer::closed, &app, &QCoreApplication::quit );
     //
     // Signalhandling einschalten
