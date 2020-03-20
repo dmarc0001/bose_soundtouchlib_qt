@@ -5,8 +5,8 @@ namespace bose_soundtoch_lib
   LibraryTestWindow::LibraryTestWindow( QString hostname, int wsPortnum, int httpPortnum, bool isDebug, QWidget *parent )
       : QMainWindow( parent )
       , host( hostname )
-      , wsPort( wsPortnum )
-      , httpPort( httpPortnum )
+      , wsPort( static_cast< quint16 >( wsPortnum ) )
+      , httpPort( static_cast< quint16 >( httpPortnum ) )
       , isDebug( isDebug )
       , threshold( QtMsgType::QtInfoMsg )
       , ui( new Ui::LibraryTestWindow() )
@@ -73,6 +73,10 @@ namespace bose_soundtoch_lib
     //
     // callbacks für ereignisse vom gerät
     //
+    connect( sDevice.get(), &BSoundTouchDevice::sigOnSoundTouchEvent, this, &LibraryTestWindow::slotOnSoundTouchEvent );
+    connect( sDevice.get(), &BSoundTouchDevice::sigOnWSConnected, this, &LibraryTestWindow::slotOnWSConnected );
+    connect( sDevice.get(), &BSoundTouchDevice::sigOnWSDisConnected, this, &LibraryTestWindow::slotOnWSDisConnected );
+    /*
     connect( sDevice.get(), &BSoundTouchDevice::sigOnPresetsUpdated, this, &LibraryTestWindow::slotOnPresetsUpdated );
     connect( sDevice.get(), &BSoundTouchDevice::sigOnNowPlayingUpdated, this, &LibraryTestWindow::slotOnNowPlayingUpdated );
     connect( sDevice.get(), &BSoundTouchDevice::sigOnPresetSelectionUpdated, this, &LibraryTestWindow::slotOnPresetSelectionUpdated );
@@ -83,11 +87,12 @@ namespace bose_soundtoch_lib
     connect( sDevice.get(), &BSoundTouchDevice::sigOnNameUpdated, this, &LibraryTestWindow::slotOnNameUpdated );
     connect( sDevice.get(), &BSoundTouchDevice::sigOnErrorUpdated, this, &LibraryTestWindow::slotOnErrorUpdated );
     connect( sDevice.get(), &BSoundTouchDevice::sigOnGroupUpdated, this, &LibraryTestWindow::slotOnGroupUpdated );
+    */
   }
 
   LibraryTestWindow::~LibraryTestWindow()
   {
-    qDebug() << "...";
+    qDebug() << "...LibraryTestWindow::~LibraryTestWindow...";
   }
 
   void LibraryTestWindow::slotOnHostnameLineEditFinished( void )
@@ -300,64 +305,196 @@ namespace bose_soundtoch_lib
     sDevice->setKey( whichkey, BSoundTouchDevice::bose_keystate::KEY_RELEASED );
   }
 
-  void LibraryTestWindow::slotOnPresetsUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::slotOnWSConnected()
+  {
+    qDebug() << "connected.";
+  }
+
+  void LibraryTestWindow::slotOnWSDisConnected()
+  {
+    qDebug() << "disconnected.";
+  }
+
+  void LibraryTestWindow::slotOnSoundTouchEvent( IResponseObjPtr responsePtr )
+  {
+    switch ( static_cast< qint8 >( responsePtr->getResultType() ) )
+    {
+      case static_cast< qint8 >( ResultobjectType::R_OK ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: ok recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_SOURCES ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: resource recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_BASS_CAPABILITIES ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: bass capabilities recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_ZONES ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: update presets";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_VOLUME ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: volume recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_PRESETS ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: presets recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_BASS ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: bass propertys recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_DEVICE_INFO ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: device info recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_PRESETS ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: update presets";
+        onPresetsUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_NOW_PLAYING ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: update presets";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_ERROR ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnErrorResult";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_GROUPS ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnGroupResult";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_NOWPLAYING ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnNowPlayingUpdated";
+        onNowPlayingUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_SELECTION ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnPresetSelectionUpdated";
+        onPresetSelectionUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_VOLUME ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnVolumeUpdated";
+        onVolumeUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_BASS ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnBassUpdated";
+        onBassUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_ZONE ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnZoneUpdated";
+        onZoneUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_INFO ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnInfoUpdated";
+        onInfoUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_NAME ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnNameUpdated";
+        onNameUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_ERROR ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnErrorUpdated";
+        onErrorUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_GROUP ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: emit sigOnGroupUpdated";
+        onGroupUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_SDKINFO ):
+      case static_cast< qint8 >( ResultobjectType::U_BROWSE_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_RECENTS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_SOURCES_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_LANGUAGE_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED ):
+        qDebug() << "LibraryTestWindow::slotOnSoundTouchEvent: unsupported events. ignore...";
+        break;
+
+      default:
+        qWarning() << "LibraryTestWindow::slotOnSoundTouchEvent: unknown object type. ignore.";
+    }
+  }
+
+  void LibraryTestWindow::onPresetsUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsPresetUpdateObject *pres = static_cast< WsPresetUpdateObject * >( response.get() );
-    qInfo() << "Preset's first id: " << pres->getDevicePresets().first().id << "on device " << pres->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnPresetsUpdated: Preset's first id: " << pres->getDevicePresets().first().id << "on device "
+            << pres->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnNowPlayingUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onNowPlayingUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsNowPlayingUpdate *npl = static_cast< WsNowPlayingUpdate * >( response.get() );
-    qInfo() << "now playing status: " << npl->getPlayStatus() << "on device " << npl->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnNowPlayingUpdated: now playing status: " << npl->getPlayStatus() << "on device "
+            << npl->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnPresetSelectionUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onPresetSelectionUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsNowSelectionUpdated *nsu = static_cast< WsNowSelectionUpdated * >( response.get() );
-    qInfo() << "switch to preset id: " << nsu->getDevicePresets().id << "on device " << nsu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnPresetSelectionUpdated: switch to preset id: " << nsu->getDevicePresets().id << "on device "
+            << nsu->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnVolumeUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onVolumeUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsVolumeUpdated *vol = static_cast< WsVolumeUpdated * >( response.get() );
-    qInfo() << "Volume set to: " << vol->getActualVolume() << "on device " << vol->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnVolumeUpdated: Volume set to: " << vol->getActualVolume() << "on device "
+            << vol->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnBassUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onBassUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsBassUpdated *bu = static_cast< WsBassUpdated * >( response.get() );
-    qInfo() << "bass updated, value" << bu->getUpdatet() << "on device " << bu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnBassUpdated: bass updated, value" << bu->getUpdatet() << "on device " << bu->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnZoneUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onZoneUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsZoneUpdated *zu = static_cast< WsZoneUpdated * >( response.get() );
-    qInfo() << "zone update on device: " << zu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnZoneUpdated: zone update on device: " << zu->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnInfoUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onInfoUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsInfoUpdated *iu = static_cast< WsInfoUpdated * >( response.get() );
-    qInfo() << "info update on device: " << iu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnInfoUpdated: info update on device: " << iu->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnNameUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onNameUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsNameUpdated *nu = static_cast< WsNameUpdated * >( response.get() );
-    qInfo() << "name update on device: " << nu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnNameUpdated: name update on device: " << nu->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnErrorUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onErrorUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsErrorUpdated *eu = static_cast< WsErrorUpdated * >( response.get() );
-    qInfo() << "error update on device: " << eu->getError().text << "on device" << eu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnErrorUpdated: error update on device: " << eu->getError().text << "on device"
+            << eu->getDeviceId();
   }
 
-  void LibraryTestWindow::slotOnGroupUpdated( std::shared_ptr< IResponseObject > response )
+  void LibraryTestWindow::onGroupUpdated( std::shared_ptr< IResponseObject > response )
   {
     WsGroupUpdated *gu = static_cast< WsGroupUpdated * >( response.get() );
-    qInfo() << "group update on device: " << gu->getDeviceId();
+    qInfo() << "LibraryTestWindow::slotOnGroupUpdated: group update on device: " << gu->getDeviceId();
   }
 
   /*

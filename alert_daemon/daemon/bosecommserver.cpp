@@ -68,10 +68,20 @@ namespace bose_commserver
     for ( auto &currAlert : activeAlerts )
     {
       currAlert->cancelAlert();
-      if ( currAlert->wait( 50000 ) )
+      // etwas zeit geben
+      for ( quint8 i = 0; i < 30; i++ )
       {
-        *lg << LCRIT << "BoseCommServer::~BoseCommServer: Thread was not finished, timeout!" << endl;
-        currAlert->exit();
+        QThread::msleep( 100 );
+        // ist das erledigt?
+        if ( currAlert->isFinished() )
+          break;
+      }
+      //
+      // wenn der Alarm noch nicht erledigt ist, warnen
+      //
+      if ( !currAlert->isFinished() )
+      {
+        *lg << LCRIT << "BoseCommServer::~BoseCommServer: alert was not finished, timeout!" << endl;
       }
       currAlert->deleteLater();
       activeAlerts.removeOne( currAlert );
@@ -93,16 +103,31 @@ namespace bose_commserver
         dTimer->stopTimer();
         // config->getConfigHash();
         *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: recived SIGINT/SIGTERM!" << endl;
+        //
+        // alle Alarme beenden
+        //
         for ( auto &currAlert : activeAlerts )
         {
+          *lg << LINFO << "Cancel running alert <" << currAlert->getAlertName() << ">..." << endl;
           currAlert->cancelAlert();
-          if ( !currAlert->wait( 2500 ) )
+          // etwas zeit geben
+          for ( quint8 i = 0; i < 30; i++ )
           {
-            *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: Thread was not finished, timeout!" << endl;
+            QThread::msleep( 100 );
+            // ist das erledigt?
+            if ( currAlert->isFinished() )
+              break;
           }
+          if ( !currAlert->isFinished() )
+          {
+            *lg << LCRIT << "BoseCommServer::reciveAsyncSignal: alert was not finished, timeout!" << endl;
+          }
+          *lg << LINFO << "Canceled running alert <" << currAlert->getAlertName() << ">...OK" << endl;
           QThread::msleep( 50 );
         }
+        //
         // das ende signalisieren
+        //
         *lg << LINFO << "BoseCommServer::reciveAsyncSignal: emit close signal!" << endl;
         emit closed();
         deleteLater();
@@ -308,9 +333,9 @@ namespace bose_commserver
     //
     // verbinde das finish Signal des alarms mit der slot funktion via lambda Funktion
     //
-    connect( currAlert, &BoseSoundAlert::finished, [this, currAlert]() { this->onAlertFinish( currAlert ); } );
-    currAlert->start();
+    connect( currAlert, &BoseSoundAlert::onFinish, [this, currAlert]() { this->onAlertFinish( currAlert ); } );
     activeAlerts.append( currAlert );
+    *lg << LDEBUG << "BoseCommServer::onStartAlert: active alerts now <" << BoseSoundAlert::getAlertCount() << ">" << endl;
   }
 
   /**
@@ -328,7 +353,9 @@ namespace bose_commserver
         // diesen alarm beenden
         //
         currAlert->cancelAlert();
-        break;
+        // ist QLIST, iterator bleibt gültig
+        activeAlerts.removeOne( currAlert );
+        return;
       }
     }
   }
@@ -341,24 +368,6 @@ namespace bose_commserver
   {
     QString alertName = alert->getAlertName();
     *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1>..." ).arg( alertName ) << endl;
-    //
-    // der normale weg den Alarm zu entsorgen.
-    // bei Cancel via SIGNAL ist der dann schon aus der Liste
-    // und es passiert hier nix
-    //
-    for ( auto currAlert : activeAlerts )
-    {
-      if ( alert == currAlert )
-      {
-        //
-        // diesen alarm loeschen
-        //
-        *lg << LDEBUG << QString( "BoseCommServer::onAlertFinish: <%1> delete..." ).arg( alertName ) << endl;
-        activeAlerts.removeOne( alert );
-        alert->deleteLater();
-        break;
-      }
-    }
     //
     // die Markierung in der Config wieder entfernen
     //
@@ -374,5 +383,6 @@ namespace bose_commserver
         break;
       }
     }
+    *lg << LDEBUG << "BoseCommServer::onAlertFinish: active alerts now <" << BoseSoundAlert::getAlertCount() << ">" << endl;
   }
 }  // namespace bose_commserver

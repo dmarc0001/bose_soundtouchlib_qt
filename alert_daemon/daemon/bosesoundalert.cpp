@@ -9,6 +9,7 @@ namespace bose_commserver
   const QRegExp BoseSoundAlert::reInet( "INTERNET_RADIO|TUNEIN" );
   const QRegExp BoseSoundAlert::reAmazon( "^AMAZON$" );
   const QRegExp BoseSoundAlert::reStandby( "^STANDBY$" );
+  quint16 BoseSoundAlert::alertCount{0};
 
   /**
    * @brief BoseSoundAlert::BoseSoundAlert
@@ -18,17 +19,22 @@ namespace bose_commserver
    * @param parent
    */
   BoseSoundAlert::BoseSoundAlert( AppConfigPtr appconfig, const SingleAlertConfig &alConf, LoggerPtr lgr, QObject *parent )
-      : QThread( parent )
+      : QObject( parent )
       , alConfig( alConf )
       , config( appconfig )
       , lg( lgr )
-      , duration( alConf.getAlDuration() )
-      , durationCounter( static_cast< qint32 >( alConf.getAlDuration() ) * factorTo1Sec )
+      , duration( static_cast< quint16 >( alConf.getAlDuration() ) )
+      , durationCounter( static_cast< quint32 >( alConf.getAlDuration() ) * factorTo1Sec )
       , alertVolume( alConf.getAlVolume() )
   {
-    *lg << LDEBUG << "BoseSoundAlert::BoseSoundAlert: construct <" << alConfig.getName() << "> OK" << endl;
-    mainTimerId = startTimer( timerValue );
-    alertStatus = AL_PREPARE;
+    ++BoseSoundAlert::alertCount;
+    *lg << LDEBUG << "BoseSoundAlert::BoseSoundAlert: construct <" << alConfig.getName() << ">, No: <" << BoseSoundAlert::alertCount
+        << "> OK" << endl;
+    connect( &alTimer, &QTimer::timeout, this, &BoseSoundAlert::onTimeout );
+    alertStatus = AL_PREPARE2;
+    // Geräte vorbereiten
+    prepareAlert();
+    alTimer.start( timerValue );
   }
 
   /**
@@ -36,28 +42,16 @@ namespace bose_commserver
    */
   BoseSoundAlert::~BoseSoundAlert()
   {
-    *lg << LDEBUG << "BoseSoundAlert::~BoseSoundAlert: Alert <" << alConfig.getName() << "> destroing..." << endl;
-  }
-
-  /**
-   * @brief BoseSoundAlert::run Hauptschleife des Threads
-   */
-  void BoseSoundAlert::run()
-  {
-    *lg << LINFO << "BoseSoundAlert::run: thread start...";
-    //
-    // warte bis der Thread beendet werden soll
-    //
-    while ( alertIsRunning )
-      msleep( 80 );
-    *lg << LINFO << "BoseSoundAlert::run: thread end..." << endl;
+    *lg << LDEBUG << "BoseSoundAlert::~BoseSoundAlert: Alert <" << alConfig.getName() << ">, No: <" << BoseSoundAlert::alertCount
+        << "> destroing..." << endl;
+    --BoseSoundAlert::alertCount;
   }
 
   /**
    * @brief BoseSoundAlert::timerEvent
    * @param event
    */
-  void BoseSoundAlert::timerEvent( QTimerEvent * )
+  void BoseSoundAlert::onTimeout()
   {
     //
     // verzweige in die richtige Routine für den jeweiligen Status des Automaten
@@ -65,29 +59,62 @@ namespace bose_commserver
     switch ( alertStatus )
     {
       case AL_INACTIVE:
-        alertStatus = AL_PREPARE;
+        alertStatus = AL_PREPARE1;
         break;
-      case AL_PREPARE:
-        prepareAlert();
+      case AL_PREPARE1:
+        // Geräte vorbereiten
+        // prepareAlert();
+        break;
+      case AL_PREPARE2:
+        // Standby erfragen
+        prepareAlertCheckStandby();
+        break;
+      case AL_PREPARE3:
+        // Lautstärke erfragen
+        prepareAlertGetVolume();
+        break;
+      case AL_PREPARE4:
+        // Lautstärke setzen
+        prepareAlertSetVolume();
+        break;
+      case AL_PREPARE5:
+        // Quelle einstellen
+        prepareAlertSetTuner();
+        break;
+      case AL_PREPARE6:
+        // Abspielen überwachen
+        prepareAlertWaitForSource();
         break;
       case AL_RAISE:
+        // Lautstärke dimmen
         durationCounter--;
         raiseVolume();
         break;
       case AL_PLAY:
+        // nur abspielen
         durationCounter--;
         checkPlaying();
         break;
       case AL_REDUCE:
+        // Lautstärke dimmen
         reduceVolume();
         break;
       case AL_POSTPARE:
+        // beenden
         postpareAlert();
         break;
       case AL_FINISHED:
-        alertIsRunning = false;
+        // alert beenden
+        alTimer.stop();
+        disconnect( &alTimer );
+        disconnect( masterDevice.get() );
+        emit onFinish();
         break;
-      case AL_WAITFOR:
+      default:
+        // ist größer als 0x80 warte ich auf etwas
+        if ( alertStatus >= 0x80 )
+        {
+        }
         // TODO: ist das erwartete Ereignis eingetreten oder timeout
         break;
     }
@@ -119,27 +146,8 @@ namespace bose_commserver
           // das geforderte Gerät ist tatsächlich da!
           // ein Objekt für den Alarm erstellen und in die Liste einbringen
           //
-          sDevicePtr sDevice = sDevicePtr( new BSoundTouchDevice(
-              avlDevice.getHostName(), avlDevice.getWsPort(), avlDevice.getPort(), this,
-              config->getThreshold() == LgThreshold::LG_DEBUG ? QtMsgType::QtDebugMsg : QtMsgType::QtCriticalMsg ) );
-          sDevice->setId( avlDevice.getId() );
-          sDevice->setIpString( avlDevice.getIp().toString() );
-          //
-          // Das Gerät erst mal mit allen Slots verbinden
-          //
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnPresetsUpdated, this, &BoseSoundAlert::slotOnPresetsUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnNowPlayingUpdated, this, &BoseSoundAlert::slotOnNowPlayingUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnPresetSelectionUpdated, this,
-                   &BoseSoundAlert::slotOnPresetSelectionUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnVolumeUpdated, this, &BoseSoundAlert::slotOnVolumeUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnBassUpdated, this, &BoseSoundAlert::slotOnBassUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnZoneUpdated, this, &BoseSoundAlert::slotOnZoneUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnInfoUpdated, this, &BoseSoundAlert::slotOnInfoUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnNameUpdated, this, &BoseSoundAlert::slotOnNameUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnErrorUpdated, this, &BoseSoundAlert::slotOnErrorUpdated );
-          connect( sDevice.get(), &BSoundTouchDevice::sigOnGroupUpdated, this, &BoseSoundAlert::slotOnGroupUpdated );
           // in die Liste
-          devices.append( sDevice );
+          devices.append( avlDevice );
         }
       }  // for availDevices
     }    // for devnames
@@ -147,118 +155,325 @@ namespace bose_commserver
     // wie viele Geräte gefunden?
     //
     int countDevices = devices.count();
-    *lg << LDEBUG << "BoseSoundAlert::prepareAlert: found <" << countDevices << "> device(s) for altert" << endl;
+    *lg << LDEBUG << "BoseSoundAlert::prepareAlert: found <" << countDevices << "> device(s) for alert" << endl;
     if ( countDevices == 0 )
     {
       // kein Gerät!
-      *lg << LCRIT << "found non device for alert! abort!" << endl;
+      *lg << LCRIT << "found no device for alert! abort!" << endl;
       alertStatus = AL_FINISHED;
       isWorking = false;
       return;
     }
-    if ( countDevices > 1 )
+    //
+    // Master Device machen
+    //
+    auto firstDev = devices.first();
+    QString ipStr( firstDev.getIp().toString() );
+    // auto local_threshold = config->getThreshold() == LgThreshold::LG_DEBUG ? QtMsgType::QtDebugMsg : QtMsgType::QtCriticalMsg;
+    masterDevice = sDevicePtr( new BSoundTouchDevice( ipStr, firstDev.getWsPort(), firstDev.getPort(), this ) );
+    masterDevice->setId( firstDev.getId() );
+    masterDevice->setIpString( firstDev.getIp().toString() );
+    //
+    // Das Gerät erst mal mit allen Slots verbinden
+    //
+    if ( config->getThreshold() == LgThreshold::LG_DEBUG )
     {
-      if ( !buildGroup() )
-      {
-        alertStatus = AL_FINISHED;
-        *lg << LWARN << "can't create playgroup for alert! try single on master device..." << endl;
-        // single versuchen?
-        // master device wir ja trotzdem gesetzt
-        // return;
-      }
+      connect( masterDevice.get(), &BSoundTouchDevice::sigOnWSConnected,
+               [=]() { *( this->lg ) << LG_INFO << "======================== CONNECTED ===================" << endl; } );
+      connect( masterDevice.get(), &BSoundTouchDevice::sigOnWSDisConnected,
+               [=]() { *( this->lg ) << LG_INFO << "======================== DISCONNECTED ===================" << endl; } );
     }
-    else
-    {
-      //
-      // genau ein Gerät
-      //
-      masterDevice = devices.first();
-    }
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnSoundTouchEvent, this, &BoseSoundAlert::slotOnSoundTouchEvent );
     //
     // verbinde das Master Gerät
     //
+    *lg << LDEBUG << "BoseSoundAlert::prepareAlert: connect Device..." << endl;
     masterDevice->connectWs();
+    //
+    // sind noch mehr da?
+    //
+    if ( countDevices > 1 )
+    {
+      // TODO:
+      // if ( !buildGroup() )
+      // {
+      //  alertStatus = AL_FINISHED;
+      //  *lg << LWARN << "can't create playgroup for alert! try single on master device..." << endl;
+      // single versuchen?
+      // master device wir ja trotzdem gesetzt
+      // return;
+      // }
+    }
     //
     // teste ob das Gerät im Standby ist
     //
-    if ( !askForStandby() )
+    askForStandby();
+    alertStatus = AL_PREPARE2;  // Status des Automaten
+    isWorking = false;
+  }
+
+  /**
+   * @brief BoseSoundAlert::prepareAlert2
+   */
+  void BoseSoundAlert::prepareAlertCheckStandby()
+  {
+    //
+    // erwarte den STANDBY Wert
+    //
+    static bool isWorking = false;
+    static quint32 timeoutCount{0};
+    if ( isWorking )
+      return;
+    isWorking = true;
+    if ( waitForList.indexOf( WT_STANDBY ) != -1 )
     {
       //
-      // GEHT NICHT; ABBRECHEN?!
-      // TODO: was sinnvolles machen
+      // ich warte auf STANDBY
       //
-      *lg << LINFO << "master device is not in state STANDBY => abort alert" << endl;
-      alertStatus = AL_FINISHED;
+      ++timeoutCount;
+      if ( timeoutCount > timeoutValue )
+      {
+        //
+        // TIMEOUT!!!!
+        //
+        *lg << LG_CRIT << "timeout while waitung for standby state for device. playstate is <" << currentPlaystate << ">" << endl;
+        alertStatus = AL_FINISHED;
+      }
       isWorking = false;
       return;
     }
     //
-    // Lautstärke erfragen (asynchron, blockierend bis timeout oder Ergebnis)
+    // hier hab ich den Wert
     //
-    if ( !askForVolume() )
+    *lg << LG_DEBUG << "BoseSoundAlert::prepareAlertCheckStandby: standby state found. continue." << endl;
+    isWorking = false;
+    timeoutCount = 0;
+    askForVolume();
+    alertStatus = AL_PREPARE3;
+  }
+
+  void BoseSoundAlert::prepareAlertGetVolume()
+  {
+    //
+    // Warte auf Ergebnis der Anfrage nach Lautstärke
+    //
+    static bool isWorking = false;
+    static quint32 timeoutCount{0};
+    if ( isWorking )
+      return;
+    isWorking = true;
+    if ( waitForList.indexOf( WT_VOLUME ) != -1 )
     {
       //
-      // GEHT NICHT; ABBRECHEN?!
-      // TODO: was sinnvolles machen
+      // ich warte auf VOLUME
       //
-      alertStatus = AL_FINISHED;
+      ++timeoutCount;
+      if ( timeoutCount > timeoutValue )
+      {
+        //
+        // TIMEOUT!!!!
+        //
+        *lg << LG_CRIT << "timeout while waitung for get volume." << endl;
+        alertStatus = AL_FINISHED;
+      }
       isWorking = false;
       return;
     }
     //
-    // Ausgangslautstärke merken
+    // hier hab ich den Wert
     //
+    *lg << LG_DEBUG << "BoseSoundAlert::prepareAlert3: successful got volume <" << currentVolume << ">" << endl;
+    timeoutCount = 0;
     bevorVolume = currentVolume;
     if ( alConfig.getAlRaiseVolume() )
     {
-      if ( !setVolume( 0 ) )
-      {
+      //
+      // Soll die Lautstärke gedimmt werden
+      //
+      setVolume( 0 );
+    }
+    else
+    {
+      //
+      // die Lautstärke auf den gewünschten Wert
+      //
+      setVolume( alertVolume );
+    }
+    isWorking = false;
+    alertStatus = AL_PREPARE4;
+  }
+
+  void BoseSoundAlert::prepareAlertSetVolume()
+  {
+    //
+    // warte auf die Einstellung der Lautstärke nach Vorgabe
+    //
+    static bool isWorking = false;
+    if ( isWorking )
+      return;
+    isWorking = true;
+    switch ( waitForSetVolume() )
+    {
+      case WS_WAITING:
+        break;
+      case WS_SUCCESS:
         //
-        // GEHT NICHT; ABBRECHEN?!
-        // TODO: was sinnvolles machen
+        // hier hab ich den Wert
+        // nun Sender einstellen
         //
+        *lg << LG_DEBUG << "BoseSoundAlert::prepareAlert4: successful set volume <" << currentVolume << ">" << endl;
+        setTunerChannel();
+        alertStatus = AL_PREPARE5;
+        break;
+      case WS_TIMEOUT:
+        //
+        // TIMEOUT!!!!
+        //
+        *lg << LG_CRIT << "timeout while waitung for set volume." << endl;
         alertStatus = AL_FINISHED;
-        isWorking = false;
-        return;
-      }
-      if ( currentVolume == 0 )
+    }
+    isWorking = false;
+  }
+
+  void BoseSoundAlert::prepareAlertSetTuner()
+  {
+    //
+    // warte auf die Einstellung des Senders/der Quelle
+    //
+    static bool isWorking = false;
+    static quint32 timeoutCount{0};
+    if ( isWorking )
+      return;
+    isWorking = true;
+    if ( waitForList.indexOf( WT_SOURCE ) != -1 )
+    {
+      //
+      // ich warte auf Sender Einstellung
+      //
+      ++timeoutCount;
+      if ( timeoutCount > timeoutValue * 2 )
       {
-        *lg << LDEBUG << "BoseSoundAlert::prepareAlert: volume set to raise from 0" << endl;
+        //
+        // TIMEOUT!!!!
+        //
+        *lg << LG_CRIT << "timeout while waitung for set play source." << endl;
+        alertStatus = AL_FINISHED;
+      }
+      isWorking = false;
+      return;
+    }
+    //
+    // hier hab ich den Wert
+    // warten ob der Sender auch spielt
+    //
+    *lg << LG_DEBUG << "BoseSoundAlert::prepareAlert5: successful set play source <" << currentSource << ">" << endl;
+    timeoutCount = 0;
+    if ( currentPlaystate.compare( "PLAY_STATE" ) != 0 )
+    {
+      //
+      // Meldung noch nicht auf abspielen
+      //
+      if ( waitForList.indexOf( WT_PLAYSTATE ) == -1 )
+        waitForList.append( WT_PLAYSTATE );
+      isWorking = false;
+      alertStatus = AL_PREPARE6;
+    }
+    else
+    {
+      //
+      // das ging schnell, der sender dudelt
+      //
+      if ( alConfig.getAlRaiseVolume() )
+      {
+        alertStatus = AL_RAISE;
       }
       else
       {
-        *lg << LWARN << "volume while prepare raising set 0, recived: <" << currentVolume << ">" << endl;
+        alertStatus = AL_PLAY;
       }
+      isWorking = false;
     }
+  }
+
+  void BoseSoundAlert::prepareAlertWaitForSource()
+  {
     //
-    // Sender einstellen
+    // warte auf das abspielen der Quelle
     //
-    if ( !setTunerChannel() )
+    static bool isWorking = false;
+    static quint32 timeoutCount{0};
+    if ( isWorking )
+      return;
+    isWorking = true;
+    if ( waitForList.indexOf( WT_PLAYSTATE ) != -1 )
     {
       //
-      // GEHT NICHT, versuche PRESET_1
+      // ich warte auf abspielen der quelle
       //
-      alConfig.setAlSource( "PRESET_1" );
-      if ( !setTunerChannel() )
+      ++timeoutCount;
+      if ( timeoutCount > timeoutValue * 3 )
       {
         //
-        // GEHT NICHT; ABBRECHEN?!
-        // TODO: was sinnvolles machen
+        // TIMEOUT!!!!
         //
-        alertStatus = AL_POSTPARE;
-        isWorking = false;
-        return;
+        *lg << LG_CRIT << "timeout while waitung for playstate for source." << endl;
+        alertStatus = AL_FINISHED;
       }
+      isWorking = false;
+      return;
     }
     //
-    // ab hier sollte alles laufen,
-    // jetzt entscheiden was weiter passiert
+    // hier hab ich den Wert
+    // warten ob der Sender auch spielt
     //
+    *lg << LG_DEBUG << "BoseSoundAlert::prepareAlert6: source is playing <" << currentSource << ">" << endl;
     if ( alConfig.getAlRaiseVolume() )
+    {
       alertStatus = AL_RAISE;
+    }
     else
+    {
       alertStatus = AL_PLAY;
+    }
+    timeoutCount = 0;
     isWorking = false;
+  }
+
+  BoseSoundAlert::waitState BoseSoundAlert::waitForSetVolume()
+  {
+    //
+    // warte auf die Einstellung der Lautstärke nach Vorgabe
+    //
+    static bool isWorking = false;
+    static quint32 timeoutCount{0};
+    if ( isWorking )
+      return WS_WAITING;
+    isWorking = true;
+    if ( waitForList.indexOf( WT_VOLUME ) != -1 )
+    {
+      //
+      // ich warte auf VOLUME
+      //
+      ++timeoutCount;
+      if ( timeoutCount > timeoutValue )
+      {
+        //
+        // TIMEOUT!!!!
+        //
+        *lg << LG_CRIT << "timeout while waitung for set volume." << endl;
+        isWorking = false;
+        return WS_TIMEOUT;
+      }
+      isWorking = false;
+      return WS_WAITING;
+    }
+    //
+    // hier hab ich den Wert
+    //
+    *lg << LG_DEBUG << "BoseSoundAlert::prepareAlert4: successful set volume <" << currentVolume << ">" << endl;
+    timeoutCount = 0;
+    isWorking = false;
+    return WS_SUCCESS;
   }
 
   /**
@@ -285,15 +500,15 @@ namespace bose_commserver
     //
     // da muss ich also die Lautstärke erhöhen
     //
-    if ( !setVolume( currentVolume + alertRaiseStep ) )
+    switch ( waitForSetVolume() )
     {
-      //
-      // GEHT NICHT; ABBRECHEN?!
-      // TODO: was sinnvolles machen
-      //
-      alertStatus = AL_FINISHED;
-      isWorking = false;
-      return;
+      case WS_WAITING:
+        break;
+      case WS_SUCCESS:
+        setVolume( currentVolume + alertRaiseStep );
+        break;
+      case WS_TIMEOUT:
+        alertStatus = AL_FINISHED;
     }
     isWorking = false;
   }
@@ -349,6 +564,7 @@ namespace bose_commserver
 
   bool BoseSoundAlert::buildGroup()
   {
+    /*
     *lg << LDEBUG << "BoseSoundAlert::buildGroup: found <" << devices.count() << ">, build an group..." << endl;
     //
     // mehr als ein Gerät: ich muss eine Gruppe bilden
@@ -368,19 +584,146 @@ namespace bose_commserver
     }
     masterDevice->setZone( masterDevice->getId(), memberList );
     // TODO: warte auf Bestätigung mit Timeout
+    */
     return ( true );
   }
 
-  void BoseSoundAlert::slotOnPresetsUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::slotOnSoundTouchEvent( IResponseObjPtr responsePtr )
   {
+    //
+    // je nach Art der Meldung...
+    //
+    switch ( static_cast< qint8 >( responsePtr->getResultType() ) )
+    {
+      case static_cast< qint8 >( ResultobjectType::R_OK ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: ok recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_SOURCES ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: resource recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_BASS_CAPABILITIES ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: bass capabilities recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_ZONES ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: update presets";
+        onZonesResult( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_VOLUME ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: volume recived";
+        onVolumeResult( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_PRESETS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: presets recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_BASS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: bass propertys recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_DEVICE_INFO ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: device info recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_PRESETS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: update presets";
+        onPresetsUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_NOW_PLAYING ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: update presets";
+        onNowPlayingResult( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_ERROR ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnErrorResult";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_GROUPS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnGroupResult";
+        onGroupUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_NOWPLAYING ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnNowPlayingUpdated";
+        onNowPlayingUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_SELECTION ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnPresetSelectionUpdated";
+        onPresetSelectionUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_VOLUME ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnVolumeUpdated";
+        onVolumeUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_BASS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnBassUpdated";
+        onBassUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_ZONE ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnZoneUpdated";
+        onZoneUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_INFO ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnInfoUpdated";
+        onInfoUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_NAME ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnNameUpdated";
+        onNameUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_ERROR ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnErrorUpdated";
+        onErrorUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_GROUP ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnGroupUpdated";
+        onGroupUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_SDKINFO ):
+      case static_cast< qint8 >( ResultobjectType::U_BROWSE_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_RECENTS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_SOURCES_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_LANGUAGE_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: unsupported events. ignore...";
+        break;
+
+      default:
+        qWarning() << "BoseSoundAlert::slotOnSoundTouchEvent: unknown object type. ignore.";
+    }
+  }
+
+  void BoseSoundAlert::onPresetsUpdated( IResponseObjPtr response )
+  {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnPresetsUpdated" << endl;
     WsPresetUpdateObject *pres = static_cast< WsPresetUpdateObject * >( response.get() );
     *lg << LINFO << "on device " << pres->getDeviceId() << " pressed " << pres->getDevicePresets().first().id << " alert aborting"
         << endl;
     // alertStatus = AL_FINISHED;
   }
 
-  void BoseSoundAlert::slotOnNowPlayingUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onNowPlayingUpdated( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnNowPlayingUpdated" << endl;
     WsNowPlayingUpdate *npl = static_cast< WsNowPlayingUpdate * >( response.get() );
     //
     // wartet jemand auf Senderwechsel
@@ -395,7 +738,6 @@ namespace bose_commserver
         //
         currentSource = npl->getSource();
         waitForList.remove( wasWaiting );
-        waitingForAnswer.wakeAll();
       }
     }
     //
@@ -411,7 +753,6 @@ namespace bose_commserver
         //
         currentPlaystate = npl->getPlayStatus();
         waitForList.remove( wasWaiting );
-        waitingForAnswer.wakeAll();
       }
     }
     //
@@ -427,7 +768,6 @@ namespace bose_commserver
         //
         currentPlaystate = npl->getPlayStatus();
         waitForList.remove( wasWaiting );
-        waitingForAnswer.wakeAll();
       }
     }
     //
@@ -440,19 +780,80 @@ namespace bose_commserver
         << " now: " << npl->getPlayStatus() << endl;
   }
 
-  void BoseSoundAlert::slotOnPresetSelectionUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onNowPlayingResult( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnNowPlayingResult" << endl;
+    HttpNowPlayingObject *npl = static_cast< HttpNowPlayingObject * >( response.get() );
+    //
+    // wartet jemand auf Senderwechsel
+    //
+    int wasWaiting = waitForList.indexOf( WT_SOURCE );
+    if ( wasWaiting != -1 )
+    {
+      if ( currentSource.compare( npl->getSource() ) != 0 )
+      {
+        //
+        // es fand ein wechsel statt
+        //
+        currentSource = npl->getSource();
+        waitForList.remove( wasWaiting );
+      }
+    }
+    //
+    // wartet jemand auf STATUSWECHSEL
+    //
+    wasWaiting = waitForList.indexOf( WT_PLAYSTATE );
+    if ( wasWaiting != -1 )
+    {
+      if ( currentPlaystate.compare( npl->getPlayStatus() ) != 0 )
+      {
+        //
+        // es fand ein wechsel statt
+        //
+        currentPlaystate = npl->getPlayStatus();
+        waitForList.remove( wasWaiting );
+      }
+    }
+    //
+    // wartet jemand auf STANDBY
+    //
+    wasWaiting = waitForList.indexOf( WT_STANDBY );
+    if ( wasWaiting != -1 )
+    {
+      if ( reStandby.exactMatch( npl->getPlayStatus() ) || reStandby.exactMatch( npl->getSource() ) )
+      {
+        //
+        // STANDBY eingetroffen
+        //
+        currentPlaystate = npl->getPlayStatus();
+        waitForList.remove( wasWaiting );
+      }
+    }
+    //
+    // speichere den aktuellen Status, soweit noch nicht passiert
+    //
+    currentPlaystate = npl->getPlayStatus();
+    currentSource = npl->getSource();
+    //
+    *lg << LDEBUG << "BoseSoundAlert::slotOnNowPlayingResult: playing status on device " << npl->getDeviceId()
+        << " now: " << npl->getPlayStatus() << " source: " << npl->getSource() << endl;
+  }
+
+  void BoseSoundAlert::onPresetSelectionUpdated( IResponseObjPtr response )
+  {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnPresetSelectionUpdated" << endl;
     WsNowSelectionUpdated *nsu = static_cast< WsNowSelectionUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnPresetSelectionUpdated: preset on device : " << nsu->getDeviceId()
         << " switched to: " << nsu->getDevicePresets().id << endl;
     // TODO: info benutzen
   }
 
-  void BoseSoundAlert::slotOnVolumeUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onVolumeUpdated( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnVolumeUpdated" << endl;
     WsVolumeUpdated *vol = static_cast< WsVolumeUpdated * >( response.get() );
     //
-    // aktuelle Lautstärke speuchern
+    // aktuelle Lautstärke speichern
     //
     currentVolume = vol->getActualVolume();
     //
@@ -463,50 +864,85 @@ namespace bose_commserver
     if ( wasWaiting != -1 )
     {
       waitForList.remove( wasWaiting );
-      waitingForAnswer.wakeAll();
     }
     *lg << LDEBUG << "BoseSoundAlert::slotOnVolumeUpdated: on device : " << vol->getDeviceId()
-        << " voulume updated to: " << vol->getActualVolume() << endl;
+        << " volume updated to: " << vol->getActualVolume() << endl;
     // TODO: zur überwachung nutzen
   }
 
-  void BoseSoundAlert::slotOnBassUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onVolumeResult( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnVolumeResult" << endl;
+    HttpVolumeObject *vol = static_cast< HttpVolumeObject * >( response.get() );
+    //
+    // aktuelle Lautstärke speichern
+    //
+    currentVolume = vol->getActualVolume();
+    //
+    // wenn jemand darauf wartet, von der Warteliste streichen und
+    // alle benachrichtigen
+    //
+    int wasWaiting = waitForList.indexOf( WT_VOLUME );
+    if ( wasWaiting != -1 )
+    {
+      waitForList.remove( wasWaiting );
+    }
+    *lg << LDEBUG << "BoseSoundAlert::slotOnVolumeResult: on device : " << vol->getDeviceId()
+        << " volume updated to: " << vol->getActualVolume() << endl;
+    // TODO: zur überwachung nutzen
+  }
+
+  void BoseSoundAlert::onBassUpdated( IResponseObjPtr response )
+  {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnBassUpdated" << endl;
     WsBassUpdated *bu = static_cast< WsBassUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnBassUpdated: bass updatet on device: " << bu->getDeviceId()
         << " to value: " << bu->getUpdatet() << endl;
     // Nur INFO
   }
 
-  void BoseSoundAlert::slotOnZoneUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onZoneUpdated( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnZoneUpdated" << endl;
     WsZoneUpdated *zu = static_cast< WsZoneUpdated * >( response.get() );
     *lg << LINFO << "zone update on device: " << zu->getDeviceId() << endl;
     // TODO: zur überwachung der Kommandos
   }
 
-  void BoseSoundAlert::slotOnInfoUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onZonesResult( bose_soundtoch_lib::IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnZonesResult" << endl;
+    HttpZoneObject *zu = static_cast< HttpZoneObject * >( response.get() );
+    *lg << LINFO << "zone recived on device: " << zu->getDeviceId() << " master: " << zu->getMaster() << endl;
+    // TODO: zur überwachung der Kommandos
+  }
+
+  void BoseSoundAlert::onInfoUpdated( IResponseObjPtr response )
+  {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnInfoUpdated" << endl;
     WsInfoUpdated *iu = static_cast< WsInfoUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnInfoUpdated: on device: " << iu->getDeviceId() << " info update..." << endl;
     // Nur info
   }
 
-  void BoseSoundAlert::slotOnNameUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onNameUpdated( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnNameUpdated" << endl;
     WsNameUpdated *nu = static_cast< WsNameUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnNameUpdated: device changed name to: " << nu->getDeviceId() << endl;
   }
 
-  void BoseSoundAlert::slotOnErrorUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onErrorUpdated( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnErrorUpdated" << endl;
     WsErrorUpdated *eu = static_cast< WsErrorUpdated * >( response.get() );
     *lg << LCRIT << "error update on device: " << eu->getError().text << "on device" << eu->getDeviceId();
     // TODO: was machen
   }
 
-  void BoseSoundAlert::slotOnGroupUpdated( ResponseObjPtr response )
+  void BoseSoundAlert::onGroupUpdated( IResponseObjPtr response )
   {
+    *lg << LDEBUG << "BoseSoundAlert::slotOnGroupUpdated" << endl;
     WsGroupUpdated *gu = static_cast< WsGroupUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnGroupUpdated: group update on device: " << gu->getDeviceId();
   }
@@ -529,7 +965,19 @@ namespace bose_commserver
     //
     // Alarm beenden!
     //
-    alertIsRunning = false;
+    //
+    // wenn in run() der mutex blockiert ist, entsperre den
+    //
+    alertStatus = AL_POSTPARE;
+  }
+
+  /**
+   * @brief BoseSoundAlert::isFinished
+   * @return
+   */
+  bool BoseSoundAlert::isFinished()
+  {
+    return alertStatus == AL_INACTIVE ? true : false;
   }
 
   /**
@@ -539,29 +987,12 @@ namespace bose_commserver
   bool BoseSoundAlert::askForVolume()
   {
     *lg << LDEBUG << "BoseSoundAlert::askForVolume: ..." << endl;
-    answerMutex.lock();
     masterDevice->getVolume();
     //
     // in die Liste das warten auf Lautstärke eintragen, wenn nötig
     //
     if ( waitForList.indexOf( WT_VOLUME ) == -1 )
       waitForList.append( WT_VOLUME );
-    //
-    // und nun warten...
-    //
-    int vloops = 4;
-    while ( waitForList.indexOf( WT_VOLUME ) != -1 && vloops > 0 )
-    {
-      waitingForAnswer.wait( &answerMutex, asyncTimeout );
-      *lg << LWARN << "timeout while waiting for request for volume..." << endl;
-      vloops--;
-    }
-    answerMutex.unlock();
-    if ( vloops <= 0 )
-    {
-      *lg << LCRIT << "can't get answer for volume on master device. abort!" << endl;
-      return false;
-    }
     *lg << LDEBUG << "BoseSoundAlert::askForVolume: ...OK" << endl;
     return true;
   }
@@ -573,29 +1004,12 @@ namespace bose_commserver
   bool BoseSoundAlert::askForStandby()
   {
     *lg << LDEBUG << "BoseSoundAlert::askForStandby: ..." << endl;
-    answerMutex.lock();
     masterDevice->getNowPlaying();
     //
     // in die Liste das warten auf standby eintragen
     //
     if ( waitForList.indexOf( WT_STANDBY ) == -1 )
       waitForList.append( WT_STANDBY );
-    //
-    // und nun warten...
-    //
-    int vloops = 2;
-    while ( waitForList.indexOf( WT_STANDBY ) != -1 && vloops > 0 )
-    {
-      waitingForAnswer.wait( &answerMutex, asyncTimeout );
-      *lg << LWARN << "timeout while waiting for request for standby..." << endl;
-      vloops--;
-    }
-    answerMutex.unlock();
-    if ( vloops <= 0 )
-    {
-      *lg << LCRIT << "can't get find standby on master device. abort!" << endl;
-      return false;
-    }
     *lg << LDEBUG << "BoseSoundAlert::askForStandby: ...OK" << endl;
     return true;
   }
@@ -603,29 +1017,12 @@ namespace bose_commserver
   bool BoseSoundAlert::setVolume( int vol )
   {
     *lg << LDEBUG << "BoseSoundAlert::setVolume: set to: " << vol << "..." << endl;
-    answerMutex.lock();
     masterDevice->setVolume( vol );
     //
     // in die Liste das warten auf Lautstärke eintragen, wenn nötig
     //
     if ( waitForList.indexOf( WT_VOLUME ) == -1 )
       waitForList.append( WT_VOLUME );
-    //
-    // und nun warten...
-    //
-    int vloops = 4;
-    while ( waitForList.indexOf( WT_VOLUME ) != -1 && vloops > 0 )
-    {
-      waitingForAnswer.wait( &answerMutex, asyncTimeout );
-      *lg << LWARN << "timeout while waiting for request for set volume..." << endl;
-      vloops--;
-    }
-    answerMutex.unlock();
-    if ( vloops <= 0 )
-    {
-      *lg << LCRIT << "can't get answer for set volume on master device. abort!" << endl;
-      return false;
-    }
     *lg << LDEBUG << "BoseSoundAlert::setVolume: ...OK" << endl;
     return true;
   }
@@ -634,7 +1031,6 @@ namespace bose_commserver
   {
     QString source = alConfig.getAlSource();
     *lg << LDEBUG << "BoseSoundAlert::setTunerChannel: set to: " << source << "..." << endl;
-    answerMutex.lock();
     //
     // welche Art Source
     //
@@ -650,7 +1046,7 @@ namespace bose_commserver
       // es soll ein PRESET gespielt werden, finde die Nummer heraus
       //
       int captured = rePresetNum.indexIn( source );
-      if ( captured > 1 )
+      if ( captured >= 0 )
       {
         //
         // da war was...
@@ -684,13 +1080,14 @@ namespace bose_commserver
             break;
           default:
             whichkey = BSoundTouchDevice::bose_key::KEY_PRESET_1;
+            *lg << LWARN << "preset not valid: <" << preset << ">" << endl;
         }
         *lg << LDEBUG << "BoseSoundAlert::setTunerChannel: send keypress to master device..." << endl;
         masterDevice->setKey( whichkey, BSoundTouchDevice::bose_keystate::KEY_RELEASED );
       }
       else
       {
-        *lg << LWARN << "can't find which preset you want. try default PRESET_1...";
+        *lg << LWARN << "can't find which preset you want. set was <" << captured << ">. try default PRESET_1...";
         masterDevice->setKey( BSoundTouchDevice::bose_key::KEY_PRESET_1, BSoundTouchDevice::bose_keystate::KEY_RELEASED );
       }
     }
@@ -713,51 +1110,7 @@ namespace bose_commserver
       //
       if ( waitForList.indexOf( WT_SOURCE ) == -1 )
         waitForList.append( WT_SOURCE );
-      //
-      // warten
-      //
-      int vloops = 6;
-      while ( waitForList.indexOf( WT_SOURCE ) != -1 && vloops > 0 )
-      {
-        waitingForAnswer.wait( &answerMutex, asyncTimeout );
-        *lg << LWARN << "timeout while waiting for request for set source..." << endl;
-        vloops--;
-      }
-      answerMutex.unlock();
-      if ( vloops <= 0 )
-      {
-        *lg << LCRIT << "can't get answer for set source on master device. abort!" << endl;
-        return false;
-      }
     }
-    //
-    // warte auf playstsatus "PLAY_STATE" BUFFERING_STATE sollte endlich sein...
-    //
-    if ( currentPlaystate.compare( "PLAY_STATE" ) != 0 )
-    {
-      //
-      // in die Liste das warten auf PLAY eintragen, wenn nötig
-      //
-      if ( waitForList.indexOf( WT_PLAYSTATE ) == -1 )
-        waitForList.append( WT_PLAYSTATE );
-      //
-      // warten
-      //
-      int vloops = 6;
-      while ( waitForList.indexOf( WT_PLAYSTATE ) != -1 && vloops > 0 )
-      {
-        waitingForAnswer.wait( &answerMutex, asyncTimeout );
-        *lg << LWARN << "timeout while waiting for playstate for set source..." << endl;
-        vloops--;
-      }
-      answerMutex.unlock();
-      if ( vloops <= 0 )
-      {
-        *lg << LCRIT << "can't get answer for playstate for set source. abort!" << endl;
-        return false;
-      }
-    }
-
     *lg << LDEBUG << "BoseSoundAlert::setTunerChannel: ...OK" << endl;
     return true;
   }

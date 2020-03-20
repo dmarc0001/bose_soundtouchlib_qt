@@ -1,5 +1,7 @@
 #include "bsoundtouchdevice.hpp"
+
 #include <QThread>
+
 #include "xmlparser/xmlresultparser.hpp"
 #include "xmlparser/xmlupdateparser.hpp"
 
@@ -86,11 +88,10 @@ namespace bose_soundtoch_lib
     //
     // Logging, eigenes logging nur wenn mehr als kritische meldungen ausgegeben werden sollen
     //
-    if ( threshold < QtMsgType::QtFatalMsg )
+    if ( threshold <= QtMsgType::QtFatalMsg )
     {
       qInstallMessageHandler( &BSoundTouchDevice::myMessageOutput );
     }
-    qDebug() << "...";
     connect( &qnam, &QNetworkAccessManager::authenticationRequired, this, &BSoundTouchDevice::slotAuthenticationRequired );
   }
 
@@ -99,7 +100,6 @@ namespace bose_soundtoch_lib
    */
   BSoundTouchDevice::~BSoundTouchDevice()
   {
-    qDebug() << "...";
   }
 
   void BSoundTouchDevice::setHostname( const QString &stHost )
@@ -509,7 +509,7 @@ namespace bose_soundtoch_lib
 
   void BSoundTouchDevice::slotOnHttpFinished( QNetworkReply *reply )
   {
-    qDebug() << "...";
+    qDebug() << "BSoundTouchDevice::slotOnHttpFinished...";
     if ( reply->error() )
     {
       qWarning() << "reply error: " << reply->error();
@@ -534,23 +534,21 @@ namespace bose_soundtoch_lib
     XmlResultParser xmlParser( relpyString, this );
     if ( xmlParser.hasError() )
     {
-      qCritical() << "error while " << reply->request().url().toString();
-      qCritical() << "error: " << xmlParser.getErrorString();
+      qCritical() << "BSoundTouchDevice::slotOnHttpFinished: error while " << reply->request().url().toString();
+      qCritical() << "BSoundTouchDevice::slotOnHttpFinished: error: " << xmlParser.getErrorString();
     }
     else
     {
       std::shared_ptr< IResponseObject > response = xmlParser.getResultObject();
       if ( response.get() == nullptr )
       {
-        qCritical() << "no response from xml response parser";
+        qCritical() << "BSoundTouchDevice::slotOnHttpFinished: no response from xml response parser";
       }
       else
       {
-        qDebug() << "result object type: " << response->getResultTypeName();
-        //
-        // hier verarbeiten / benachtichtigen
-        //
-        emit sigOnRequestAnswer( response );
+        qDebug() << "BSoundTouchDevice::slotOnHttpFinished: result object type: " << response->getResultTypeName();
+        qDebug() << "BSoundTouchDevice::slotOnHttpFinished: emit sigOnSoundTouchEvent";
+        emit sigOnSoundTouchEvent( response );
       }
     }
     reply->deleteLater();
@@ -562,14 +560,14 @@ namespace bose_soundtoch_lib
     // We read all of its new data and write it into the file.
     // That way we use less RAM than when reading it at the finished()
     // signal of the QNetworkReply
-    qDebug() << "data recived...";
+    qDebug() << "BSoundTouchDevice::slotOnHttpFinished: data recived...";
     // QString relpyString( reply->readAll() );
     // lg->debug( relpyString );
   }
 
   void BSoundTouchDevice::slotAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator )
   {
-    qInfo() << "raise signal for auth (if programmed....)";
+    qInfo() << "BSoundTouchDevice::slotOnHttpFinished: raise signal for auth (if programmed....)";
     emit sigAuthenticationRequired( repl, authenticator );
     //
     // innerhalb der SIGNAL Behandlung machen
@@ -585,49 +583,49 @@ namespace bose_soundtoch_lib
 
   void BSoundTouchDevice::connectWs( void )
   {
-    qDebug() << "...";
+    qDebug() << "BSoundTouchDevice::connectWs...";
     if ( !webSocket || !webSocket->isValid() )
     {
       if ( !webSocket )
       {
-        qDebug() << "create new BWebSocklet object...";
+        qDebug() << "BSoundTouchDevice::connectWs: create new BWebSocklet object...";
         webSocket = std::unique_ptr< BWebsocket >( new BWebsocket( hostname, wsPort, this ) );
         //
         // signale verbinden
         //
-        qDebug() << "connect signals...";
+        qDebug() << "BSoundTouchDevice::connectWs: connect signals...";
         connect( webSocket.get(), &BWebsocket::sigOnWSConnected, this, &BSoundTouchDevice::slotOnWSConnected );
         connect( webSocket.get(), &BWebsocket::sigOnWSDisConnected, this, &BSoundTouchDevice::slotOnWSDisConnected );
         connect( webSocket.get(), &BWebsocket::sigOnWSTextMessageReceived, this, &BSoundTouchDevice::slotOnWSTextMessageReceived );
       }
       // nach open sollte sowas kommen: <SoundTouchSdkInfo serverVersion="4" serverBuild="trunk r42017 v4 epdbuild cepeswbld02" />
-      qDebug() << "open an websocket to device...";
+      qDebug() << "BSoundTouchDevice::connectWs: open an websocket to device...";
       webSocket->open();
     }
   }
 
   void BSoundTouchDevice::disconnectWs( void )
   {
-    qDebug() << "...";
+    qDebug() << "BSoundTouchDevice::disconnectWs...";
     webSocket->close();
     disconnect( webSocket.get() );
   }
 
   void BSoundTouchDevice::slotOnWSConnected( void )
   {
-    qDebug() << "...";
+    qDebug() << "BSoundTouchDevice::slotOnWSConnected...";
     emit sigOnWSConnected();
   }
 
   void BSoundTouchDevice::slotOnWSDisConnected( void )
   {
-    qDebug() << "...";
+    qDebug() << "BSoundTouchDevice::slotOnWSDisConnected...";
     emit sigOnWSDisConnected();
   }
 
   void BSoundTouchDevice::slotOnWSTextMessageReceived( QString message )
   {
-    qDebug() << "...";
+    qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived...";
     //
     // die nachricht nach bekannten Obketken parsen
     //
@@ -635,83 +633,25 @@ namespace bose_soundtoch_lib
     XMLUpdateParser xmlParser( message, this );
     if ( xmlParser.hasError() )
     {
-      qCritical() << "xml parser error: " << xmlParser.getErrorString();
+      qCritical() << "BSoundTouchDevice::slotOnWSTextMessageReceived: xml parser error: " << xmlParser.getErrorString();
     }
     else
     {
       std::shared_ptr< IResponseObject > response = xmlParser.getResultObject();
       if ( response.get() == nullptr )
       {
-        qCritical() << "no response from xml update parser";
+        qCritical() << "BSoundTouchDevice::slotOnWSTextMessageReceived: no response from xml update parser";
       }
       else
       {
-        qDebug() << "result object type: " << response->getResultTypeName();
+        qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: result object type: " << response->getResultTypeName();
         //
         // TODO: hier verarbeiten
         //
-        switch ( static_cast< qint8 >( response->getResultType() ) )
-        {
-          case static_cast< qint8 >( ResultobjectType::U_PRESETS ):
-            emit sigOnPresetsUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_NOWPLAYING ):
-            emit sigOnNowPlayingUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_SELECTION ):
-            emit sigOnPresetSelectionUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_VOLUME ):
-            emit sigOnVolumeUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_BASS ):
-            emit sigOnBassUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_ZONE ):
-            emit sigOnZoneUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_INFO ):
-            emit sigOnInfoUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_NAME ):
-            emit sigOnNameUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_ERROR ):
-            emit sigOnErrorUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_GROUP ):
-            emit sigOnGroupUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_SDKINFO ):
-          case static_cast< qint8 >( ResultobjectType::U_BROWSE_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_RECENTS_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_SOURCES_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_LANGUAGE_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED ):
-            qDebug() << "unsupported events. ignore...";
-            break;
-
-          default:
-            qWarning() << "unknown object type. ignore.";
-        }
+        emit sigOnSoundTouchEvent( response );
       }
     }
-    emit sigOnWSTextMessageReceived( message );
+    qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnWSTextMessageReceived";
   }
 
   void BSoundTouchDevice::myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg )

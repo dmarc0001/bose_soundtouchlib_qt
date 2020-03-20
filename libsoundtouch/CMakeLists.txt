@@ -107,10 +107,11 @@ set(SOURCES
 )
 
 set( HEADERS
+  bsoundtouchdevice.hpp
+  libsoundtouch_global.hpp
+  xmlparser/bsoundtouch_global.hpp
   xmlparser/xmlresultparser.hpp
   xmlparser/iresponseobject.hpp
-  xmlparser/bsoundtouch_global.hpp
-  bsoundtouchdevice.hpp
   websocket/bwebsocket.hpp
   xmlparser/xmlupdateparser.hpp
   xmlparser/httpresponse/httppresetsobject.hpp

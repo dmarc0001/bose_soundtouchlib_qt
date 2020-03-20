@@ -94,6 +94,19 @@ namespace bose_commserver
    */
   void DaemonTimer::testIfAlertNeedStart( QDate &today, QTime &now, SingleAlertConfig &currAl )
   {
+#ifdef DEBUG
+    //
+    // im debug mode auch den typ DEBUG quasi sofort starten
+    // wenn der nicht schon läuft
+    //
+    if ( ( currAl.getAlType().compare( "DEBUG", Qt::CaseInsensitive ) == 0 ) && !currAl.getRunSince().isValid() )
+    {
+      currAl.setAlTime( QTime::currentTime().addSecs( 50 ) );
+      currAl.setAlDate( QDate() );
+      QList< qint8 > emptyList;
+      currAl.setAlDays( emptyList );
+    }
+#endif
     //
     // ist der Alarm mit Datum, und wenn ja, ist er heute?
     //

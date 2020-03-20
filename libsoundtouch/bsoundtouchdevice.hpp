@@ -2,6 +2,7 @@
 #define BSOUNDTOUCHDEVICE_HPP
 
 #include <stdio.h>
+
 #include <QAuthenticator>
 #include <QMap>
 #include <QNetworkAccessManager>
@@ -12,6 +13,8 @@
 #include <QVector>
 #include <QtDebug>
 #include <memory>
+
+#include "libsoundtouch_global.hpp"
 #include "websocket/bwebsocket.hpp"
 #include "xmlparser/bsoundtouch_global.hpp"
 #include "xmlparser/iresponseobject.hpp"
@@ -21,12 +24,14 @@
 
 namespace bose_soundtoch_lib
 {
+  using IResponseObjPtr = std::shared_ptr< IResponseObject >;
+
   class SOUNDTOUCH_QT_LIBSHARED_EXPORT BSoundTouchDevice : public QObject
   {
     Q_OBJECT
 
     public:
-    //! private interne Klasse möglichkeiten der keys
+    //! interne Klasse möglichkeiten der keys
     enum class bose_keystate : int
     {
       KEY_PRESSED,
@@ -81,14 +86,13 @@ namespace bose_soundtoch_lib
     std::unique_ptr< BWebsocket > webSocket;
     QtMsgType threshold;
     QUrl url;
-    QNetworkAccessManager qnam;
-    // QNetworkReply *reply;
-    static const QMap< bose_keystate, QString > keystati;
+    QNetworkAccessManager qnam;                              //! Access Manager für network
+    static const QMap< bose_keystate, QString > keystati;    //! 1 mögliche Keystati
     static const QMap< bose_key, QString > keynames;         //! Namen der Tasten
-    static const QMap< bose_playstate, QString > playstate;  // mögliche Playstati
-    static const char *subproto;
-    constexpr static int timeoutMillis = 80;
-    static const QString version;
+    static const QMap< bose_playstate, QString > playstate;  //! mögliche Playstati
+    static const char *subproto;                             //! Subprotokoll
+    constexpr static int timeoutMillis = 80;                 //! Timout in Milisekunden
+    static const QString version;                            //! Versionsnummer
 
     public:
     explicit BSoundTouchDevice( QString &stHost,
@@ -148,20 +152,8 @@ namespace bose_soundtoch_lib
     signals:
     void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );  //! sig wenn Authentifizierung gefordert
     void sigOnWSConnected( void );                                                         //! sig wenn Websocket erbunden ist
-    void sigOnWSDisConnected( void );                                                      //! sif wenn Websocket getrennt wurde
-    void sigOnWSTextMessageReceived( QString message );                                    //! sig wenn Websocket etwas gesendet hat
-    void sigOnRequestAnswer( std::shared_ptr< IResponseObject > response );                //! Antwort auf ein HTTP Request
-    //
-    void sigOnPresetsUpdated( std::shared_ptr< IResponseObject > );          //! sig on preset Update
-    void sigOnNowPlayingUpdated( std::shared_ptr< IResponseObject > );       //! sig on now playing Update
-    void sigOnPresetSelectionUpdated( std::shared_ptr< IResponseObject > );  //! sig on selction an Update
-    void sigOnVolumeUpdated( std::shared_ptr< IResponseObject > );           //! sig on volume changed/updated
-    void sigOnBassUpdated( std::shared_ptr< IResponseObject > );             //! sig on bass property updated
-    void sigOnZoneUpdated( std::shared_ptr< IResponseObject > );             //! sig on zone updated
-    void sigOnInfoUpdated( std::shared_ptr< IResponseObject > );             //! sig on device info updated
-    void sigOnNameUpdated( std::shared_ptr< IResponseObject > );             //! sig on device name updated
-    void sigOnErrorUpdated( std::shared_ptr< IResponseObject > );            //! sig on error message changed/updated
-    void sigOnGroupUpdated( std::shared_ptr< IResponseObject > );            //! sig on group updated (SoundTouch 10 only)
+    void sigOnWSDisConnected( void );                                                      //! sig wenn Websocket getrennt wurde
+    void sigOnSoundTouchEvent( IResponseObjPtr );                                          //! Ein Ereignis wurde erzeugt
 
     private slots:
     void slotAuthenticationRequired( QNetworkReply *, QAuthenticator *authenticator );
