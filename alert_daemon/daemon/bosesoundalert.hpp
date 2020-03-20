@@ -9,6 +9,7 @@
 #include <QtWebSockets/QWebSocketServer>
 #include <bsoundtouchdevice.hpp>
 #include <memory>
+
 #include "config/alertconfig.hpp"
 #include "config/common_def.hpp"
 #include "logging/logger.hpp"
@@ -106,33 +107,33 @@ namespace bose_commserver
     void reduceVolume();               //! verringere Lautstärke AL_REDUCE
     void postpareAlert();              //! Aufräumarbeiten /restaurieren des Zustandes und Ausschalten AL_POSTPARE
     void finishAlert();                //! Alarm beenden AL_FINISHED
-    //
-    bool buildGroup();          //! erzeuge eine playgroup
-    bool askForStandby();       //! ist das Gerät im Standby? true => Ja
-    bool askForVolume();        //! blockierend, wartet auf Lautstärke
-    bool setVolume( int vol );  //! blockierend, setze Lautstärke
-    bool setTunerChannel();     //! stelle den gewählten Sender (aus der config) ein
+    bool buildGroup();                 //! erzeuge eine playgroup
+    bool askForStandby();              //! ist das Gerät im Standby? true => Ja
+    bool askForVolume();               //! blockierend, wartet auf Lautstärke
+    bool setVolume( int vol );         //! blockierend, setze Lautstärke
+    bool setTunerChannel();            //! stelle den gewählten Sender (aus der config) ein
+    void onPresetsUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onNowPlayingUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onNowPlayingResult( bose_soundtoch_lib::IResponseObjPtr );
+    void onPresetSelectionUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onVolumeUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onVolumeResult( bose_soundtoch_lib::IResponseObjPtr );
+    void onBassUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onZoneUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onZonesResult( bose_soundtoch_lib::IResponseObjPtr );
+    void onInfoUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onNameUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onErrorUpdated( bose_soundtoch_lib::IResponseObjPtr );
+    void onGroupUpdated( bose_soundtoch_lib::IResponseObjPtr );
 
     signals:
     void onFinish();  //! wenn der Alarm fertig ist
 
     private slots:
     // Asynchrone Nachrichten der Geräte
-    void slotOnPresetsUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnNowPlayingUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnNowPlayingResult( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnPresetSelectionUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnVolumeUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnVolumeResult( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnBassUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnZoneUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnZonesResult( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnInfoUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnNameUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnErrorUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-    void slotOnGroupUpdated( bose_soundtoch_lib::IResponseObjPtr response );
-
-    // sigOnRequestAnswer
+    void slotOnSoundTouchEvent( bose_soundtoch_lib::IResponseObjPtr );
+    // void slotOnWSConnected();
+    // void slotOnWSDisConnected();
   };
 }  // namespace bose_commserver
 #endif  // BOSESOUNDALERT_HPP

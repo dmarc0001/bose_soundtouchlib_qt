@@ -182,28 +182,8 @@ namespace bose_commserver
                [=]() { *( this->lg ) << LG_INFO << "======================== CONNECTED ===================" << endl; } );
       connect( masterDevice.get(), &BSoundTouchDevice::sigOnWSDisConnected,
                [=]() { *( this->lg ) << LG_INFO << "======================== DISCONNECTED ===================" << endl; } );
-      connect( masterDevice.get(), &BSoundTouchDevice::sigOnRequestAnswer,
-               [=]() { *( this->lg ) << LG_INFO << "======================== REQUEST ANSWER ===================" << endl; } );
     }
-    /*
-    void sigOnOkResult( IResponseObjPtr );                //! wenn OK empfangen
-    void sigOnErrorResult( IResponseObjPtr );             //! Fehler bei der Abfrage
-    */
-
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnPresetsUpdated, this, &BoseSoundAlert::slotOnPresetsUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnNowPlayingUpdated, this, &BoseSoundAlert::slotOnNowPlayingUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnNowPlayingResult, this, &BoseSoundAlert::slotOnNowPlayingResult );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnPresetSelectionUpdated, this,
-             &BoseSoundAlert::slotOnPresetSelectionUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnVolumeUpdated, this, &BoseSoundAlert::slotOnVolumeUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnVolumeResult, this, &BoseSoundAlert::slotOnVolumeResult );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnBassUpdated, this, &BoseSoundAlert::slotOnBassUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnZoneUpdated, this, &BoseSoundAlert::slotOnZoneUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnZonesResult, this, &BoseSoundAlert::slotOnZonesResult );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnInfoUpdated, this, &BoseSoundAlert::slotOnInfoUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnNameUpdated, this, &BoseSoundAlert::slotOnNameUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnErrorUpdated, this, &BoseSoundAlert::slotOnErrorUpdated );
-    connect( masterDevice.get(), &BSoundTouchDevice::sigOnGroupUpdated, this, &BoseSoundAlert::slotOnGroupUpdated );
+    connect( masterDevice.get(), &BSoundTouchDevice::sigOnSoundTouchEvent, this, &BoseSoundAlert::slotOnSoundTouchEvent );
     //
     // verbinde das Master Gerät
     //
@@ -604,11 +584,135 @@ namespace bose_commserver
     }
     masterDevice->setZone( masterDevice->getId(), memberList );
     // TODO: warte auf Bestätigung mit Timeout
-*/
+    */
     return ( true );
   }
 
-  void BoseSoundAlert::slotOnPresetsUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::slotOnSoundTouchEvent( IResponseObjPtr responsePtr )
+  {
+    //
+    // je nach Art der Meldung...
+    //
+    switch ( static_cast< qint8 >( responsePtr->getResultType() ) )
+    {
+      case static_cast< qint8 >( ResultobjectType::R_OK ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: ok recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_SOURCES ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: resource recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_BASS_CAPABILITIES ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: bass capabilities recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_ZONES ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: update presets";
+        onZonesResult( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_VOLUME ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: volume recived";
+        onVolumeResult( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_PRESETS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: presets recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_BASS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: bass propertys recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_DEVICE_INFO ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: device info recived";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_PRESETS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: update presets";
+        onPresetsUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_NOW_PLAYING ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: update presets";
+        onNowPlayingResult( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_ERROR ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnErrorResult";
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::R_GROUPS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnGroupResult";
+        onGroupUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_NOWPLAYING ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnNowPlayingUpdated";
+        onNowPlayingUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_SELECTION ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnPresetSelectionUpdated";
+        onPresetSelectionUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_VOLUME ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnVolumeUpdated";
+        onVolumeUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_BASS ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnBassUpdated";
+        onBassUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_ZONE ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnZoneUpdated";
+        onZoneUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_INFO ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnInfoUpdated";
+        onInfoUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_NAME ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnNameUpdated";
+        onNameUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_ERROR ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnErrorUpdated";
+        onErrorUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_GROUP ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: emit sigOnGroupUpdated";
+        onGroupUpdated( responsePtr );
+        break;
+
+      case static_cast< qint8 >( ResultobjectType::U_SDKINFO ):
+      case static_cast< qint8 >( ResultobjectType::U_BROWSE_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_RECENTS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_SOURCES_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_LANGUAGE_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED ):
+      case static_cast< qint8 >( ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED ):
+        qDebug() << "BoseSoundAlert::slotOnSoundTouchEvent: unsupported events. ignore...";
+        break;
+
+      default:
+        qWarning() << "BoseSoundAlert::slotOnSoundTouchEvent: unknown object type. ignore.";
+    }
+  }
+
+  void BoseSoundAlert::onPresetsUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnPresetsUpdated" << endl;
     WsPresetUpdateObject *pres = static_cast< WsPresetUpdateObject * >( response.get() );
@@ -617,7 +721,7 @@ namespace bose_commserver
     // alertStatus = AL_FINISHED;
   }
 
-  void BoseSoundAlert::slotOnNowPlayingUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onNowPlayingUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnNowPlayingUpdated" << endl;
     WsNowPlayingUpdate *npl = static_cast< WsNowPlayingUpdate * >( response.get() );
@@ -676,7 +780,7 @@ namespace bose_commserver
         << " now: " << npl->getPlayStatus() << endl;
   }
 
-  void BoseSoundAlert::slotOnNowPlayingResult( IResponseObjPtr response )
+  void BoseSoundAlert::onNowPlayingResult( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnNowPlayingResult" << endl;
     HttpNowPlayingObject *npl = static_cast< HttpNowPlayingObject * >( response.get() );
@@ -735,7 +839,7 @@ namespace bose_commserver
         << " now: " << npl->getPlayStatus() << " source: " << npl->getSource() << endl;
   }
 
-  void BoseSoundAlert::slotOnPresetSelectionUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onPresetSelectionUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnPresetSelectionUpdated" << endl;
     WsNowSelectionUpdated *nsu = static_cast< WsNowSelectionUpdated * >( response.get() );
@@ -744,7 +848,7 @@ namespace bose_commserver
     // TODO: info benutzen
   }
 
-  void BoseSoundAlert::slotOnVolumeUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onVolumeUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnVolumeUpdated" << endl;
     WsVolumeUpdated *vol = static_cast< WsVolumeUpdated * >( response.get() );
@@ -766,7 +870,7 @@ namespace bose_commserver
     // TODO: zur überwachung nutzen
   }
 
-  void BoseSoundAlert::slotOnVolumeResult( IResponseObjPtr response )
+  void BoseSoundAlert::onVolumeResult( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnVolumeResult" << endl;
     HttpVolumeObject *vol = static_cast< HttpVolumeObject * >( response.get() );
@@ -788,7 +892,7 @@ namespace bose_commserver
     // TODO: zur überwachung nutzen
   }
 
-  void BoseSoundAlert::slotOnBassUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onBassUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnBassUpdated" << endl;
     WsBassUpdated *bu = static_cast< WsBassUpdated * >( response.get() );
@@ -797,7 +901,7 @@ namespace bose_commserver
     // Nur INFO
   }
 
-  void BoseSoundAlert::slotOnZoneUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onZoneUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnZoneUpdated" << endl;
     WsZoneUpdated *zu = static_cast< WsZoneUpdated * >( response.get() );
@@ -805,7 +909,7 @@ namespace bose_commserver
     // TODO: zur überwachung der Kommandos
   }
 
-  void BoseSoundAlert::slotOnZonesResult( bose_soundtoch_lib::IResponseObjPtr response )
+  void BoseSoundAlert::onZonesResult( bose_soundtoch_lib::IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnZonesResult" << endl;
     HttpZoneObject *zu = static_cast< HttpZoneObject * >( response.get() );
@@ -813,7 +917,7 @@ namespace bose_commserver
     // TODO: zur überwachung der Kommandos
   }
 
-  void BoseSoundAlert::slotOnInfoUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onInfoUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnInfoUpdated" << endl;
     WsInfoUpdated *iu = static_cast< WsInfoUpdated * >( response.get() );
@@ -821,14 +925,14 @@ namespace bose_commserver
     // Nur info
   }
 
-  void BoseSoundAlert::slotOnNameUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onNameUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnNameUpdated" << endl;
     WsNameUpdated *nu = static_cast< WsNameUpdated * >( response.get() );
     *lg << LDEBUG << "BoseSoundAlert::slotOnNameUpdated: device changed name to: " << nu->getDeviceId() << endl;
   }
 
-  void BoseSoundAlert::slotOnErrorUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onErrorUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnErrorUpdated" << endl;
     WsErrorUpdated *eu = static_cast< WsErrorUpdated * >( response.get() );
@@ -836,7 +940,7 @@ namespace bose_commserver
     // TODO: was machen
   }
 
-  void BoseSoundAlert::slotOnGroupUpdated( IResponseObjPtr response )
+  void BoseSoundAlert::onGroupUpdated( IResponseObjPtr response )
   {
     *lg << LDEBUG << "BoseSoundAlert::slotOnGroupUpdated" << endl;
     WsGroupUpdated *gu = static_cast< WsGroupUpdated * >( response.get() );

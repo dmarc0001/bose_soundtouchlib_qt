@@ -10,6 +10,7 @@
 #include <bsoundtouchdevice.hpp>
 #include <iostream>
 #include <memory>
+
 #include "config/programconfig.hpp"
 #include "ui_librarytestwindow.h"
 #include "xmlparser/xmlupdateparser.hpp"
@@ -39,6 +40,16 @@ namespace bose_soundtoch_lib
 
     private:
     // static void myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg );
+    void onPresetsUpdated( IResponseObjPtr response );
+    void onNowPlayingUpdated( IResponseObjPtr response );
+    void onPresetSelectionUpdated( IResponseObjPtr response );
+    void onVolumeUpdated( IResponseObjPtr response );
+    void onBassUpdated( IResponseObjPtr response );
+    void onZoneUpdated( IResponseObjPtr response );
+    void onInfoUpdated( IResponseObjPtr response );
+    void onNameUpdated( IResponseObjPtr response );
+    void onErrorUpdated( IResponseObjPtr response );
+    void onGroupUpdated( IResponseObjPtr response );
 
     private slots:
     void slotOnConnectWsButton( void );
@@ -76,6 +87,10 @@ namespace bose_soundtoch_lib
     //
     // "callbacks" für asyncrone ereignisse
     //
+    void slotOnSoundTouchEvent( IResponseObjPtr );
+    void slotOnWSConnected();
+    void slotOnWSDisConnected();
+    /*
     void slotOnPresetsUpdated( std::shared_ptr< IResponseObject > response );
     void slotOnNowPlayingUpdated( std::shared_ptr< IResponseObject > response );
     void slotOnPresetSelectionUpdated( std::shared_ptr< IResponseObject > response );
@@ -86,6 +101,7 @@ namespace bose_soundtoch_lib
     void slotOnNameUpdated( std::shared_ptr< IResponseObject > response );
     void slotOnErrorUpdated( std::shared_ptr< IResponseObject > response );
     void slotOnGroupUpdated( std::shared_ptr< IResponseObject > response );
+    */
   };
 }  // namespace bose_soundtoch_lib
 #endif  // LIBRARYTESTWINDOW_HPP

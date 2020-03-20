@@ -1,5 +1,7 @@
 #include "bsoundtouchdevice.hpp"
+
 #include <QThread>
+
 #include "xmlparser/xmlresultparser.hpp"
 #include "xmlparser/xmlupdateparser.hpp"
 
@@ -545,68 +547,8 @@ namespace bose_soundtoch_lib
       else
       {
         qDebug() << "BSoundTouchDevice::slotOnHttpFinished: result object type: " << response->getResultTypeName();
-        //
-        // hier verarbeiten / benachtichtigen
-        //
-        switch ( static_cast< qint8 >( response->getResultType() ) )
-        {
-          case static_cast< qint8 >( ResultobjectType::R_OK ):
-            emit sigOnOkResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_SOURCES ):
-            emit sigOnSourcesResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_BASS_CAPABILITIES ):
-            emit sigOnBassCapabilitiesResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_ZONES ):
-            emit sigOnZonesResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_VOLUME ):
-            emit sigOnVolumeResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_PRESETS ):
-            emit sigOnPresetsResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_BASS ):
-            emit sigOnBassResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_DEVICE_INFO ):
-            emit sigOnDeviceInfoResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_PRESETS ):
-            qDebug() << "BSoundTouchDevice::slotOnHttpFinished: emit sigOnPresetsResult";
-            emit sigOnPresetsResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_NOW_PLAYING ):
-            qDebug() << "BSoundTouchDevice::slotOnHttpFinished: emit sigOnNowPlayingResult";
-            emit sigOnNowPlayingResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_ERROR ):
-            qDebug() << "BSoundTouchDevice::slotOnHttpFinished: emit sigOnErrorResult";
-            emit sigOnErrorResult( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::R_GROUPS ):
-            qDebug() << "BSoundTouchDevice::slotOnHttpFinished: emit sigOnGroupResult";
-            emit sigOnGroupResult( response );
-            break;
-
-          default:
-            qWarning() << "BSoundTouchDevice::slotOnHttpFinished: unknown object type. ignore.";
-        }
-        qDebug() << "BSoundTouchDevice::slotOnHttpFinished: emit sigOnRequestAnswer";
-        emit sigOnRequestAnswer( response );
+        qDebug() << "BSoundTouchDevice::slotOnHttpFinished: emit sigOnSoundTouchEvent";
+        emit sigOnSoundTouchEvent( response );
       }
     }
     reply->deleteLater();
@@ -706,79 +648,10 @@ namespace bose_soundtoch_lib
         //
         // TODO: hier verarbeiten
         //
-        switch ( static_cast< qint8 >( response->getResultType() ) )
-        {
-          case static_cast< qint8 >( ResultobjectType::U_PRESETS ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnPresetsUpdated";
-            emit sigOnPresetsUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_NOWPLAYING ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnNowPlayingUpdated";
-            emit sigOnNowPlayingUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_SELECTION ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnPresetSelectionUpdated";
-            emit sigOnPresetSelectionUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_VOLUME ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnVolumeUpdated";
-            emit sigOnVolumeUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_BASS ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnBassUpdated";
-            emit sigOnBassUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_ZONE ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnZoneUpdated";
-            emit sigOnZoneUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_INFO ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnInfoUpdated";
-            emit sigOnInfoUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_NAME ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnNameUpdated";
-            emit sigOnNameUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_ERROR ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnErrorUpdated";
-            emit sigOnErrorUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_GROUP ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnGroupUpdated";
-            emit sigOnGroupUpdated( response );
-            break;
-
-          case static_cast< qint8 >( ResultobjectType::U_SDKINFO ):
-          case static_cast< qint8 >( ResultobjectType::U_BROWSE_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_RECENTS_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_SOURCES_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_LANGUAGE_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_USER_ACTIVITY_UPDATED_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_USER_INACTIVITY_UPDATED_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_CONNECTION_STATE_UPDATED_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_TONECONTROLS_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_AUDIOPRODUCT_LEVELCONTROLS_UNSUPPORTED ):
-          case static_cast< qint8 >( ResultobjectType::U_AUDIO_SP_CONTROLS_UNSUPPORTED ):
-            qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: unsupported events. ignore...";
-            break;
-
-          default:
-            qWarning() << "BSoundTouchDevice::slotOnWSTextMessageReceived: unknown object type. ignore.";
-        }
+        emit sigOnSoundTouchEvent( response );
       }
     }
     qDebug() << "BSoundTouchDevice::slotOnWSTextMessageReceived: emit sigOnWSTextMessageReceived";
-    emit sigOnWSTextMessageReceived( message );
   }
 
   void BSoundTouchDevice::myMessageOutput( QtMsgType type, const QMessageLogContext &context, const QString &msg )
