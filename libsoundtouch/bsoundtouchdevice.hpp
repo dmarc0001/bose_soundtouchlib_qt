@@ -2,6 +2,7 @@
 #define BSOUNDTOUCHDEVICE_HPP
 
 #include <stdio.h>
+
 #include <QAuthenticator>
 #include <QMap>
 #include <QNetworkAccessManager>
@@ -12,6 +13,7 @@
 #include <QVector>
 #include <QtDebug>
 #include <memory>
+
 #include "libsoundtouch_global.hpp"
 #include "websocket/bwebsocket.hpp"
 #include "xmlparser/bsoundtouch_global.hpp"
@@ -149,31 +151,9 @@ namespace bose_soundtoch_lib
 
     signals:
     void sigAuthenticationRequired( QNetworkReply *repl, QAuthenticator *authenticator );  //! sig wenn Authentifizierung gefordert
-    void sigOnSourcesResult( IResponseObjPtr );           //! wenn Sourcen als Antwort empfangen wurden
-    void sigOnBassCapabilitiesResult( IResponseObjPtr );  //! wenn Bass Möglickkeiten als Antwort empfangen wurde
-    void sigOnZonesResult( IResponseObjPtr );             //! wenn Zohnen als Antwort empfangen wurden
-    void sigOnVolumeResult( IResponseObjPtr );            //! wenn volume als Antwort empfangen wurden
-    void sigOnPresetsResult( IResponseObjPtr );           //! wenn presets als Antwort empfangen wurden
-    void sigOnBassResult( IResponseObjPtr );              //! wenn Bass als Antwort empfangen wurden
-    void sigOnDeviceInfoResult( IResponseObjPtr );        //! wenn device Info als Antwort empfangen wurden
-    void sigOnNowPlayingResult( IResponseObjPtr );        //! wenn now playing empfangen wurde (ist genau wie update)
-    void sigOnOkResult( IResponseObjPtr );                //! wenn OK empfangen
-    void sigOnErrorResult( IResponseObjPtr );             //! Fehler bei der Abfrage
-    void sigOnGroupResult( IResponseObjPtr );             //! Gruppe erfragt
-    void sigOnWSConnected( void );                        //! sig wenn Websocket erbunden ist
-    void sigOnWSDisConnected( void );                     //! sif wenn Websocket getrennt wurde
-    void sigOnWSTextMessageReceived( QString message );   //! sig wenn Websocket etwas gesendet hat
-    void sigOnRequestAnswer( IResponseObjPtr response );  //! Antwort auf ein HTTP Request
-    void sigOnPresetsUpdated( IResponseObjPtr );          //! sig on preset Update
-    void sigOnNowPlayingUpdated( IResponseObjPtr );       //! sig on now playing Update
-    void sigOnPresetSelectionUpdated( IResponseObjPtr );  //! sig on selction an Update
-    void sigOnVolumeUpdated( IResponseObjPtr );           //! sig on volume changed/updated
-    void sigOnBassUpdated( IResponseObjPtr );             //! sig on bass property updated
-    void sigOnZoneUpdated( IResponseObjPtr );             //! sig on zone updated
-    void sigOnInfoUpdated( IResponseObjPtr );             //! sig on device info updated
-    void sigOnNameUpdated( IResponseObjPtr );             //! sig on device name updated
-    void sigOnGroupUpdated( IResponseObjPtr );            //! sig on group updated SoundTouch 10 only
-    void sigOnErrorUpdated( IResponseObjPtr );            //! sig on error message changed or updated
+    void sigOnWSConnected( void );                                                         //! sig wenn Websocket erbunden ist
+    void sigOnWSDisConnected( void );                                                      //! sig wenn Websocket getrennt wurde
+    void sigOnSoundTouchEvent( IResponseObjPtr );                                          //! Ein Ereignis wurde erzeugt
 
     private slots:
     void slotAuthenticationRequired( QNetworkReply *, QAuthenticator *authenticator );
