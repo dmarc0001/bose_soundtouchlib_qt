@@ -3,4 +3,8 @@ include/
 lib/
 QT5*/
 rpilib/
+build/
+CMakeFiles/
 *.txt.user
+CMakeCache.txt
+
