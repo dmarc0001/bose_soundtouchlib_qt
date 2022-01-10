@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+#
+export LIBDIR=rpilib
+export AL_BIN=alert_daemon
+export LIB_BIN=libsoundtouch.so
+export AL_BIN_D=alert_daemon_debug
+export LIB_BIN_D=libsoundtouch_debug.so
+
+pushd `pwd`
+cd $LIBDIR
+echo "bin hier:" `pwd`
+
+
+ls -al
+
+
+
+if [[ -f $AL_BIN_D ]] ; then
+  echo "alert daemon  DEBUG..." 
+  if [[  -f $LIB_BIN_D ]] ; then
+    echo "copy debug binary..."
+    scp $AL_BIN_D dmarcini@radioweckerDev.fritz.box:/home/dmarcini/qt_test/soundtouch/
+    scp $LIB_BIN_D dmarcini@radioweckerDev.fritz.box:/home/dmarcini/qt_test/soundtouch/
+  fi
+fi
+echo -e "\n"
+
+if [[ -f $AL_BIN ]] ; then 
+  if [[ -f $LIB_BIN ]] ; then
+    echo "copy release version..."
+    scp $AL_BIN dmarcini@radioweckerDev.fritz.box:/home/dmarcini/qt_test/soundtouch/
+    scp $LIB_BIN dmarcini@radioweckerDev.fritz.box:/home/dmarcini/qt_test/soundtouch/
+  fi
+fi
+echo -e "\n"
+popd
+
+

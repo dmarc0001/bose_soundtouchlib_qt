@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+#
+
+###############################################################################
+# ACHTUNG Datei sysroot/usr/lib/arm-linux-gnueabihf/libc.so anpassen          #
+# GROUP ( ../../lib/arm-linux-gnueabihf/libc.so.6  \                          #
+#         ../../usr/lib/arm-linux-gnueabihf/libc_nonshared.a  AS_NEEDED \     #
+#         ( ../../lib/arm-linux-gnueabihf/ld-linux-armhf.so.3 ) )             #
+###############################################################################
+
+
+export BUILDDIR=QT5152-NATIVE-GCC-x64
+export DEBUGDIR=$BUILDDIR/Debug
+export RELEASEDIR=$BUILDDIR/Release
+#export LIBPATH=/home/dmarcini/raspi/sysroot/usr/lib:/home/dmarcini/raspi/sysroot/usr
+
+
+mkdir -p $DEBUGDIR
+mkdir -p $RELEASEDIR
+
+if [[ "$1" = "clean" ]] ; then
+  pushd `pwd`
+  echo "make clear..."
+  cd $DEBUGDIR
+  cmake --build . --target clean
+  popd
+  pushd `pwd`
+  cd $RELEASEDIR
+  cmake --build . --target clean
+  popd
+fi
+
+
+pushd `pwd`
+echo "make debug version..."
+cd $DEBUGDIR
+cmake -GNinja \
+  -DCMAKE_BUILD_TYPE=Debug \
+  ../../ 
+cmake --build . --target all
+popd
+
+
+#pushd `pwd`
+#cd $RELEASEDIR
+#echo "make release version..."
+#cmake \
+#  -DCMAKE_BUILD_TYPE=Release \
+#  ../../ 
+#cmake --build .
+#
+#popd
+# CMAKE_MODULE_PATH
+
+%{ActiveProject:NativePath}/%{Kit:FileSystemName}/%{BuildConfig:Name}
