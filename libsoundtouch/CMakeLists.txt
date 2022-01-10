@@ -22,10 +22,10 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 ###############################################################################
 # Projekt Definitionen                                                        #
 ###############################################################################
-set(KIT QT5141)
+set(KIT QT5152)
 set(MAJOR 1) # major version number
 set(MINOR 0) # minor version number
-set(PATCH 5) # patch number
+set(PATCH 6) # patch number
 set(BUILD 0) # win32: build number
 
 if (CMAKE_CROSSCOMPILING)

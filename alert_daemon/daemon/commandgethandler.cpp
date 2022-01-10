@@ -10,7 +10,7 @@ namespace bose_commserver
   CommandGetHandler::CommandGetHandler( AppConfigPtr dconfig, QJsonObject request ) : config( dconfig ), gRequest( request )
   {
     lg = config->getLogger();
-    *lg << LINFO << "CommandGetHandler::CommandGetHandler: create object..." << endl;
+    *lg << LINFO << "CommandGetHandler::CommandGetHandler: create object..." << Qt::endl;
   }
 
   /**
@@ -23,7 +23,7 @@ namespace bose_commserver
     //
     // es ist ein get Kommando, wurde vor der Instanzierung geprüft
     //
-    *lg << LDEBUG << "CommandGetHandler::getResponse: get answer..." << endl;
+    *lg << LDEBUG << "CommandGetHandler::getResponse: get answer..." << Qt::endl;
     //
     // ist es ein Objekt und ist es ein GET Objekt?
     //
@@ -48,7 +48,7 @@ namespace bose_commserver
         //
         QString key = it.key();
         QString val = it.value().toString();
-        *lg << LDEBUG << "CommandGetHandler::getResponse: get params: <" << key << "> <" << val << ">..." << endl;
+        *lg << LDEBUG << "CommandGetHandler::getResponse: get params: <" << key << "> <" << val << ">..." << Qt::endl;
         //
         // Config anfrage?
         //
@@ -63,9 +63,9 @@ namespace bose_commserver
             // config des Daemons
             // evtl noch zugriff beschränken
             //
-            *lg << LDEBUG << "CommandGetHandler::getResponse: read daemon config..." << endl;
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read daemon config..." << Qt::endl;
             insertDaemonConfig( jsonObj );
-            *lg << LDEBUG << "CommandGetHandler::getResponse: read daemon config...OK" << endl;
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read daemon config...OK" << Qt::endl;
           }
           //
           // alle Alermeinstellungen
@@ -78,7 +78,7 @@ namespace bose_commserver
             *lg << LDEBUG << "CommandGetHandler::getResponse: read all alert config...";
             for ( const auto &alert : *( config->getAlConfigs() ) )
             {
-              *lg << LDEBUG << "CommandGetHandler::getResponse: read alert <" << alert.getName() << "> config..." << endl;
+              *lg << LDEBUG << "CommandGetHandler::getResponse: read alert <" << alert.getName() << "> config..." << Qt::endl;
               insertAlertConfig( jsonObj, alert );
             }
             *lg << LDEBUG << "CommandGetHandler::getResponse: read all alert config...OK";
@@ -127,12 +127,12 @@ namespace bose_commserver
             //
             // eine konfig eines alarmes soll ausgegeben werden
             //
-            *lg << LDEBUG << "CommandGetHandler::getResponse: read config for alert <" << val << ">..." << endl;
+            *lg << LDEBUG << "CommandGetHandler::getResponse: read config for alert <" << val << ">..." << Qt::endl;
             for ( const auto &alert : *( config->getAlConfigs() ) )
             {
               if ( val.compare( alert.getName() ) == 0 )
               {
-                *lg << LDEBUG << "CommandGetHandler::getResponse: read config for alert <" << val << ">...OK" << endl;
+                *lg << LDEBUG << "CommandGetHandler::getResponse: read config for alert <" << val << ">...OK" << Qt::endl;
                 insertAlertConfig( jsonObj, alert );
                 break;
               }
@@ -143,14 +143,14 @@ namespace bose_commserver
           //
           else
           {
-            *lg << LWARN << "CommandGetHandler::getResponse: unknown get request: <" << val << ">" << endl;
+            *lg << LWARN << "CommandGetHandler::getResponse: unknown get request: <" << val << ">" << Qt::endl;
           }
         }
         else
         {
           // TODO: ganz böse, was melden oder so
           // ist es ein Objekt und ist es ein GET Objekt? ==> NEIN!
-          *lg << LCRIT << "CommandGetHandler::getResponse: unknown request, should be \"get\" with params" << endl;
+          *lg << LCRIT << "CommandGetHandler::getResponse: unknown request, should be \"get\" with params" << Qt::endl;
           answer = ConnectionHandler::getJSONErrorMessage( "not a valid get json object recived" );
           return answer;
         }

@@ -31,7 +31,7 @@ namespace bose_commserver
   /**
    * @brief operator <<
    * @param lg
-   * @param endl
+   * @param Qt::endl
    * @return
    */
   Logger &operator<<( Logger &lg, QTextStream &( QTextStream &s ) )
@@ -97,8 +97,8 @@ namespace bose_commserver
         if ( logFile && logFile->isOpen() && textStream && consoleStream )
         {
           if ( consoleOk )
-            *consoleStream << "START CONSOLE LOGGING (" << fileName << "), console logging: " << consoleLog << endl;
-          *textStream << "START FILE LOGGING (" << fileName << ")" << endl;
+            *consoleStream << "START CONSOLE LOGGING (" << fileName << "), console logging: " << consoleLog << Qt::endl;
+          *textStream << "START FILE LOGGING (" << fileName << ")" << Qt::endl;
           return ( 1 );
         }
       }
@@ -142,14 +142,14 @@ namespace bose_commserver
       //
       // Zeilenende ausgeben und Ausgabe flushen
       //
-      *textStream << endl;
+      *textStream << Qt::endl;
       textStream->flush();
       //
       // ist log zur Konsole aktiv, auch da neue Zeile
       //
       if ( logToConsole )
       {
-        *consoleStream << endl;
+        *consoleStream << Qt::endl;
       }
       wasNewline = true;
     }

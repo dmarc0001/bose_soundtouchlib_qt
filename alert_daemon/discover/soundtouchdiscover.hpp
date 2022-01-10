@@ -1,7 +1,7 @@
 #ifndef SOUNDBARBROWSER_HPP
 #define SOUNDBARBROWSER_HPP
 
-#include <QtZeroConf/qzeroconf.h>
+#include <qtzeroconf/qzeroconf.h>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QObject>

@@ -11,23 +11,23 @@ namespace bose_commserver
       : QObject( parent ), lg( dconfig->getLogger() ), config( dconfig ), zConfPtr( std::unique_ptr< QZeroConf >( new QZeroConf ) )
 
   {
-    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: create discover object..." << endl;
-    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signal for errors..." << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: create discover object..." << Qt::endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signal for errors..." << Qt::endl;
     connect( zConfPtr.get(), &QZeroConf::error, this, &SoundTouchDiscover::onError );
-    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signals for services..." << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signals for services..." << Qt::endl;
     connect( zConfPtr.get(), &QZeroConf::serviceAdded, this, &SoundTouchDiscover::onServiceAdded );
     connect( zConfPtr.get(), &QZeroConf::serviceRemoved, this, &SoundTouchDiscover::onServiceRemoved );
     connect( zConfPtr.get(), &QZeroConf::serviceUpdated, this, &SoundTouchDiscover::onServiceUpdated );
-    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signals for services...OK" << endl;
-    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser..." << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: connect signals for services...OK" << Qt::endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser..." << Qt::endl;
     zConfPtr->startBrowser( SOUNDTOUCH_TCP, QAbstractSocket::IPv4Protocol );
     if ( zConfPtr->browserExists() )
     {
-      *lg << LINFO << "SoundTouch discovering for devices started..." << endl;
+      *lg << LINFO << "SoundTouch discovering for devices started..." << Qt::endl;
     }
     // zConfPtr->startBrowser( "_soundtouch._tcp.local" );
-    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser...OK" << endl;
-    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: create discover object...OK" << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: start browser...OK" << Qt::endl;
+    *lg << LDEBUG << "SoundTouchDiscover::SoundTouchDiscover: create discover object...OK" << Qt::endl;
   }
 
   /**
@@ -61,18 +61,18 @@ namespace bose_commserver
     // etwas zum lesen
     //
     *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded: " << servicePtr->name() << " on host: " << servicePtr->host()
-        << " domain: " << servicePtr->domain() << " port: " << servicePtr->port() << " IP: " << servicePtr->ip().toString() << endl;
+        << " domain: " << servicePtr->domain() << " port: " << servicePtr->port() << " IP: " << servicePtr->ip().toString() << Qt::endl;
     /*
     *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded: " << servicePtr->name() << " on host: " << servicePtr->host()
         << " domain: " << servicePtr->domain() << " type " << servicePtr->type() << " port: " << servicePtr->port()
-        << " IP: " << servicePtr->ip().toString() << endl
-        << " text: " << endl;
+        << " IP: " << servicePtr->ip().toString() << Qt::endl
+        << " text: " << Qt::endl;
     //
     // die empfangenen Werte zeigen
     //
     for ( auto key : servicePtr->txt().keys() )
     {
-      *lg << " key: <" << QString( key ) << "> val: <" << QString( ( servicePtr->txt() ).take( key ) ) << ">" << endl;
+      *lg << " key: <" << QString( key ) << "> val: <" << QString( ( servicePtr->txt() ).take( key ) ) << ">" << Qt::endl;
     }
     */
     //
@@ -83,7 +83,7 @@ namespace bose_commserver
     {
       if ( currDev.getName().compare( servicePtr->name() ) == 0 )
       {
-        *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded:: device is in the list, ignore..." << endl;
+        *lg << LDEBUG << "SoundTouchDiscover::onServiceAdded:: device is in the list, ignore..." << Qt::endl;
         //
         // schon gefunden, ignorieren
         //
@@ -100,7 +100,7 @@ namespace bose_commserver
                                static_cast< quint16 >( config->getDefaultWsPort().toInt() ), servicePtr->txt().take( "MAC" ) );
       newDev.setHostName( servicePtr->host() );
       newDev.setModel( servicePtr->txt().take( "MODEL" ) );
-      *lg << LINFO << "new service for device <" << servicePtr->name() << "> addet to config." << endl;
+      *lg << LINFO << "new service for device <" << servicePtr->name() << "> addet to config." << Qt::endl;
       dList.append( newDev );
     }
   }
@@ -112,7 +112,7 @@ namespace bose_commserver
   void SoundTouchDiscover::onServiceRemoved( QZeroConfService servicePtr )
   {
     QMutexLocker locker( &logMutex );
-    *lg << LDEBUG << "SoundTouchDiscover::onServiceRemoved: " << servicePtr->name() << " on host: " << servicePtr->host() << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceRemoved: " << servicePtr->name() << " on host: " << servicePtr->host() << Qt::endl;
     //
     // in der config schauen, ob das Teil schon gespeichert war
     //
@@ -129,7 +129,7 @@ namespace bose_commserver
         // entferne es
         //
         it = dList.erase( it );
-        *lg << LINFO << "device <" << servicePtr->name() << "> on host: " << servicePtr->host() << " was removed from config." << endl;
+        *lg << LINFO << "device <" << servicePtr->name() << "> on host: " << servicePtr->host() << " was removed from config." << Qt::endl;
       }
     }
   }
@@ -140,7 +140,7 @@ namespace bose_commserver
    */
   void SoundTouchDiscover::onServiceUpdated( QZeroConfService servicePtr )
   {
-    *lg << LDEBUG << "SoundTouchDiscover::onServiceUpdated: ..." << servicePtr->name() << " on host: " << servicePtr->host() << endl;
+    *lg << LDEBUG << "SoundTouchDiscover::onServiceUpdated: ..." << servicePtr->name() << " on host: " << servicePtr->host() << Qt::endl;
     //
     // gucke mal, ob das in der Liste ist...
     //
@@ -160,7 +160,7 @@ namespace bose_commserver
         it->setPort( servicePtr->port() );
         it->setId( servicePtr->txt().take( "MAC" ) );
         *lg << LINFO << "device <" << servicePtr->name() << "> on host: " << servicePtr->host() << " was updated in the config."
-            << endl;
+            << Qt::endl;
         break;
       }
     }

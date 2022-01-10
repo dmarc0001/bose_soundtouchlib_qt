@@ -4,7 +4,10 @@ lib/
 QT5*/
 rpilib/
 build/
+.vscode/
 CMakeFiles/
 *.txt.user
 CMakeCache.txt
+cmake*.cmake
+
 

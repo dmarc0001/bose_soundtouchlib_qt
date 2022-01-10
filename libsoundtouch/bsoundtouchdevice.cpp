@@ -491,7 +491,7 @@ namespace bose_soundtoch_lib
     //
     // post übernimmt QbyteArray, daher eine kleine Konvertierung
     //
-    buffer.append( data );
+    buffer.append( data.toLatin1() );
     request.setHeader( QNetworkRequest::ContentTypeHeader, "application/xml" );
     // request.setHeader( QNetworkRequest::ContentTypeHeader, "text/xml" );
 

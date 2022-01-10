@@ -39,7 +39,7 @@ namespace bose_commserver
         //
         QString key = toSetIt.key();
         QJsonObject val = toSetIt.value().toJsonObject();
-        *lg << LDEBUG << "CommandSetHandler::getResponse: set type: <" << key << ">..." << endl;
+        *lg << LDEBUG << "CommandSetHandler::getResponse: set type: <" << key << ">..." << Qt::endl;
         //
         // daemon set Config anfrage?
         // TODO: evtl noch zugriff beschränken
@@ -62,7 +62,7 @@ namespace bose_commserver
 
               LgThreshold thr = Logger::getThresholdFromString( setVal );
               config->setThreshold( thr );
-              *lg << LDEBUG << "CommandSetHandler::getResponse: set daemon config to <" << setVal << ">..." << endl;
+              *lg << LDEBUG << "CommandSetHandler::getResponse: set daemon config to <" << setVal << ">..." << Qt::endl;
               config->setIsDebug( setVal.compare( "true" ) == 0 ? true : false );
               insertOkFor( jsonObj, daemonIter.key(), true );
             }
@@ -106,7 +106,7 @@ namespace bose_commserver
             else
             {
               // insertOkFor( jsonObj, key, false );
-              *lg << LWARN << "CommandSetHandler::getResponse: trying to configure an not exist alert! ignore!" << endl;
+              *lg << LWARN << "CommandSetHandler::getResponse: trying to configure an not exist alert! ignore!" << Qt::endl;
             }
           }
           else
@@ -124,7 +124,7 @@ namespace bose_commserver
           //
           // nix zum einstellen gefunden
           //
-          *lg << LCRIT << "CommandSetHandler::getResponse: unknown request, should be \"set\" with params" << endl;
+          *lg << LCRIT << "CommandSetHandler::getResponse: unknown request, should be \"set\" with params" << Qt::endl;
           answer = ConnectionHandler::getJSONErrorMessage( "not a valid get json object recived" );
           return answer;
         }
@@ -134,7 +134,7 @@ namespace bose_commserver
         //
         // keine Antworten gefunden?
         //
-        *lg << LWARN << "CommandSetHandler::getResponse: no parameters for answer includet!" << endl;
+        *lg << LWARN << "CommandSetHandler::getResponse: no parameters for answer includet!" << Qt::endl;
         answer = ConnectionHandler::getJSONErrorMessage( "no answers for set request computed! call programmer!" );
         return answer;
       }
@@ -270,12 +270,12 @@ namespace bose_commserver
       }
       else if ( alertConfigKey.compare( command::setConfigNewAlCmd ) == 0 )
       {
-        *lg << LDEBUG << "CommandSetHandler::updateSingleAlert: this is an new alert..." << endl;
+        *lg << LDEBUG << "CommandSetHandler::updateSingleAlert: this is an new alert..." << Qt::endl;
       }
       else
       {
         *lg << LWARN << "CommandSetHandler::updateSingleAlert: unknown set for <" << sAlert.getName() << "> recived: <"
-            << alertConfigKey << ">" << endl;
+            << alertConfigKey << ">" << Qt::endl;
       }
     }
   }
