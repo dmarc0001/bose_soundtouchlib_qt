@@ -22,7 +22,7 @@ endif()
 ###############################################################################
 # Projekt definitionen                                                        #
 ###############################################################################
-set(KIT QT5141)
+set(KIT QT5152)
 set(MAJOR 1) # major version number
 set(MINOR 0) # minor version number
 set(PATCH 0) # patch number

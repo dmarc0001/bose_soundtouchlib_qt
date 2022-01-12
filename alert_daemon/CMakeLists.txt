@@ -34,7 +34,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ###############################################################################
 # Projekt definitionen                                                        #
 ###############################################################################
-set(KIT QT5141)
+set(KIT QT5152)
 set(MAJOR 0) # major version number
 set(MINOR 2) # minor version number
 set(PATCH 0) # patch number
