@@ -298,8 +298,8 @@ namespace bose_commserver
       //
       // das wird wohl klappen
       //
-      // lg->startLogging( LgThreshold::LG_DEBUG, config->getLogfile() );
-      lg->startLogging( static_cast< LgThreshold >( config->getThreshold() ), config->getLogfileName(), config->getLogToConsole() );
+      QString fullLogFileName = logDirStr.append( QDir::separator() ).append( config->getLogfileName() );
+      lg->startLogging( static_cast< LgThreshold >( config->getThreshold() ), fullLogFileName, config->getLogToConsole() );
       config->setLogger( lg );
       *lg << LINFO << "BoseCommServer::createLogger: logger created..." << Qt::endl;
       return ( true );
@@ -319,7 +319,8 @@ namespace bose_commserver
     *lg << LDEBUG << QString( "BoseCommServer::onStartAlert: <%1>..." ).arg( alert.getName() ) << Qt::endl;
     if ( alert.getRunSince().isValid() )
     {
-      *lg << LWARN << QString( "BoseCommServer::onStartAlert: <%1> alredy running. Abort starting..." ).arg( alert.getName() ) << Qt::endl;
+      *lg << LWARN << QString( "BoseCommServer::onStartAlert: <%1> alredy running. Abort starting..." ).arg( alert.getName() )
+          << Qt::endl;
       return;
     }
     //
