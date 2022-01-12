@@ -76,7 +76,7 @@ namespace bose_commserver
             // alle alarme
             //
             *lg << LDEBUG << "CommandGetHandler::getResponse: read all alert config...";
-            for ( const auto &alert : *( config->getAlConfigs() ) )
+            for ( const auto &alert : qAsConst( *( config->getAlConfigs() ) ) )
             {
               *lg << LDEBUG << "CommandGetHandler::getResponse: read alert <" << alert.getName() << "> config..." << Qt::endl;
               insertAlertConfig( jsonObj, alert );
@@ -128,7 +128,7 @@ namespace bose_commserver
             // eine konfig eines alarmes soll ausgegeben werden
             //
             *lg << LDEBUG << "CommandGetHandler::getResponse: read config for alert <" << val << ">..." << Qt::endl;
-            for ( const auto &alert : *( config->getAlConfigs() ) )
+            for ( const auto &alert : qAsConst( *( config->getAlConfigs() ) ) )
             {
               if ( val.compare( alert.getName() ) == 0 )
               {

@@ -227,7 +227,10 @@ namespace bose_commserver
                .arg( handler->getNSock()->peerAddress().toString() )
                .arg( toDeleteHandlerId, 12, 10, QLatin1Char( '0' ) )
         << Qt::endl;
-    for ( auto currHandler : remoteConnections )
+    //
+    // die entfernte Verbindung wird geschlossen, also entferne die Referenz auf die Verbindung
+    //
+    for ( const auto &currHandler : qAsConst( remoteConnections ) )
     {
       if ( toDeleteHandlerId == currHandler->getCurrentHandlerNum() )
       {
@@ -259,7 +262,7 @@ namespace bose_commserver
     //
     *lg << LINFO << "BoseCommServer::onClosedListening: listening comserver socket closed." << Qt::endl;
     // remoteConnections
-    // TODO: bestehende sitzungen beednen/schiessen
+    // TODO: bestehende sitzungen beenden/schiessen
     // TODO: emit commandClosedSignal
   }
 

@@ -54,12 +54,12 @@ namespace bose_commserver
     public slots:
 
     private slots:
-    void onNewConnection();                                   //! neue ankommende Kommandoverbindung
-    void onClosedListening();                                 //! serversocket geschlossen
-    void onClientClosed( const ConnectionHandler *handler );  //! wenn ein client die Verbindung beendet hat
-    void onStartAlert( SingleAlertConfig &alert );            //! Es soll ein Alarm gestartet werden
-    void onStopAlert( SingleAlertConfig &alert );             //! es soll ein alarm gestoppt werden
-    void onAlertFinish( BoseSoundAlert *alert );              //! wenn ein Alarm sich beendet hat
+    void onNewConnection();                                                    //! neue ankommende Kommandoverbindung
+    void onClosedListening();                                                  //! serversocket geschlossen
+    void onClientClosed( const bose_commserver::ConnectionHandler *handler );  //! wenn ein client die Verbindung beendet hat
+    void onStartAlert( bose_commserver::SingleAlertConfig &alert );            //! Es soll ein Alarm gestartet werden
+    void onStopAlert( bose_commserver::SingleAlertConfig &alert );             //! es soll ein alarm gestoppt werden
+    void onAlertFinish( bose_commserver::BoseSoundAlert *alert );              //! wenn ein Alarm sich beendet hat
   };
 }  // namespace bose_commserver
 #endif  // BOSECOMMSERVER_HPP

@@ -124,8 +124,7 @@ namespace bose_commserver
     *lg << LDEBUG
         << QString( "ConnectionHandler::onRecTextMessage: handler id: %1 recived: %2 from %3" )
                .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) )
-               .arg( msg )
-               .arg( nSock->peerAddress().toString() )
+               .arg( msg, nSock->peerAddress().toString() )
         << Qt::endl;
     JSonStringPtr answer;
     //
@@ -206,8 +205,7 @@ namespace bose_commserver
     *lg << LDEBUG
         << QString( "ConnectionHandler::onRecTextMessage: handler id: %1 recived: %2 from %3" )
                .arg( currentHandlerNum, 12, 10, QLatin1Char( '0' ) )
-               .arg( QString( msg.toHex( ':' ) ) )
-               .arg( nSock->peerAddress().toString() )
+               .arg( QString( msg.toHex( ':' ) ), nSock->peerAddress().toString() )
         << Qt::endl;
     nSock->sendTextMessage( "BINARY ACKNOWLEDGED" );
   }
